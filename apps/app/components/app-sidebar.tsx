@@ -40,7 +40,7 @@ export function AppSidebar({ workspaces, user, ...props }: Props) {
 
   // /dashboard/workspaces 이외의 /dashboard/[id]/... 패턴이면 워크스페이스 컨텍스트
   const segments = pathname.split("/").filter(Boolean)
-  const NON_WORKSPACE_SEGMENTS = new Set(["workspaces", "inspectors"])
+  const NON_WORKSPACE_SEGMENTS = new Set(["workspaces"])
   const workspaceId =
     segments[0] === "dashboard" &&
     segments[1] &&
@@ -120,6 +120,17 @@ export function AppSidebar({ workspaces, user, ...props }: Props) {
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
+                    isActive={pathname.includes("/inspectors")}
+                  >
+                    <Link href={`/dashboard/${workspaceId}/inspectors`}>
+                      <UsersIcon />
+                      <span>점검자 관리</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
                     isActive={pathname.includes("/checklists")}
                   >
                     <Link href={`/dashboard/${workspaceId}/checklists`}>
@@ -154,17 +165,6 @@ export function AppSidebar({ workspaces, user, ...props }: Props) {
                   <Link href="/dashboard/workspaces">
                     <LayoutGridIcon />
                     <span>워크스페이스 목록</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === "/dashboard/inspectors"}
-                >
-                  <Link href="/dashboard/inspectors">
-                    <UsersIcon />
-                    <span>점검자 관리</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

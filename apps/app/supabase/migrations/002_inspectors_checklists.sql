@@ -5,21 +5,24 @@
 
 -- =============================================================================
 -- 1. inspectors (점검자)
---    테넌트 레벨 엔티티. 워크스페이스에 종속되지 않음.
+--    워크스페이스 레벨 엔티티. 각 워크스페이스별로 담당자를 관리.
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS inspectors (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id  UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  name       VARCHAR(100) NOT NULL,
-  phone      VARCHAR(11),
-  email      VARCHAR(255),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  tenant_id    UUID NOT NULL REFERENCES tenants(id)    ON DELETE CASCADE,
+  name         VARCHAR(100) NOT NULL,
+  phone        VARCHAR(11),
+  email        VARCHAR(255),
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE  inspectors IS '점검을 수행하는 담당자. 테넌트 레벨 엔티티.';
+COMMENT ON TABLE  inspectors IS '점검을 수행하는 담당자. 워크스페이스 레벨 엔티티.';
 COMMENT ON COLUMN inspectors.phone IS '숫자만, 최대 11자리.';
+COMMENT ON COLUMN inspectors.tenant_id IS 'RLS 격리용 비정규화 FK.';
 
-CREATE INDEX IF NOT EXISTS idx_inspectors_tenant_id ON inspectors(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_inspectors_workspace_id ON inspectors(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_inspectors_tenant_id    ON inspectors(tenant_id);
 
 ALTER TABLE inspectors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inspectors FORCE ROW LEVEL SECURITY;

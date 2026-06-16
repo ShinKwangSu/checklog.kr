@@ -11,6 +11,7 @@ import {
   updateInspector,
   deleteInspector,
 } from '@/app/actions/inspector'
+
 import { inspectorSchema, type InspectorInput } from '@/lib/validations/inspector'
 import { formatPhone } from '@/lib/utils/phone'
 import type { Inspector } from '@/types/database'
@@ -51,10 +52,11 @@ import { Input } from '@spotcare/ui/components/input'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
 
 type Props = {
+  workspaceId: string
   inspectors: Inspector[]
 }
 
-export function InspectorManager({ inspectors }: Props) {
+export function InspectorManager({ workspaceId, inspectors }: Props) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -62,7 +64,7 @@ export function InspectorManager({ inspectors }: Props) {
           <CardTitle>점검자</CardTitle>
           <CardDescription>총 {inspectors.length}명</CardDescription>
         </div>
-        <InspectorFormDialog />
+        <InspectorFormDialog workspaceId={workspaceId} />
       </CardHeader>
       <CardContent>
         {inspectors.length === 0 ? (
@@ -70,7 +72,7 @@ export function InspectorManager({ inspectors }: Props) {
             <p className="text-sm text-muted-foreground">
               아직 등록된 점검자가 없습니다. 점검자를 추가하세요.
             </p>
-            <InspectorFormDialog />
+            <InspectorFormDialog workspaceId={workspaceId} />
           </div>
         ) : (
           <Table>
@@ -91,6 +93,7 @@ export function InspectorManager({ inspectors }: Props) {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <InspectorFormDialog
+                        workspaceId={workspaceId}
                         inspector={inspector}
                         trigger={
                           <Button variant="ghost" size="icon" aria-label="수정">
@@ -99,7 +102,7 @@ export function InspectorManager({ inspectors }: Props) {
                         }
                       />
                       <ConfirmDeleteButton
-                        onConfirm={() => deleteInspector(inspector.id)}
+                        onConfirm={() => deleteInspector(inspector.id, workspaceId)}
                         title="점검자를 삭제하시겠습니까?"
                         description="삭제한 점검자 정보는 복구할 수 없습니다."
                         successMessage="점검자를 삭제했습니다."
@@ -117,9 +120,11 @@ export function InspectorManager({ inspectors }: Props) {
 }
 
 function InspectorFormDialog({
+  workspaceId,
   inspector,
   trigger,
 }: {
+  workspaceId: string
   inspector?: Inspector
   trigger?: React.ReactNode
 }) {
@@ -144,8 +149,8 @@ function InspectorFormDialog({
 
     startTransition(async () => {
       const result = isEdit
-        ? await updateInspector(inspector.id, formData)
-        : await createInspector(formData)
+        ? await updateInspector(inspector.id, workspaceId, formData)
+        : await createInspector(workspaceId, formData)
 
       if (result.success) {
         toast.success(isEdit ? '점검자를 수정했습니다.' : '점검자를 추가했습니다.')

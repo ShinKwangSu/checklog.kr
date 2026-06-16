@@ -75,6 +75,7 @@ export type Facility = {
  */
 export type Inspector = {
   id: string
+  workspace_id: string
   tenant_id: string
   name: string
   phone: string | null
@@ -160,6 +161,7 @@ export type FacilityUpdate = Partial<
 
 export type InspectorInsert = {
   id?: string
+  workspace_id: string
   tenant_id: string
   name: string
   phone?: string | null

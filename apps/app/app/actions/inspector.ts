@@ -7,14 +7,16 @@ import { inspectorSchema } from '@/lib/validations/inspector'
 import type { Inspector } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-const INSPECTORS_PATH = '/dashboard/inspectors'
-
 async function getTenantId(): Promise<string | null> {
   const session = await auth()
   return session?.user?.tenantId ?? null
 }
 
-export async function getInspectors(): Promise<Inspector[]> {
+function inspectorsPath(workspaceId: string): string {
+  return `/dashboard/${workspaceId}/inspectors`
+}
+
+export async function getInspectors(workspaceId: string): Promise<Inspector[]> {
   const tenantId = await getTenantId()
   if (!tenantId) return []
 
@@ -22,6 +24,7 @@ export async function getInspectors(): Promise<Inspector[]> {
   const { data, error } = await supabase
     .from('inspectors')
     .select('*')
+    .eq('workspace_id', workspaceId)
     .eq('tenant_id', tenantId)
     .order('created_at', { ascending: true })
 
@@ -30,6 +33,7 @@ export async function getInspectors(): Promise<Inspector[]> {
 }
 
 export async function createInspector(
+  workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Inspector>> {
   const tenantId = await getTenantId()
@@ -45,6 +49,7 @@ export async function createInspector(
   const { data, error } = await supabase
     .from('inspectors')
     .insert({
+      workspace_id: workspaceId,
       tenant_id: tenantId,
       name,
       phone: phone || null,
@@ -55,12 +60,13 @@ export async function createInspector(
 
   if (error) return { success: false, error: '점검자 생성 중 오류가 발생했습니다.' }
 
-  revalidatePath(INSPECTORS_PATH)
+  revalidatePath(inspectorsPath(workspaceId))
   return { success: true, data }
 }
 
 export async function updateInspector(
   id: string,
+  workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Inspector>> {
   const tenantId = await getTenantId()
@@ -77,6 +83,7 @@ export async function updateInspector(
     .from('inspectors')
     .update({ name, phone: phone || null, email: email || null })
     .eq('id', id)
+    .eq('workspace_id', workspaceId)
     .eq('tenant_id', tenantId)
     .select()
     .maybeSingle()
@@ -84,11 +91,14 @@ export async function updateInspector(
   if (error) return { success: false, error: '점검자 수정 중 오류가 발생했습니다.' }
   if (!data) return { success: false, error: '점검자를 찾을 수 없습니다.' }
 
-  revalidatePath(INSPECTORS_PATH)
+  revalidatePath(inspectorsPath(workspaceId))
   return { success: true, data }
 }
 
-export async function deleteInspector(id: string): Promise<ActionResult> {
+export async function deleteInspector(
+  id: string,
+  workspaceId: string
+): Promise<ActionResult> {
   const tenantId = await getTenantId()
   if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
 
@@ -97,10 +107,11 @@ export async function deleteInspector(id: string): Promise<ActionResult> {
     .from('inspectors')
     .delete()
     .eq('id', id)
+    .eq('workspace_id', workspaceId)
     .eq('tenant_id', tenantId)
 
   if (error) return { success: false, error: '점검자 삭제 중 오류가 발생했습니다.' }
 
-  revalidatePath(INSPECTORS_PATH)
+  revalidatePath(inspectorsPath(workspaceId))
   return { success: true }
 }
