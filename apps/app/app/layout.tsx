@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@spotcare/ui/components/sonner'
 
 export const metadata: Metadata = {
   title: 'spotcare.kr — 시설 관리 어드민',

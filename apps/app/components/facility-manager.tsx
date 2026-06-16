@@ -37,7 +37,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@spotcare/ui/components/card'
 import {
   Table,
   TableBody,
@@ -45,7 +45,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@spotcare/ui/components/table'
 import {
   Dialog,
   DialogContent,
@@ -54,7 +54,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@spotcare/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -62,17 +62,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@spotcare/ui/components/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+} from '@spotcare/ui/components/select'
+import { Button } from '@spotcare/ui/components/button'
+import { Input } from '@spotcare/ui/components/input'
+import { Textarea } from '@spotcare/ui/components/textarea'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
 
 // 클라이언트 검증 스키마.

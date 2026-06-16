@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@spotcare/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -35,9 +35,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+} from '@spotcare/ui/components/form'
+import { Button } from '@spotcare/ui/components/button'
+import { Input } from '@spotcare/ui/components/input'
 
 // 클라이언트 검증 스키마(서버 workspaceSchema 와 동일 규약: min_floor 는 양수 깊이).
 const formSchema = z.object({

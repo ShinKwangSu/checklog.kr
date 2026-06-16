@@ -10,8 +10,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+} from '@spotcare/ui/components/card'
+import { Button } from '@spotcare/ui/components/button'
 import { WorkspaceFormDialog } from '@/components/workspace-form-dialog'
 import { WorkspaceRowActions } from '@/components/workspace-row-actions'
 

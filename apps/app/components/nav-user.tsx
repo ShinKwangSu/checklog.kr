@@ -6,7 +6,7 @@ import { logoutAction } from "@/app/actions/auth"
 import {
   Avatar,
   AvatarFallback,
-} from "@/components/ui/avatar"
+} from "@spotcare/ui/components/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@spotcare/ui/components/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@spotcare/ui/components/sidebar"
 
 export function NavUser({
   user,

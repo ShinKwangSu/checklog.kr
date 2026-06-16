@@ -19,10 +19,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from '@spotcare/ui/components/card'
+import { Button } from '@spotcare/ui/components/button'
+import { Input } from '@spotcare/ui/components/input'
+import { Label } from '@spotcare/ui/components/label'
 
 const initialState: AuthActionState = { success: false }
 

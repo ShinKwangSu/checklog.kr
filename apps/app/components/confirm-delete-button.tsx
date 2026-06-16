@@ -21,8 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+} from '@spotcare/ui/components/dialog'
+import { Button } from '@spotcare/ui/components/button'
 
 type Props = {
   onConfirm: () => Promise<ActionResult>

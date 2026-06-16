@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from "@spotcare/ui/components/sidebar"
 
 type Workspace = { id: string; workspace_name: string }
 

@@ -19,6 +19,10 @@
       }
     ],
     "paths": {
+      "@/lib/supabase/client": ["../../packages/database/src/supabase/client.ts"],
+      "@/lib/supabase/server": ["../../packages/database/src/supabase/server.ts"],
+      "@/types/database": ["../../packages/database/src/types/database.ts"],
+      "@/lib/utils/floor": ["../../packages/database/src/utils/floor.ts"],
       "@/*": ["./*"]
     }
   },

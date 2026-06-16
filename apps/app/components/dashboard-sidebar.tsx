@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Building2, LayoutGrid, Layers, Boxes } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@spotcare/ui/lib/utils'
 import type { Workspace } from '@/types/database'
 import { LogoutButton } from '@/components/logout-button'
 
