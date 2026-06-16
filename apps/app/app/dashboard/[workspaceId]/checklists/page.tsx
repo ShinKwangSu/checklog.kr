@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getWorkspace } from '@/app/actions/workspace'
 import { getChecklists } from '@/app/actions/checklist'
 import { ChecklistManager } from '@/components/checklist-manager'
+// getChecklists now returns ChecklistWithItems[] — ChecklistManager accepts it directly
 
 export default async function ChecklistsPage({
   params,

@@ -99,6 +99,27 @@ export type Checklist = {
   created_at: string
 }
 
+/**
+ * checklist_items — 점검표의 개별 항목.
+ * sort_order 기준 오름차순으로 표시한다.
+ */
+export type ChecklistItem = {
+  id: string
+  checklist_id: string
+  workspace_id: string
+  tenant_id: string
+  item_name: string
+  response_type: 'checklist'
+  is_required: boolean
+  sort_order: number
+  created_at: string
+}
+
+/** 항목이 함께 로드된 점검표 (getChecklists 반환 타입) */
+export type ChecklistWithItems = Checklist & {
+  checklist_items: ChecklistItem[]
+}
+
 // -----------------------------------------------------------------------------
 // Insert 타입 (INSERT 시 입력 형태 — DB 기본값/자동생성 컬럼은 선택적)
 // -----------------------------------------------------------------------------
@@ -169,6 +190,18 @@ export type InspectorInsert = {
   created_at?: string
 }
 
+export type ChecklistItemInsert = {
+  id?: string
+  checklist_id: string
+  workspace_id: string
+  tenant_id: string
+  item_name: string
+  response_type?: 'checklist'
+  is_required?: boolean
+  sort_order?: number
+  created_at?: string
+}
+
 export type ChecklistInsert = {
   id?: string
   workspace_id: string
@@ -226,6 +259,12 @@ export type Database = {
         Row: Checklist
         Insert: ChecklistInsert
         Update: Partial<ChecklistInsert>
+        Relationships: []
+      }
+      checklist_items: {
+        Row: ChecklistItem
+        Insert: ChecklistItemInsert
+        Update: Partial<ChecklistItemInsert>
         Relationships: []
       }
     }

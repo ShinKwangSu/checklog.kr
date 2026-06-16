@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Pencil } from 'lucide-react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
@@ -12,7 +12,7 @@ import {
   deleteChecklist,
 } from '@/app/actions/checklist'
 import { checklistSchema, type ChecklistInput } from '@/lib/validations/checklist'
-import type { Checklist } from '@/types/database'
+import type { ChecklistWithItems } from '@/types/database'
 import {
   Card,
   CardContent,
@@ -66,9 +66,11 @@ const CYCLE_LABEL: Record<string, string> = {
   monthly: '매월',
 }
 
+const DEFAULT_ITEM = { item_name: '', response_type: 'checklist' as const, is_required: true }
+
 type Props = {
   workspaceId: string
-  checklists: Checklist[]
+  checklists: ChecklistWithItems[]
 }
 
 export function ChecklistManager({ workspaceId, checklists }: Props) {
@@ -96,6 +98,7 @@ export function ChecklistManager({ workspaceId, checklists }: Props) {
                 <TableHead>점검표명</TableHead>
                 <TableHead>반복 주기</TableHead>
                 <TableHead>횟수</TableHead>
+                <TableHead>항목</TableHead>
                 <TableHead className="text-right">액션</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,6 +119,7 @@ export function ChecklistManager({ workspaceId, checklists }: Props) {
                       )}
                   </TableCell>
                   <TableCell>{checklist.count}회</TableCell>
+                  <TableCell>{checklist.checklist_items.length}개</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <ChecklistFormDialog
@@ -132,7 +136,7 @@ export function ChecklistManager({ workspaceId, checklists }: Props) {
                           deleteChecklist(checklist.id, workspaceId)
                         }
                         title="점검표를 삭제하시겠습니까?"
-                        description="삭제한 점검표는 복구할 수 없습니다."
+                        description="삭제한 점검표와 모든 항목은 복구할 수 없습니다."
                         successMessage="점검표를 삭제했습니다."
                       />
                     </div>
@@ -147,13 +151,30 @@ export function ChecklistManager({ workspaceId, checklists }: Props) {
   )
 }
 
+function buildDefaultValues(checklist?: ChecklistWithItems): ChecklistInput {
+  return {
+    checklist_name: checklist?.checklist_name ?? '',
+    description: checklist?.description ?? '',
+    repeat_cycle: checklist?.repeat_cycle ?? 'daily',
+    count: checklist?.count ?? 1,
+    days: checklist?.days ?? [],
+    items: checklist?.checklist_items.length
+      ? checklist.checklist_items.map((i) => ({
+          item_name: i.item_name,
+          response_type: i.response_type,
+          is_required: i.is_required,
+        }))
+      : [DEFAULT_ITEM],
+  }
+}
+
 function ChecklistFormDialog({
   workspaceId,
   checklist,
   trigger,
 }: {
   workspaceId: string
-  checklist?: Checklist
+  checklist?: ChecklistWithItems
   trigger?: React.ReactNode
 }) {
   const [open, setOpen] = useState(false)
@@ -162,13 +183,12 @@ function ChecklistFormDialog({
 
   const form = useForm<ChecklistInput>({
     resolver: zodResolver(checklistSchema),
-    defaultValues: {
-      checklist_name: checklist?.checklist_name ?? '',
-      description: checklist?.description ?? '',
-      repeat_cycle: checklist?.repeat_cycle ?? 'daily',
-      count: checklist?.count ?? 1,
-      days: checklist?.days ?? [],
-    },
+    defaultValues: buildDefaultValues(checklist),
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'items',
   })
 
   const repeatCycle = form.watch('repeat_cycle')
@@ -182,6 +202,7 @@ function ChecklistFormDialog({
     if (values.repeat_cycle === 'weekly') {
       formData.set('days', JSON.stringify(values.days ?? []))
     }
+    formData.set('items_json', JSON.stringify(values.items))
 
     startTransition(async () => {
       const result = isEdit
@@ -191,15 +212,7 @@ function ChecklistFormDialog({
       if (result.success) {
         toast.success(isEdit ? '점검표를 수정했습니다.' : '점검표를 추가했습니다.')
         setOpen(false)
-        if (!isEdit) {
-          form.reset({
-            checklist_name: '',
-            description: '',
-            repeat_cycle: 'daily',
-            count: 1,
-            days: [],
-          })
-        }
+        if (!isEdit) form.reset(buildDefaultValues())
       } else {
         toast.error(result.error)
       }
@@ -211,15 +224,7 @@ function ChecklistFormDialog({
       open={open}
       onOpenChange={(next) => {
         setOpen(next)
-        if (next) {
-          form.reset({
-            checklist_name: checklist?.checklist_name ?? '',
-            description: checklist?.description ?? '',
-            repeat_cycle: checklist?.repeat_cycle ?? 'daily',
-            count: checklist?.count ?? 1,
-            days: checklist?.days ?? [],
-          })
-        }
+        if (next) form.reset(buildDefaultValues(checklist))
       }}
     >
       <DialogTrigger asChild>
@@ -230,10 +235,10 @@ function ChecklistFormDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? '점검표 수정' : '점검표 추가'}</DialogTitle>
-          <DialogDescription>점검표 정보를 입력하세요.</DialogDescription>
+          <DialogDescription>점검표 정보와 항목을 입력하세요.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -259,7 +264,7 @@ function ChecklistFormDialog({
                   <FormControl>
                     <Textarea
                       placeholder="점검 내용을 간략히 입력하세요."
-                      rows={3}
+                      rows={2}
                       {...field}
                     />
                   </FormControl>
@@ -267,47 +272,49 @@ function ChecklistFormDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="repeat_cycle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>반복 주기 *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="repeat_cycle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>반복 주기 *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="주기 선택" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="daily">매일</SelectItem>
+                        <SelectItem value="weekly">매주</SelectItem>
+                        <SelectItem value="monthly">매월</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="count"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>횟수 *</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="주기 선택" />
-                      </SelectTrigger>
+                      <Input
+                        type="number"
+                        min={1}
+                        placeholder="1"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="daily">매일</SelectItem>
-                      <SelectItem value="weekly">매주</SelectItem>
-                      <SelectItem value="monthly">매월</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="count"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>횟수 *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      placeholder="1"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             {repeatCycle === 'weekly' && (
               <FormField
                 control={form.control}
@@ -330,10 +337,7 @@ function ChecklistFormDialog({
                               )
                             }}
                           />
-                          <label
-                            htmlFor={`day-${idx}`}
-                            className="text-sm cursor-pointer"
-                          >
+                          <label htmlFor={`day-${idx}`} className="text-sm cursor-pointer">
                             {label}
                           </label>
                         </div>
@@ -344,6 +348,102 @@ function ChecklistFormDialog({
                 )}
               />
             )}
+
+            {/* 점검 항목 */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <FormLabel>점검 항목 *</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append(DEFAULT_ITEM)}
+                >
+                  <Plus className="h-3 w-3" />
+                  항목 추가
+                </Button>
+              </div>
+              {fields.length > 0 && (
+                <div className="grid grid-cols-[1fr_100px_40px_32px] gap-x-2 gap-y-1 text-xs text-muted-foreground px-1 mb-1">
+                  <span>항목명</span>
+                  <span>응답 방식</span>
+                  <span className="text-center">필수</span>
+                  <span />
+                </div>
+              )}
+              <div className="space-y-2">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="grid grid-cols-[1fr_100px_40px_32px] gap-x-2 items-start">
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.item_name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={`항목 ${index + 1}`} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.response_type`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="checklist">체크리스트</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`items.${index}.is_required`}
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-center pt-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(v) => field.onChange(v === true)}
+                              title="필수 응답 항목"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-0.5 h-9 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => remove(index)}
+                      disabled={fields.length === 1}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {form.formState.errors.items?.root && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.items.root.message}
+                </p>
+              )}
+              {form.formState.errors.items?.message && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.items.message}
+                </p>
+              )}
+            </div>
+
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
                 {isPending ? '저장 중...' : isEdit ? '수정' : '추가'}

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { createClient } from '@/lib/supabase/server'
 import { checklistSchema } from '@/lib/validations/checklist'
-import type { Checklist } from '@/types/database'
+import type { ChecklistWithItems } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
 async function getTenantId(): Promise<string | null> {
@@ -16,42 +16,51 @@ function checklistsPath(workspaceId: string): string {
   return `/dashboard/${workspaceId}/checklists`
 }
 
-export async function getChecklists(workspaceId: string): Promise<Checklist[]> {
+export async function getChecklists(workspaceId: string): Promise<ChecklistWithItems[]> {
   const tenantId = await getTenantId()
   if (!tenantId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('checklists')
-    .select('*')
+    .select('*, checklist_items(id, item_name, response_type, is_required, sort_order)')
     .eq('workspace_id', workspaceId)
     .eq('tenant_id', tenantId)
     .order('created_at', { ascending: true })
 
   if (error) return []
-  return data ?? []
+
+  // 항목을 sort_order 기준 정렬
+  const rows = (data ?? []) as unknown as ChecklistWithItems[]
+  return rows.map((c) => ({
+    ...c,
+    checklist_items: [...(c.checklist_items ?? [])].sort(
+      (a, b) => a.sort_order - b.sort_order
+    ),
+  }))
 }
 
 export async function createChecklist(
   workspaceId: string,
   formData: FormData
-): Promise<ActionResult<Checklist>> {
+): Promise<ActionResult<ChecklistWithItems>> {
   const tenantId = await getTenantId()
   if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
-  const daysRaw = formData.get('days')
   const parsed = checklistSchema.safeParse({
     ...raw,
-    days: daysRaw ? JSON.parse(daysRaw as string) : undefined,
+    days: raw.days ? JSON.parse(raw.days as string) : undefined,
+    items: raw.items_json ? JSON.parse(raw.items_json as string) : [],
   })
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.' }
   }
 
-  const { checklist_name, description, repeat_cycle, count, days } = parsed.data
+  const { checklist_name, description, repeat_cycle, count, days, items } = parsed.data
   const supabase = createClient()
-  const { data, error } = await supabase
+
+  const { data: checklist, error } = await supabase
     .from('checklists')
     .insert({
       workspace_id: workspaceId,
@@ -67,31 +76,46 @@ export async function createChecklist(
 
   if (error) return { success: false, error: '점검표 생성 중 오류가 발생했습니다.' }
 
+  const { error: itemsError } = await supabase.from('checklist_items').insert(
+    items.map((item, idx) => ({
+      checklist_id: checklist.id,
+      workspace_id: workspaceId,
+      tenant_id: tenantId,
+      item_name: item.item_name,
+      response_type: item.response_type,
+      is_required: item.is_required,
+      sort_order: idx,
+    }))
+  )
+
+  if (itemsError) return { success: false, error: '항목 저장 중 오류가 발생했습니다.' }
+
   revalidatePath(checklistsPath(workspaceId))
-  return { success: true, data }
+  return { success: true }
 }
 
 export async function updateChecklist(
   id: string,
   workspaceId: string,
   formData: FormData
-): Promise<ActionResult<Checklist>> {
+): Promise<ActionResult<ChecklistWithItems>> {
   const tenantId = await getTenantId()
   if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
-  const daysRaw = formData.get('days')
   const parsed = checklistSchema.safeParse({
     ...raw,
-    days: daysRaw ? JSON.parse(daysRaw as string) : undefined,
+    days: raw.days ? JSON.parse(raw.days as string) : undefined,
+    items: raw.items_json ? JSON.parse(raw.items_json as string) : [],
   })
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? '입력값을 확인해주세요.' }
   }
 
-  const { checklist_name, description, repeat_cycle, count, days } = parsed.data
+  const { checklist_name, description, repeat_cycle, count, days, items } = parsed.data
   const supabase = createClient()
-  const { data, error } = await supabase
+
+  const { error } = await supabase
     .from('checklists')
     .update({
       checklist_name,
@@ -103,14 +127,28 @@ export async function updateChecklist(
     .eq('id', id)
     .eq('workspace_id', workspaceId)
     .eq('tenant_id', tenantId)
-    .select()
-    .maybeSingle()
 
   if (error) return { success: false, error: '점검표 수정 중 오류가 발생했습니다.' }
-  if (!data) return { success: false, error: '점검표를 찾을 수 없습니다.' }
+
+  // 항목 전체 교체 (삭제 후 재삽입)
+  await supabase.from('checklist_items').delete().eq('checklist_id', id).eq('tenant_id', tenantId)
+
+  const { error: itemsError } = await supabase.from('checklist_items').insert(
+    items.map((item, idx) => ({
+      checklist_id: id,
+      workspace_id: workspaceId,
+      tenant_id: tenantId,
+      item_name: item.item_name,
+      response_type: item.response_type,
+      is_required: item.is_required,
+      sort_order: idx,
+    }))
+  )
+
+  if (itemsError) return { success: false, error: '항목 저장 중 오류가 발생했습니다.' }
 
   revalidatePath(checklistsPath(workspaceId))
-  return { success: true, data }
+  return { success: true }
 }
 
 export async function deleteChecklist(
