@@ -27,7 +27,20 @@ description: >
 
 ---
 
-## 2. 도메인 기반 디렉토리 구조
+## 2. 레이어 도입 기준
+
+도메인 레이어드 아키텍처는 복잡도가 생길 때 도입한다. **미리 적용하지 않는다.**
+
+| 상황 | 대응 |
+|------|------|
+| action에서 Supabase 직접 호출 (기본) | ✅ 허용 — 단순 CRUD는 flat이 더 읽기 좋다 |
+| 같은 쿼리를 두 곳 이상에서 재사용 | repository로 분리 |
+| action 내 비즈니스 로직이 10줄 이상 복잡해질 때 | service로 분리 |
+| 비즈니스 로직 단독 단위 테스트가 필요할 때 | repository 주입 패턴 도입 |
+
+레이어를 나눌 때는 아래 구조를 따른다.
+
+## 3. 도메인 기반 디렉토리 구조
 
 모든 로직은 **도메인**별로 **레이어드 아키텍처**로 구성한다.
 
@@ -93,7 +106,7 @@ description: >
 
 ---
 
-## 3. Supabase 클라이언트 규칙
+## 4. Supabase 클라이언트 규칙
 
 Supabase는 실행 환경별로 클라이언트를 **반드시 분리**한다.
 
@@ -131,7 +144,7 @@ export async function getWorkspacesAction() {
 
 ---
 
-## 4. React Query 전략
+## 5. React Query 전략
 
 ### 4.1 Query Keys (엄격)
 
@@ -184,7 +197,7 @@ export function useWorkspace(id: string) {
 
 ---
 
-## 5. Prefetch 전략
+## 6. Prefetch 전략
 
 ### 언제 Prefetch 할까
 
@@ -231,7 +244,7 @@ return <HydrationBoundary state={state}><PageContent /></HydrationBoundary>
 
 ---
 
-## 6. 캐시 레이어 규칙
+## 7. 캐시 레이어 규칙
 
 | 레이어 | 역할 |
 |--------|------|
@@ -247,7 +260,7 @@ export const getServerSupabase = cache(() => createServerSupabase())
 
 ---
 
-## 7. Mutation & Invalidation
+## 8. Mutation & Invalidation
 
 흐름: `Server Action → Supabase 변경 → invalidateQueries → UI refetch`
 
@@ -267,7 +280,7 @@ const { mutate } = useMutation({
 
 ---
 
-## 8. 에러 처리 전략
+## 9. 에러 처리 전략
 
 ### ActionResult 패턴 (변경 Server Action 전용)
 
@@ -319,7 +332,7 @@ export async function createWorkspaceAction(data): Promise<ActionResult> {
 
 ---
 
-## 9. 서버 / 클라이언트 경계
+## 10. 서버 / 클라이언트 경계
 
 **서버(Server Component):** prefetch + SEO 중요 데이터. React Query 훅 사용 ❌.
 
@@ -327,7 +340,7 @@ export async function createWorkspaceAction(data): Promise<ActionResult> {
 
 ---
 
-## 10. Suspense & 스트리밍 정책
+## 11. Suspense & 스트리밍 정책
 
 레이아웃 안정성에 영향을 주는 비동기 경계에만 Suspense 사용.
 
@@ -338,7 +351,7 @@ export async function createWorkspaceAction(data): Promise<ActionResult> {
 
 ---
 
-## 11. URL & 쿼리 스트링
+## 12. URL & 쿼리 스트링
 
 - `nuqs`만 사용 (직접 `useSearchParams` 사용 금지)
 - `null` → query param 제거
@@ -347,7 +360,7 @@ export async function createWorkspaceAction(data): Promise<ActionResult> {
 
 ---
 
-## 12. 페이지네이션
+## 13. 페이지네이션
 
 - 무한 쿼리 prefetch 금지
 - 페이지 인덱스는 query key에 포함
@@ -356,7 +369,7 @@ export async function createWorkspaceAction(data): Promise<ActionResult> {
 
 ---
 
-## 13. 성능 가드레일 (Lighthouse ≥ 90)
+## 14. 성능 가드레일 (Lighthouse ≥ 90)
 
 금지:
 - `useEffect`에서 데이터 패칭
