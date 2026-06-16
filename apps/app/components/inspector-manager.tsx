@@ -86,7 +86,7 @@ export function InspectorManager({ inspectors }: Props) {
               {inspectors.map((inspector) => (
                 <TableRow key={inspector.id}>
                   <TableCell className="font-medium">{inspector.name}</TableCell>
-                  <TableCell>{inspector.phone ?? '-'}</TableCell>
+                  <TableCell>{inspector.phone ? formatPhone(inspector.phone) : '-'}</TableCell>
                   <TableCell>{inspector.email ?? '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -206,7 +206,7 @@ function InspectorFormDialog({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>전화번호</FormLabel>
+                  <FormLabel>전화번호 *</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="010-0000-0000"
@@ -225,7 +225,7 @@ function InspectorFormDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>이메일</FormLabel>
+                  <FormLabel>이메일 <span className="text-muted-foreground font-normal">(선택)</span></FormLabel>
                   <FormControl>
                     <Input
                       placeholder="example@company.com"
