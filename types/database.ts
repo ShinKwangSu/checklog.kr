@@ -1,0 +1,176 @@
+// =============================================================================
+// spotcare.kr MVP — Database Types
+// supabase/migrations/001_initial_schema.sql 과 1:1로 동기화된다.
+// 스키마 변경 시 이 파일을 반드시 함께 갱신할 것.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Row 타입 (DB 에서 SELECT 된 형태)
+// -----------------------------------------------------------------------------
+
+/**
+ * tenants — 마스터 계정/업체.
+ * password_hash 는 절대 클라이언트로 전달하지 않는다(서버 전용).
+ */
+export type Tenant = {
+  id: string
+  company_name: string
+  admin_name: string
+  phone: string
+  email: string
+  created_at: string
+}
+
+/**
+ * password_hash 를 포함한 서버 전용 Tenant 형태.
+ * 로그인 검증 등 서버 컨텍스트에서만 사용한다.
+ */
+export type TenantWithSecret = Tenant & {
+  password_hash: string
+}
+
+/**
+ * workspaces — 업체가 관리하는 건물/장소.
+ * max_floor: 지상 최고 층(양수, 없으면 0)
+ * min_floor: 지하 최저 층(음수, 없으면 0)
+ */
+export type Workspace = {
+  id: string
+  tenant_id: string
+  workspace_name: string
+  max_floor: number
+  min_floor: number
+  created_at: string
+}
+
+/**
+ * facility_types — 워크스페이스별 공간 카테고리.
+ */
+export type FacilityType = {
+  id: string
+  workspace_id: string
+  tenant_id: string
+  type_name: string
+  created_at: string
+}
+
+/**
+ * facilities — 실제 관리 대상 시설.
+ * floor: 정수 저장(3층=3, 지하1층=-1, 층없음=0). 표시 변환은 앱 레이어.
+ */
+export type Facility = {
+  id: string
+  workspace_id: string
+  tenant_id: string
+  facility_type_id: string
+  facility_name: string
+  floor: number
+  location_description: string | null
+  notes: string | null
+  created_at: string
+}
+
+// -----------------------------------------------------------------------------
+// Insert 타입 (INSERT 시 입력 형태 — DB 기본값/자동생성 컬럼은 선택적)
+// -----------------------------------------------------------------------------
+
+export type TenantInsert = {
+  id?: string
+  company_name: string
+  admin_name: string
+  phone: string
+  email: string
+  password_hash: string
+  created_at?: string
+}
+
+export type WorkspaceInsert = {
+  id?: string
+  tenant_id: string
+  workspace_name: string
+  max_floor?: number
+  min_floor?: number
+  created_at?: string
+}
+
+export type FacilityTypeInsert = {
+  id?: string
+  workspace_id: string
+  tenant_id: string
+  type_name: string
+  created_at?: string
+}
+
+export type FacilityInsert = {
+  id?: string
+  workspace_id: string
+  tenant_id: string
+  facility_type_id: string
+  facility_name: string
+  floor: number
+  location_description?: string | null
+  notes?: string | null
+  created_at?: string
+}
+
+// -----------------------------------------------------------------------------
+// Update 타입 (UPDATE 시 부분 갱신 — 모든 필드 선택적)
+// 격리 키(tenant_id) 와 PK(id) 는 갱신 대상에서 제외한다.
+// -----------------------------------------------------------------------------
+
+export type WorkspaceUpdate = Partial<
+  Omit<Workspace, 'id' | 'tenant_id' | 'created_at'>
+>
+
+export type FacilityTypeUpdate = Partial<
+  Omit<FacilityType, 'id' | 'tenant_id' | 'workspace_id' | 'created_at'>
+>
+
+export type FacilityUpdate = Partial<
+  Omit<Facility, 'id' | 'tenant_id' | 'workspace_id' | 'created_at'>
+>
+
+// -----------------------------------------------------------------------------
+// Supabase 클라이언트 제네릭용 Database 인터페이스
+// createClient<Database>(...) 형태로 사용한다.
+// -----------------------------------------------------------------------------
+
+export type Database = {
+  public: {
+    // @supabase/supabase-js 의 GenericSchema 제약을 만족시키기 위해
+    // Views/Functions 키가 반드시 존재해야 한다(없으면 insert/update 가 never 추론).
+    Views: Record<string, never>
+    Tables: {
+      tenants: {
+        Row: TenantWithSecret
+        Insert: TenantInsert
+        Update: Partial<TenantInsert>
+        Relationships: []
+      }
+      workspaces: {
+        Row: Workspace
+        Insert: WorkspaceInsert
+        Update: Partial<WorkspaceInsert>
+        Relationships: []
+      }
+      facility_types: {
+        Row: FacilityType
+        Insert: FacilityTypeInsert
+        Update: Partial<FacilityTypeInsert>
+        Relationships: []
+      }
+      facilities: {
+        Row: Facility
+        Insert: FacilityInsert
+        Update: Partial<FacilityInsert>
+        Relationships: []
+      }
+    }
+    Functions: {
+      app_current_tenant_id: {
+        Args: Record<string, never>
+        Returns: string
+      }
+    }
+  }
+}
