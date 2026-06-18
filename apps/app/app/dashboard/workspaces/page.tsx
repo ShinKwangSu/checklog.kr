@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BuildingIcon, ListIcon, MapPinIcon } from 'lucide-react'
+import { BuildingIcon } from 'lucide-react'
 
 import { getWorkspaces } from '@/app/actions/workspace'
 import { floorToDisplay, generateFloorOptions } from '@/lib/utils/floor'
@@ -7,11 +7,9 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@spotcare/ui/components/card'
-import { Button } from '@spotcare/ui/components/button'
 import { WorkspaceFormDialog } from '@/components/workspace-form-dialog'
 import { WorkspaceRowActions } from '@/components/workspace-row-actions'
 
@@ -49,7 +47,7 @@ export default async function WorkspacesPage() {
             const bottomLabel = ws.min_floor < 0 ? floorToDisplay(ws.min_floor) : null
             const floorRange =
               topLabel && bottomLabel
-                ? `${topLabel} ~ ${bottomLabel}`
+                ? `${bottomLabel} ~ ${topLabel}`
                 : topLabel
                   ? `지상 ${topLabel}`
                   : bottomLabel
@@ -59,9 +57,14 @@ export default async function WorkspacesPage() {
             return (
               <Card
                 key={ws.id}
-                className="group flex flex-col transition-shadow hover:shadow-md"
+                className="group relative flex flex-col transition-shadow hover:shadow-md cursor-pointer"
               >
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                <Link
+                  href={`/dashboard/${ws.id}/facilities`}
+                  className="absolute inset-0 z-0 rounded-[inherit]"
+                  aria-label={`${ws.workspace_name} 관리`}
+                />
+                <CardHeader className="relative z-10 flex flex-row items-start justify-between space-y-0 pb-2">
                   <div className="space-y-1">
                     <CardTitle className="text-base leading-tight">
                       {ws.workspace_name}
@@ -71,37 +74,16 @@ export default async function WorkspacesPage() {
                   <WorkspaceRowActions workspace={ws} />
                 </CardHeader>
 
-                <CardContent className="flex-1">
-                  <Link
-                    href={`/dashboard/${ws.id}/facilities`}
-                    className="block"
-                    aria-label={`${ws.workspace_name} 관리`}
-                  >
-                    <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors group-hover:bg-muted">
-                      <BuildingIcon className="h-4 w-4 shrink-0" />
-                      <span>
-                        {floorOptions.length > 0
-                          ? `총 ${floorOptions.length}개 층`
-                          : '층 범위 미설정'}
-                      </span>
-                    </div>
-                  </Link>
+                <CardContent className="relative z-10 flex-1">
+                  <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors group-hover:bg-muted">
+                    <BuildingIcon className="h-4 w-4 shrink-0" />
+                    <span>
+                      {floorOptions.length > 0
+                        ? `총 ${floorOptions.length}개 층`
+                        : '층 범위 미설정'}
+                    </span>
+                  </div>
                 </CardContent>
-
-                <CardFooter className="gap-2 pt-0">
-                  <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link href={`/dashboard/${ws.id}/facility-types`}>
-                      <ListIcon className="h-3.5 w-3.5" />
-                      시설 타입
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm" className="flex-1">
-                    <Link href={`/dashboard/${ws.id}/facilities`}>
-                      <MapPinIcon className="h-3.5 w-3.5" />
-                      시설 관리
-                    </Link>
-                  </Button>
-                </CardFooter>
               </Card>
             )
           })}
