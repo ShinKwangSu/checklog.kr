@@ -24,6 +24,12 @@ export const authConfig = {
   session: {
     strategy: 'jwt',
   },
+  cookies: {
+    sessionToken: {
+      name: 'spotcare-admin.session-token',
+      options: { httpOnly: true, sameSite: 'lax', path: '/', secure: false },
+    },
+  },
   // providers 는 auth.ts 에서 Credentials Provider 를 더해 완성한다.
   // (Edge 호환을 위해 이 파일에는 Node 전용 의존성을 두지 않는다.)
   providers: [],
