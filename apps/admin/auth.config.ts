@@ -31,16 +31,17 @@ export const authConfig = {
     // 미들웨어 경로 보호.
     // /dashboard 이하는 인증 필요, 그 외(/login 등)는 허용.
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
+      // adminId 가 JWT에 없으면 유효한 세션으로 취급하지 않는다.
+      // (adminId 없는 스테일 JWT가 루프를 유발하는 것을 방지)
+      const isAdmin = !!(auth?.user as { adminId?: string } | undefined)?.adminId
       const isDashboard = nextUrl.pathname.startsWith('/dashboard')
 
       if (isDashboard) {
-        // 비로그인 → 차단(Auth.js 가 자동으로 /login 으로 리다이렉트)
-        return isLoggedIn
+        return isAdmin
       }
 
-      // 로그인 상태에서 /login 접근 시 대시보드로 보냄
-      if (isLoggedIn && nextUrl.pathname === '/login') {
+      // 정상 인증된 상태에서 /login 접근 시 대시보드로 보냄
+      if (isAdmin && nextUrl.pathname === '/login') {
         return Response.redirect(new URL('/dashboard', nextUrl))
       }
 
