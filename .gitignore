@@ -40,6 +40,9 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
+# turborepo local cache
+.turbo/
+
 # claude / omc runtime
 .omc/
 _workspace/
