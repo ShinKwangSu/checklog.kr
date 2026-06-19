@@ -227,12 +227,10 @@ function PhotoItem({
         </button>
       )}
 
-      {/* capture="environment": 모바일에서 후면 카메라 우선 */}
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]
