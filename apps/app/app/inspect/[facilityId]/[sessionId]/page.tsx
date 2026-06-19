@@ -25,7 +25,7 @@ export default async function InspectSessionPage({
         <div className="text-center space-y-3 max-w-sm">
           <p className="text-xl font-semibold text-destructive">{message}</p>
           <p className="text-sm text-muted-foreground">
-            담당자에게 QR 코드 재스캔을 요청하세요.
+            QR 코드를 재스캔 해주세요.
           </p>
         </div>
       </div>

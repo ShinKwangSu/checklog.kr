@@ -50,12 +50,15 @@ export default async function InspectStatusPage({
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-lg p-6 space-y-6">
-        {/* 시설 정보 */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold">{facility.facility_name}</h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
-          )}
+        {/* 시설 정보 + 점검하기 */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1 min-w-0">
+            <h1 className="text-2xl font-bold">{facility.facility_name}</h1>
+            {subtitle && (
+              <p className="text-sm text-muted-foreground">{subtitle}</p>
+            )}
+          </div>
+          {hasChecklist && <InspectEntryButton facilityId={facilityId} />}
         </div>
 
         {/* 점검 통계 */}
@@ -103,12 +106,6 @@ export default async function InspectStatusPage({
           </div>
         )}
 
-        {/* 점검하기 */}
-        {hasChecklist && (
-          <div className="flex justify-end border-t pt-4">
-            <InspectEntryButton facilityId={facilityId} />
-          </div>
-        )}
       </div>
     </div>
   )
