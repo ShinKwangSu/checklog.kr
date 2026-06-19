@@ -1,32 +1,22 @@
 # dependencies
-node_modules
-.pnp
-.pnp.js
+node_modules/
 
 # next.js
 .next/
 out/
 
 # production
-build
+build/
 
-# env (keep .env.sample)
+# env files
 .env
 .env.local
 .env.*.local
 .env.development
 .env.production
 
-# pnpm
-pnpm-lock.yaml
-
-# npm (no longer used)
-package-lock.json
-
-# debug
+# debug logs
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 
 # vercel
@@ -36,12 +26,12 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# turborepo local cache
+.turbo/
+
 # misc
 .DS_Store
 Thumbs.db
-
-# turborepo local cache
-.turbo/
 
 # claude / omc runtime
 .omc/

@@ -55,7 +55,7 @@ REVOKE ALL ON TABLE admins FROM anon, authenticated;
 INSERT INTO admins (email, password_hash, name)
 VALUES (
   'admin@spotcare.kr',
-  '$2b$10$PLACEHOLDER_REPLACE_WITH_REAL_HASH',
+  '$2a$10$Rd0fUcLbXXN.A9vbYSKJmOxYjLXTOW/0o4h54nmtHpJX8CREffUZa',
   '관리자'
 )
 ON CONFLICT (email) DO NOTHING;
