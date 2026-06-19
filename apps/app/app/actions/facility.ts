@@ -142,9 +142,7 @@ export async function createFacility(
 
   const { facility_name, floor, facility_type_id, location_description, notes } =
     parsed.data
-  const checklistIds: string[] = raw.checklist_ids_json
-    ? JSON.parse(raw.checklist_ids_json as string)
-    : []
+  const checklistId = (raw.checklist_id as string) || null
 
   const supabase = createClient()
 
@@ -182,15 +180,13 @@ export async function createFacility(
     return { success: false, error: '시설 생성 중 오류가 발생했습니다.' }
   }
 
-  if (checklistIds.length > 0) {
-    await supabase.from('facility_checklists').insert(
-      checklistIds.map((checklistId) => ({
-        facility_id: data.id,
-        checklist_id: checklistId,
-        workspace_id: workspaceId,
-        tenant_id: tenantId,
-      }))
-    )
+  if (checklistId) {
+    await supabase.from('facility_checklists').insert({
+      facility_id: data.id,
+      checklist_id: checklistId,
+      workspace_id: workspaceId,
+      tenant_id: tenantId,
+    })
   }
 
   revalidatePath(facilitiesPath(workspaceId))
@@ -222,9 +218,7 @@ export async function updateFacility(
 
   const { facility_name, floor, facility_type_id, location_description, notes } =
     parsed.data
-  const checklistIds: string[] = raw.checklist_ids_json
-    ? JSON.parse(raw.checklist_ids_json as string)
-    : []
+  const checklistId = (raw.checklist_id as string) || null
 
   const supabase = createClient()
 
@@ -272,15 +266,13 @@ export async function updateFacility(
     .eq('facility_id', id)
     .eq('tenant_id', tenantId)
 
-  if (checklistIds.length > 0) {
-    await supabase.from('facility_checklists').insert(
-      checklistIds.map((checklistId) => ({
-        facility_id: id,
-        checklist_id: checklistId,
-        workspace_id: workspaceId,
-        tenant_id: tenantId,
-      }))
-    )
+  if (checklistId) {
+    await supabase.from('facility_checklists').insert({
+      facility_id: id,
+      checklist_id: checklistId,
+      workspace_id: workspaceId,
+      tenant_id: tenantId,
+    })
   }
 
   revalidatePath(facilitiesPath(workspaceId))

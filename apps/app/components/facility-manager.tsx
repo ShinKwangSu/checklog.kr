@@ -73,7 +73,6 @@ import {
 import { Button } from '@spotcare/ui/components/button'
 import { Input } from '@spotcare/ui/components/input'
 import { Textarea } from '@spotcare/ui/components/textarea'
-import { Checkbox } from '@spotcare/ui/components/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,6 +80,7 @@ import {
   DropdownMenuTrigger,
 } from '@spotcare/ui/components/dropdown-menu'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
+import { FacilityQrDialog } from '@/components/facility-qr-dialog'
 
 // 클라이언트 검증 스키마.
 const formSchema = z.object({
@@ -95,7 +95,7 @@ const formSchema = z.object({
   facility_type_id: z.string().uuid('시설 타입을 선택해주세요.'),
   location_description: z.string().trim().max(2000).optional(),
   notes: z.string().trim().max(2000).optional(),
-  checklist_ids: z.array(z.string()).default([]),
+  checklist_id: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -114,6 +114,7 @@ export function FacilityManager({
   checklists,
 }: Props) {
   const typeNameById = new Map(facilityTypes.map((t) => [t.id, t.type_name]))
+  const checklistNameById = new Map(checklists.map((cl) => [cl.id, cl.checklist_name]))
   const hasTypes = facilityTypes.length > 0
   const floorOptions = generateFloorOptions(workspace.max_floor, workspace.min_floor)
   const hasFloors = floorOptions.length > 0
@@ -179,8 +180,8 @@ export function FacilityManager({
                     {typeNameById.get(f.facility_type_id) ?? '-'}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {f.facility_checklists.length > 0
-                      ? `${f.facility_checklists.length}개`
+                    {f.facility_checklists[0]?.checklist_id
+                      ? (checklistNameById.get(f.facility_checklists[0].checklist_id) ?? '-')
                       : '-'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
@@ -244,7 +245,7 @@ function FacilityFormDialog({
       facility_type_id: facility?.facility_type_id ?? '',
       location_description: facility?.location_description ?? '',
       notes: facility?.notes ?? '',
-      checklist_ids: facility?.facility_checklists?.map((fc) => fc.checklist_id) ?? [],
+      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? undefined,
     },
   })
 
@@ -255,7 +256,7 @@ function FacilityFormDialog({
       facility_type_id: facility?.facility_type_id ?? '',
       location_description: facility?.location_description ?? '',
       notes: facility?.notes ?? '',
-      checklist_ids: facility?.facility_checklists?.map((fc) => fc.checklist_id) ?? [],
+      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? undefined,
     })
   }
 
@@ -266,7 +267,7 @@ function FacilityFormDialog({
     formData.set('facility_type_id', values.facility_type_id)
     formData.set('location_description', values.location_description ?? '')
     formData.set('notes', values.notes ?? '')
-    formData.set('checklist_ids_json', JSON.stringify(values.checklist_ids ?? []))
+    formData.set('checklist_id', values.checklist_id ?? '')
 
     startTransition(async () => {
       const result = isEdit
@@ -433,37 +434,33 @@ function FacilityFormDialog({
             {checklists.length > 0 && (
               <FormField
                 control={form.control}
-                name="checklist_ids"
+                name="checklist_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
                       점검표{' '}
                       <span className="text-muted-foreground">(선택)</span>
                     </FormLabel>
-                    <div className="space-y-2">
-                      {checklists.map((cl) => (
-                        <div key={cl.id} className="flex items-center gap-2">
-                          <Checkbox
-                            id={`cl-${cl.id}`}
-                            checked={field.value?.includes(cl.id) ?? false}
-                            onCheckedChange={(checked) => {
-                              const current = field.value ?? []
-                              field.onChange(
-                                checked
-                                  ? [...current, cl.id]
-                                  : current.filter((id) => id !== cl.id)
-                              )
-                            }}
-                          />
-                          <label
-                            htmlFor={`cl-${cl.id}`}
-                            className="text-sm cursor-pointer"
-                          >
+                    <Select
+                      value={field.value ?? '__none__'}
+                      onValueChange={(val) =>
+                        field.onChange(val === '__none__' ? undefined : val)
+                      }
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="점검표 선택" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">선택 안 함</SelectItem>
+                        {checklists.map((cl) => (
+                          <SelectItem key={cl.id} value={cl.id}>
                             {cl.checklist_name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -500,6 +497,9 @@ function FacilityRowActions({
 
   return (
     <>
+      {facility.facility_checklists[0]?.checklist_id && (
+        <FacilityQrDialog facility={facility} />
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label="더 보기">

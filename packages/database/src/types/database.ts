@@ -273,6 +273,46 @@ export type AdminInsert = {
 /** admins Update — id/created_at 은 갱신 대상에서 제외한다. */
 export type AdminUpdate = Partial<Omit<Admin, 'id' | 'created_at'>>
 
+/**
+ * inspection_sessions — QR 스캔 시 생성되는 5분 유효 점검 세션.
+ * id(UUID)가 일회성 토큰 역할을 한다.
+ */
+export type InspectionSession = {
+  id: string
+  facility_id: string
+  status: 'active' | 'completed' | 'expired'
+  created_at: string
+  expires_at: string
+  completed_at: string | null
+}
+
+export type InspectionSessionInsert = {
+  id?: string
+  facility_id: string
+  status?: 'active' | 'completed' | 'expired'
+  expires_at?: string
+  completed_at?: string | null
+}
+
+/**
+ * inspection_results — 점검 제출 결과.
+ * item_results: { "<checklist_item_id>": true|false }
+ */
+export type InspectionResult = {
+  id: string
+  session_id: string
+  facility_id: string
+  submitted_at: string
+  item_results: Record<string, boolean>
+}
+
+export type InspectionResultInsert = {
+  id?: string
+  session_id: string
+  facility_id: string
+  item_results: Record<string, boolean>
+}
+
 // -----------------------------------------------------------------------------
 // Supabase 클라이언트 제네릭용 Database 인터페이스
 // createClient<Database>(...) 형태로 사용한다.
@@ -336,6 +376,18 @@ export type Database = {
         Row: AdminWithSecret
         Insert: AdminInsert
         Update: Partial<AdminInsert>
+        Relationships: []
+      }
+      inspection_sessions: {
+        Row: InspectionSession
+        Insert: InspectionSessionInsert
+        Update: Partial<InspectionSessionInsert>
+        Relationships: []
+      }
+      inspection_results: {
+        Row: InspectionResult
+        Insert: InspectionResultInsert
+        Update: Partial<InspectionResultInsert>
         Relationships: []
       }
     }
