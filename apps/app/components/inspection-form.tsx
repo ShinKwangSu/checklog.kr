@@ -222,7 +222,7 @@ function PhotoItem({
         >
           <Camera className="h-6 w-6" />
           <span className="text-xs">
-            {uploading ? '업로드 중...' : '사진 촬영 또는 선택'}
+            {uploading ? '업로드 중...' : '사진 촬영'}
           </span>
         </button>
       )}
@@ -231,6 +231,7 @@ function PhotoItem({
         ref={inputRef}
         type="file"
         accept="image/*"
+        capture="environment"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]

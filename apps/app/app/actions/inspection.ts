@@ -488,7 +488,8 @@ export async function uploadInspectionPhoto(
     .upload(path, file, { contentType: file.type, upsert: true })
 
   if (error) {
-    return { success: false, error: '사진 업로드 중 오류가 발생했습니다.' }
+    console.error('[uploadInspectionPhoto] storage error:', error)
+    return { success: false, error: `사진 업로드 실패: ${error.message}` }
   }
 
   const { data: { publicUrl } } = supabase.storage
