@@ -37,6 +37,7 @@ export default async function InspectStatusPage({
 
   const lastInspectionLabel = lastInspection
     ? new Date(lastInspection).toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
         year: 'numeric',
         month: 'long',
         day: 'numeric',

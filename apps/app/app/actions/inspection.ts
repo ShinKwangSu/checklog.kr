@@ -244,12 +244,17 @@ export async function getInspectStatus(
 ): Promise<InspectStatusData | null> {
   const supabase = createClient()
 
-  const now = new Date()
+  // 날짜 경계는 KST(UTC+9) 기준으로 계산한다.
+  // 서버가 UTC로 동작해도 한국 사용자 기준 "오늘/이번 달"이 올바르게 집계된다.
+  const KST_OFFSET_MS = 9 * 60 * 60 * 1000
+  const nowKST = new Date(Date.now() + KST_OFFSET_MS)
   const todayStart = new Date(
-    now.getFullYear(), now.getMonth(), now.getDate()
+    Date.UTC(nowKST.getUTCFullYear(), nowKST.getUTCMonth(), nowKST.getUTCDate()) - KST_OFFSET_MS
   ).toISOString()
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const monthStart = new Date(
+    Date.UTC(nowKST.getUTCFullYear(), nowKST.getUTCMonth(), 1) - KST_OFFSET_MS
+  ).toISOString()
 
   const [facilityRes, lastRes, dailyRes, weeklyRes, monthlyRes, fcRes] =
     await Promise.all([

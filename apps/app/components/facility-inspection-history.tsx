@@ -31,6 +31,7 @@ import type { FacilityWithChecklists } from '@/types/database'
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
