@@ -196,7 +196,7 @@ export function WorkspaceFormDialog({ workspace, trigger, open: openProp, onOpen
           )}
         </DialogTrigger>
       )}
-      <DialogContent>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             {isEdit ? '워크스페이스 수정' : '워크스페이스 추가'}

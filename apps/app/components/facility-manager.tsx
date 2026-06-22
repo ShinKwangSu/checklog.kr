@@ -295,7 +295,7 @@ function FacilityFormDialog({
           )}
         </DialogTrigger>
       )}
-      <DialogContent>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{isEdit ? '시설 수정' : '시설 등록'}</DialogTitle>
           <DialogDescription>

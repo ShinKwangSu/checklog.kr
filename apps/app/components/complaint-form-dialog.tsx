@@ -127,7 +127,7 @@ export function ComplaintFormDialog({ facilityId }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>민원 접수</DialogTitle>
         </DialogHeader>
