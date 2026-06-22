@@ -81,8 +81,6 @@ import {
 } from '@spotcare/ui/components/dropdown-menu'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
 import { FacilityQrDialog } from '@/components/facility-qr-dialog'
-import { FacilityInspectionHistory } from '@/components/facility-inspection-history'
-import { FacilityComplaintHistory } from '@/components/facility-complaint-history'
 
 // 클라이언트 검증 스키마.
 const formSchema = z.object({
@@ -502,8 +500,6 @@ function FacilityRowActions({
       {facility.facility_checklists[0]?.checklist_id && (
         <FacilityQrDialog facility={facility} />
       )}
-      <FacilityInspectionHistory facility={facility} />
-      <FacilityComplaintHistory facility={facility} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label="더 보기">

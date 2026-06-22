@@ -11,6 +11,8 @@ import {
   LayoutDashboardIcon,
   ListIcon,
   MapPinIcon,
+  MessageSquareTextIcon,
+  ShieldCheckIcon,
   UsersIcon,
 } from "lucide-react"
 
@@ -151,6 +153,30 @@ export function AppSidebar({ workspaces, user, ...props }: Props) {
                     <Link href={`/dashboard/${workspaceId}/checklists`}>
                       <ClipboardListIcon />
                       <span>점검표 관리</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.includes("/inspections")}
+                    onClick={closeOnMobile}
+                  >
+                    <Link href={`/dashboard/${workspaceId}/inspections`}>
+                      <ShieldCheckIcon />
+                      <span>점검 관리</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.includes("/complaints")}
+                    onClick={closeOnMobile}
+                  >
+                    <Link href={`/dashboard/${workspaceId}/complaints`}>
+                      <MessageSquareTextIcon />
+                      <span>민원 관리</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

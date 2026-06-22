@@ -123,6 +123,51 @@ export async function uploadComplaintPhoto(
 }
 
 // =============================================================================
+// 워크스페이스 전체 민원 조회 (테넌트 인증) — 민원 관리 페이지
+// =============================================================================
+
+export type ComplaintWithFacility = Complaint & {
+  facility_name: string
+}
+
+export async function getWorkspaceComplaints(
+  workspaceId: string
+): Promise<ComplaintWithFacility[]> {
+  const tenantId = await getTenantId()
+  if (!tenantId) return []
+
+  const supabase = createClient()
+
+  const { data: facilities } = await supabase
+    .from('facilities')
+    .select('id, facility_name')
+    .eq('workspace_id', workspaceId)
+    .eq('tenant_id', tenantId)
+    .is('deleted_at', null)
+
+  if (!facilities?.length) return []
+
+  const facilityIds = facilities.map((f) => f.id)
+  const facilityMap = new Map(facilities.map((f) => [f.id, f.facility_name]))
+
+  const { data, error } = await supabase
+    .from('complaints')
+    .select('*')
+    .in('facility_id', facilityIds)
+    .eq('tenant_id', tenantId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(200)
+
+  if (error) return []
+
+  return (data ?? []).map((c) => ({
+    ...(c as Complaint),
+    facility_name: facilityMap.get(c.facility_id) ?? '알 수 없음',
+  }))
+}
+
+// =============================================================================
 // 민원 목록 조회 (테넌트 인증)
 // =============================================================================
 

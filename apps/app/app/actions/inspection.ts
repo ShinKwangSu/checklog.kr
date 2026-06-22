@@ -10,6 +10,7 @@
 //   - 제출 후 status='completed' 로 변경 → 재제출/재접근 차단.
 // =============================================================================
 
+import { auth } from '@/auth'
 import { createClient } from '@/lib/supabase/server'
 import type { InspectionSession, ChecklistItem, Facility } from '@/types/database'
 
@@ -445,6 +446,87 @@ export async function getInspectionDetail(
       result: item.id in itemResults ? itemResults[item.id] : null,
     })),
   }
+}
+
+// =============================================================================
+// 워크스페이스 전체 점검 이력 — 점검 관리 페이지에서 호출 (테넌트 인증 필요)
+// =============================================================================
+
+export type WorkspaceInspectionHistoryItem = InspectionHistoryItem & {
+  facility_id: string
+  facility_name: string
+}
+
+export async function getWorkspaceInspectionHistory(
+  workspaceId: string
+): Promise<WorkspaceInspectionHistoryItem[]> {
+  const session = await auth()
+  const tenantId = session?.user?.tenantId
+  if (!tenantId) return []
+
+  const supabase = createClient()
+
+  const { data: facilities } = await supabase
+    .from('facilities')
+    .select('id, facility_name')
+    .eq('workspace_id', workspaceId)
+    .eq('tenant_id', tenantId)
+    .is('deleted_at', null)
+
+  if (!facilities?.length) return []
+
+  const facilityIds = facilities.map((f) => f.id)
+  const facilityMap = new Map(facilities.map((f) => [f.id, f.facility_name]))
+
+  const { data: sessions } = await supabase
+    .from('inspection_sessions')
+    .select('id, completed_at, inspector_id, facility_id')
+    .in('facility_id', facilityIds)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false })
+    .limit(200)
+
+  if (!sessions?.length) return []
+
+  const sessionIds = sessions.map((s) => s.id)
+  const inspectorIds = [
+    ...new Set(sessions.map((s) => s.inspector_id).filter(Boolean) as string[]),
+  ]
+
+  const [resultsRes, inspectorsRes] = await Promise.all([
+    supabase
+      .from('inspection_results')
+      .select('session_id, submitted_at, item_results')
+      .in('session_id', sessionIds),
+    inspectorIds.length
+      ? supabase.from('inspectors').select('id, name, phone').in('id', inspectorIds)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const resultMap = new Map((resultsRes.data ?? []).map((r) => [r.session_id, r]))
+  const inspectorMap = new Map((inspectorsRes.data ?? []).map((i) => [i.id, i]))
+
+  return sessions.map((s) => {
+    const result = resultMap.get(s.id)
+    const inspector = s.inspector_id ? inspectorMap.get(s.inspector_id) : null
+    const values = Object.values(result?.item_results ?? {}) as (boolean | string)[]
+    const passCount = values.filter(
+      (v) => v === true || (typeof v === 'string' && v.length > 0)
+    ).length
+    const failCount = values.filter((v) => v === false).length
+
+    return {
+      session_id: s.id,
+      submitted_at: result?.submitted_at ?? s.completed_at ?? '',
+      inspector_name: inspector?.name ?? null,
+      inspector_phone: inspector?.phone ?? null,
+      pass_count: passCount,
+      fail_count: failCount,
+      total_count: values.length,
+      facility_id: s.facility_id,
+      facility_name: facilityMap.get(s.facility_id) ?? '알 수 없음',
+    }
+  })
 }
 
 // =============================================================================
