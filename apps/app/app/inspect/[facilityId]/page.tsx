@@ -1,6 +1,7 @@
 import { getInspectStatus } from '@/app/actions/inspection'
 import { floorToDisplay } from '@/lib/utils/floor'
 import { InspectEntryButton } from '@/components/inspect-entry-button'
+import { ComplaintFormDialog } from '@/components/complaint-form-dialog'
 
 export const dynamic = 'force-dynamic'
 
@@ -105,6 +106,11 @@ export default async function InspectStatusPage({
             </ul>
           </div>
         )}
+
+        {/* 민원 접수 */}
+        <div className="border-t pt-6">
+          <ComplaintFormDialog facilityId={facilityId} />
+        </div>
 
       </div>
     </div>

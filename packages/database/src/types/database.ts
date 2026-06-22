@@ -332,6 +332,55 @@ export type InspectionResultInsert = {
 }
 
 // -----------------------------------------------------------------------------
+// 민원 (complaints)
+// -----------------------------------------------------------------------------
+
+/**
+ * 앱 레이어 상수 — DB 테이블 없음. 고정 민원 유형 4종.
+ * "직접 입력" 선택 시 별도 텍스트 필드에 자유 입력 → complaint_type에 그대로 저장.
+ */
+export const COMPLAINT_TYPE_OPTIONS = [
+  { value: '시설 고장', label: '시설 고장' },
+  { value: '청소 요청', label: '청소 요청' },
+  { value: '안전 문제', label: '안전 문제' },
+  { value: '직접 입력', label: '직접 입력' },
+] as const
+
+export type ComplaintTypePreset = typeof COMPLAINT_TYPE_OPTIONS[number]['value']
+
+export type Complaint = {
+  id: string
+  facility_id: string
+  workspace_id: string
+  tenant_id: string
+  complaint_type: string
+  content: string
+  photo_urls: string[]
+  status: 'received' | 'in_progress' | 'resolved'
+  created_at: string
+  resolved_at: string | null
+  deleted_at?: string | null
+}
+
+export type ComplaintInsert = {
+  id?: string
+  facility_id: string
+  workspace_id: string
+  tenant_id: string
+  complaint_type: string
+  content: string
+  photo_urls?: string[]
+  status?: 'received' | 'in_progress' | 'resolved'
+  created_at?: string
+  resolved_at?: string | null
+  deleted_at?: string | null
+}
+
+export type ComplaintUpdate = Partial<
+  Omit<Complaint, 'id' | 'tenant_id' | 'workspace_id' | 'facility_id' | 'created_at'>
+>
+
+// -----------------------------------------------------------------------------
 // Supabase 클라이언트 제네릭용 Database 인터페이스
 // createClient<Database>(...) 형태로 사용한다.
 // -----------------------------------------------------------------------------
@@ -406,6 +455,12 @@ export type Database = {
         Row: InspectionResult
         Insert: InspectionResultInsert
         Update: Partial<InspectionResultInsert>
+        Relationships: []
+      }
+      complaints: {
+        Row: Complaint
+        Insert: ComplaintInsert
+        Update: ComplaintUpdate
         Relationships: []
       }
     }
