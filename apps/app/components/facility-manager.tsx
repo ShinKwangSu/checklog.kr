@@ -239,7 +239,7 @@ function FacilityFormDialog({
       floor: facility?.floor ?? floorOptions[0]?.value,
       facility_type_id: facility?.facility_type_id ?? '',
       memo: facility?.memo ?? '',
-      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? undefined,
+      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? '__none__',
     },
   })
 
@@ -249,7 +249,7 @@ function FacilityFormDialog({
       floor: facility?.floor ?? floorOptions[0]?.value,
       facility_type_id: facility?.facility_type_id ?? '',
       memo: facility?.memo ?? '',
-      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? undefined,
+      checklist_id: facility?.facility_checklists?.[0]?.checklist_id ?? '__none__',
     })
   }
 
@@ -259,7 +259,8 @@ function FacilityFormDialog({
     formData.set('floor', String(values.floor))
     formData.set('facility_type_id', values.facility_type_id)
     formData.set('memo', values.memo ?? '')
-    formData.set('checklist_id', values.checklist_id ?? '')
+    // '__none__' → 빈 문자열로 변환해 서버에 "점검표 없음"으로 전달
+    formData.set('checklist_id', values.checklist_id === '__none__' ? '' : (values.checklist_id ?? ''))
 
     startTransition(async () => {
       const result = isEdit
@@ -414,9 +415,7 @@ function FacilityFormDialog({
                     </FormLabel>
                     <Select
                       value={field.value ?? '__none__'}
-                      onValueChange={(val) =>
-                        field.onChange(val === '__none__' ? undefined : val)
-                      }
+                      onValueChange={field.onChange}
                     >
                       <FormControl>
                         <SelectTrigger>
