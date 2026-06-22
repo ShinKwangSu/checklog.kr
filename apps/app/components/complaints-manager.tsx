@@ -4,7 +4,7 @@
 // spotcare.kr MVP — 민원 관리 클라이언트 컴포넌트
 // =============================================================================
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { MessageSquareText, ArrowLeft, ImageIcon } from 'lucide-react'
 import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
 import {
@@ -23,6 +23,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@spotcare/ui/components/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@spotcare/ui/components/select'
 import {
   Table,
   TableBody,
@@ -194,6 +201,19 @@ export function ComplaintsManager({ workspaceName, initialItems }: Props) {
   const [items, setItems] = useState(initialItems)
   const [selected, setSelected] = useState<ComplaintWithFacility | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [facilityFilter, setFacilityFilter] = useState<string>('__all__')
+
+  const facilities = useMemo(() => {
+    const map = new Map<string, string>()
+    items.forEach((i) => map.set(i.facility_id, i.facility_name))
+    return Array.from(map, ([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+  }, [items])
+
+  const filtered = useMemo(
+    () => facilityFilter === '__all__' ? items : items.filter((i) => i.facility_id === facilityFilter),
+    [items, facilityFilter]
+  )
 
   const handleSelect = useCallback((item: ComplaintWithFacility) => {
     setSelected(item)
@@ -245,10 +265,27 @@ export function ComplaintsManager({ workspaceName, initialItems }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle>민원 이력</CardTitle>
-          <CardDescription>
-            {workspaceName} · 총 {items.length}건
-          </CardDescription>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1.5">
+              <CardTitle>민원 이력</CardTitle>
+              <CardDescription>
+                {workspaceName} · {facilityFilter === '__all__' ? `총 ${items.length}건` : `${filtered.length}건 / 전체 ${items.length}건`}
+              </CardDescription>
+            </div>
+            {facilities.length > 1 && (
+              <Select value={facilityFilter} onValueChange={setFacilityFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">전체 시설</SelectItem>
+                  {facilities.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {items.length === 0 ? (
@@ -268,7 +305,7 @@ export function ComplaintsManager({ workspaceName, initialItems }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item) => (
+                {filtered.map((item) => (
                   <TableRow
                     key={item.id}
                     className="cursor-pointer hover:bg-accent"

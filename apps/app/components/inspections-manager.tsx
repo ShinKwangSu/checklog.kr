@@ -4,7 +4,7 @@
 // spotcare.kr MVP — 점검 관리 클라이언트 컴포넌트
 // =============================================================================
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { ClipboardList, ArrowLeft, CheckCircle2, XCircle, MinusCircle, User, Phone } from 'lucide-react'
 import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
 import {
@@ -24,6 +24,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@spotcare/ui/components/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@spotcare/ui/components/select'
 import {
   Table,
   TableBody,
@@ -180,6 +187,19 @@ type Props = {
 export function InspectionsManager({ workspaceName, items }: Props) {
   const [selected, setSelected] = useState<WorkspaceInspectionHistoryItem | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [facilityFilter, setFacilityFilter] = useState<string>('__all__')
+
+  const facilities = useMemo(() => {
+    const map = new Map<string, string>()
+    items.forEach((i) => map.set(i.facility_id, i.facility_name))
+    return Array.from(map, ([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+  }, [items])
+
+  const filtered = useMemo(
+    () => facilityFilter === '__all__' ? items : items.filter((i) => i.facility_id === facilityFilter),
+    [items, facilityFilter]
+  )
 
   const handleSelect = useCallback((item: WorkspaceInspectionHistoryItem) => {
     setSelected(item)
@@ -211,10 +231,27 @@ export function InspectionsManager({ workspaceName, items }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle>점검 이력</CardTitle>
-          <CardDescription>
-            {workspaceName} · 총 {items.length}건
-          </CardDescription>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1.5">
+              <CardTitle>점검 이력</CardTitle>
+              <CardDescription>
+                {workspaceName} · {facilityFilter === '__all__' ? `총 ${items.length}건` : `${filtered.length}건 / 전체 ${items.length}건`}
+              </CardDescription>
+            </div>
+            {facilities.length > 1 && (
+              <Select value={facilityFilter} onValueChange={setFacilityFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">전체 시설</SelectItem>
+                  {facilities.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {items.length === 0 ? (
@@ -233,7 +270,7 @@ export function InspectionsManager({ workspaceName, items }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item) => (
+                {filtered.map((item) => (
                   <TableRow
                     key={item.session_id}
                     className="cursor-pointer hover:bg-accent"
