@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Menu } from 'lucide-react'
 
 import { Button } from '@spotcare/ui/components/button'
@@ -20,8 +21,16 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          {siteConfig.name}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/symbol.svg"
+            alt="CheckLog"
+            width={28}
+            height={28}
+            className="rounded-md"
+            priority
+          />
+          <span className="text-lg font-bold tracking-tight">CheckLog</span>
         </Link>
 
         {/* 데스크톱 내비 */}
@@ -55,8 +64,15 @@ export function SiteHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
-            <SheetTitle className="text-left text-lg font-bold">
-              {siteConfig.name}
+            <SheetTitle className="flex items-center gap-2 text-left text-lg font-bold">
+              <Image
+                src="/symbol.svg"
+                alt=""
+                width={24}
+                height={24}
+                className="rounded-md"
+              />
+              CheckLog
             </SheetTitle>
             <nav className="mt-6 flex flex-col gap-1">
               {siteConfig.nav.map((item) => (

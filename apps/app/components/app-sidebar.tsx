@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   ArrowLeftIcon,
@@ -78,8 +79,14 @@ export function AppSidebar({ workspaces, user, ...props }: Props) {
                 className="data-[slot=sidebar-menu-button]:!p-1.5"
               >
                 <Link href="/dashboard/workspaces">
-                  <BuildingIcon className="h-5 w-5" />
-                  <span className="text-base font-semibold">spotcare</span>
+                  <Image
+                    src="/symbol.svg"
+                    alt="CheckLog"
+                    width={24}
+                    height={24}
+                    className="rounded-md"
+                  />
+                  <span className="text-base font-semibold">CheckLog</span>
                 </Link>
               </SidebarMenuButton>
             )}

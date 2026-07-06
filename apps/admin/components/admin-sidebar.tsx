@@ -8,13 +8,9 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  Building2,
-  LayoutDashboard,
-  ShieldCheck,
-  ShieldEllipsis,
-} from 'lucide-react'
+import { Building2, LayoutDashboard, ShieldCheck } from 'lucide-react'
 
 import { NavUser } from '@/components/nav-user'
 import {
@@ -63,8 +59,14 @@ export function AdminSidebar({ user, ...props }: Props) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/dashboard">
-                <ShieldEllipsis className="h-5 w-5" />
-                <span className="text-base font-semibold">spotcare 관리자</span>
+                <Image
+                  src="/symbol.svg"
+                  alt="CheckLog"
+                  width={24}
+                  height={24}
+                  className="rounded-md"
+                />
+                <span className="text-base font-semibold">CheckLog</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
