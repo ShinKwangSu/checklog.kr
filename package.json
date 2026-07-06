@@ -5,6 +5,7 @@
     "dev": "turbo dev",
     "dev:app": "turbo dev --filter=@spotcare/app",
     "dev:admin": "turbo dev --filter=@spotcare/admin",
+    "dev:web": "turbo dev --filter=@spotcare/web",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck"

@@ -33,6 +33,12 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
+# editors
+.idea/
+
+# npm (this is a pnpm workspace — package-lock.json is an accidental artifact)
+package-lock.json
+
 # claude / omc runtime
 .omc/
 _workspace/
