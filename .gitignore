@@ -44,3 +44,6 @@ package-lock.json
 _workspace/
 _workspace_prev/
 .gstack/
+
+# tokensave cache
+.tokensave/

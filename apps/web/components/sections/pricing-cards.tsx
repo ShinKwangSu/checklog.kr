@@ -61,7 +61,7 @@ export function PricingCards() {
               asChild
             >
               {plan.name === 'Enterprise' ? (
-                <a href="/contact">{plan.cta}</a>
+                <a href="/#contact">{plan.cta}</a>
               ) : (
                 <a href={siteConfig.app.signup}>{plan.cta}</a>
               )}

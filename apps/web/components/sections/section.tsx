@@ -3,14 +3,19 @@ import { cn } from '@checklog/ui/lib/utils'
 type SectionProps = {
   children: React.ReactNode
   className?: string
+  /** 앵커 내비게이션 대상 id */
+  id?: string
   /** 옅은 배경 강조 섹션 */
   muted?: boolean
 }
 
 /** 페이지 세로 리듬을 통일하는 공통 섹션 래퍼 */
-export function Section({ children, className, muted }: SectionProps) {
+export function Section({ children, className, id, muted }: SectionProps) {
   return (
-    <section className={cn(muted && 'bg-muted/30', className)}>
+    <section
+      id={id}
+      className={cn('scroll-mt-16', muted && 'bg-muted/30', className)}
+    >
       <div className="container py-16 md:py-24">{children}</div>
     </section>
   )

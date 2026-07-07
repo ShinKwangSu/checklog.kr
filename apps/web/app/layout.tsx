@@ -15,12 +15,12 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteConfig.name} — 시설 관리 SaaS`,
+    default: `${siteConfig.name} — 현장 점검·민원 관리 SaaS`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   openGraph: {
-    title: `${siteConfig.name} — 시설 관리 SaaS`,
+    title: `${siteConfig.name} — 현장 점검·민원 관리 SaaS`,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
