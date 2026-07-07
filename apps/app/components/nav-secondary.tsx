@@ -9,7 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@spotcare/ui/components/sidebar"
+} from "@checklog/ui/components/sidebar"
 
 export function NavSecondary({
   items,

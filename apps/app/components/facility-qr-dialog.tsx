@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — QR 코드 다이얼로그 (시설 점검 QR 인쇄/다운로드)
+// checklog.kr MVP — QR 코드 다이얼로그 (시설 점검 QR 인쇄/다운로드)
 // =============================================================================
 
 import { useRef } from 'react'
@@ -16,8 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@spotcare/ui/components/dialog'
-import { Button } from '@spotcare/ui/components/button'
+} from '@checklog/ui/components/dialog'
+import { Button } from '@checklog/ui/components/button'
 
 type Props = {
   facility: FacilityWithChecklists
@@ -25,7 +25,7 @@ type Props = {
 
 export function FacilityQrDialog({ facility }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://spotcare.kr'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://checklog.kr'
   const inspectUrl = `${appUrl}/inspect/${facility.id}`
 
   const floorLabel = floorToDisplay(facility.floor)

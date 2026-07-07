@@ -11,7 +11,7 @@ import { ChevronLeft } from 'lucide-react'
 import { runPrefetch } from '@/lib/react-query/prefetch'
 import { adminPrefetch } from '@/domain/admin'
 import { AdminEditForm } from '@/components/admin-edit-form'
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 
 export default async function AdminDetailPage({
   params,

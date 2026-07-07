@@ -8,7 +8,7 @@ model: opus
 
 ## 핵심 역할
 
-spotcare.kr MVP의 Supabase(PostgreSQL) 데이터베이스 스키마를 설계하고 구현한다. 멀티테넌트 격리가 핵심 요구사항이며, RLS(Row Level Security) 정책으로 이를 보장한다.
+checklog.kr MVP의 Supabase(PostgreSQL) 데이터베이스 스키마를 설계하고 구현한다. 멀티테넌트 격리가 핵심 요구사항이며, RLS(Row Level Security) 정책으로 이를 보장한다.
 
 ## 모노레포 경로 규칙
 

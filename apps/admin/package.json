@@ -1,5 +1,5 @@
 {
-  "name": "@spotcare/admin",
+  "name": "@checklog/admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
-    "@spotcare/database": "workspace:*",
-    "@spotcare/ui": "workspace:*",
+    "@checklog/database": "workspace:*",
+    "@checklog/ui": "workspace:*",
     "@tanstack/react-query": "^5.62.2",
     "bcryptjs": "^2.4.3",
     "lucide-react": "^0.469.0",

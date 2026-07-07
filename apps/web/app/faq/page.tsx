@@ -6,7 +6,7 @@ import { CtaBanner } from '@/components/sections/cta-banner'
 
 export const metadata: Metadata = {
   title: 'FAQ',
-  description: 'spotcare 서비스에 대해 자주 묻는 질문과 답변을 모았습니다.',
+  description: 'checklog 서비스에 대해 자주 묻는 질문과 답변을 모았습니다.',
 }
 
 export default function FaqPage() {

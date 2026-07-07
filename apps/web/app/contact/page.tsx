@@ -1,16 +1,16 @@
 import type { Metadata } from 'next'
 
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
-import { Textarea } from '@spotcare/ui/components/textarea'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
+import { Textarea } from '@checklog/ui/components/textarea'
 
 import { Section, SectionHeading } from '@/components/sections/section'
 import { siteConfig } from '@/config/site'
 
 export const metadata: Metadata = {
   title: '도입문의',
-  description: 'spotcare 도입을 검토 중이신가요? 문의를 남겨 주시면 담당자가 연락드립니다.',
+  description: 'checklog 도입을 검토 중이신가요? 문의를 남겨 주시면 담당자가 연락드립니다.',
 }
 
 export default function ContactPage() {

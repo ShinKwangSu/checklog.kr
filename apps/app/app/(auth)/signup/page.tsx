@@ -1,10 +1,11 @@
-'use client'
+"use client";
 
-import { useActionState, useState } from 'react'
-import Link from 'next/link'
+import Link from "next/link";
+import { useActionState, useState } from "react";
 
-import { signUpAction, type AuthActionState } from '@/app/actions/auth'
-import { formatPhone, rawPhone } from '@/lib/utils/phone'
+import { signUpAction, type AuthActionState } from "@/app/actions/auth";
+import { formatPhone, rawPhone } from "@/lib/utils/phone";
+import { Button } from "@checklog/ui/components/button";
 import {
   Card,
   CardContent,
@@ -12,32 +13,31 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+} from "@checklog/ui/components/card";
+import { Input } from "@checklog/ui/components/input";
+import { Label } from "@checklog/ui/components/label";
 
-const initialState: AuthActionState = { success: false }
+const initialState: AuthActionState = { success: false };
 
 function FieldError({ messages }: { messages?: string[] }) {
-  if (!messages?.[0]) return null
-  return <p className="text-sm text-destructive">{messages[0]}</p>
+  if (!messages?.[0]) return null;
+  return <p className="text-sm text-destructive">{messages[0]}</p>;
 }
 
 export default function SignupPage() {
   const [state, formAction, isPending] = useActionState(
     signUpAction,
-    initialState
-  )
+    initialState,
+  );
 
-  const [companyName, setCompanyName] = useState('')
-  const [adminName, setAdminName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [companyName, setCompanyName] = useState("");
+  const [adminName, setAdminName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setPhone(formatPhone(e.target.value))
+    setPhone(formatPhone(e.target.value));
   }
 
   return (
@@ -63,7 +63,7 @@ export default function SignupPage() {
               <Input
                 id="company_name"
                 name="company_name"
-                placeholder="(주) 스팟케어"
+                placeholder="(주) 체크로그"
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
@@ -140,10 +140,10 @@ export default function SignupPage() {
 
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? '가입 중...' : '회원가입'}
+              {isPending ? "가입 중..." : "회원가입"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              이미 계정이 있으신가요?{' '}
+              이미 계정이 있으신가요?{" "}
               <Link
                 href="/login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
@@ -155,5 +155,5 @@ export default function SignupPage() {
         </form>
       </Card>
     </main>
-  )
+  );
 }

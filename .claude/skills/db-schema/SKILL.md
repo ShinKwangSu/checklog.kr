@@ -1,9 +1,9 @@
 ---
 name: db-schema
-description: spotcare.kr MVP Supabase 스키마 설계 가이드. tenants/workspaces/facility_types/facilities 테이블 DDL, RLS 정책, TypeScript 타입 생성. DB Architect 에이전트가 스키마 설계 작업 시 반드시 이 스킬을 사용한다. '스키마', '테이블 설계', 'RLS', '마이그레이션' 요청 시 트리거.
+description: checklog.kr MVP Supabase 스키마 설계 가이드. tenants/workspaces/facility_types/facilities 테이블 DDL, RLS 정책, TypeScript 타입 생성. DB Architect 에이전트가 스키마 설계 작업 시 반드시 이 스킬을 사용한다. '스키마', '테이블 설계', 'RLS', '마이그레이션' 요청 시 트리거.
 ---
 
-# DB Schema — spotcare.kr MVP
+# DB Schema — checklog.kr MVP
 
 ## 산출물 경로 (모노레포 루트 기준)
 
@@ -13,7 +13,7 @@ description: spotcare.kr MVP Supabase 스키마 설계 가이드. tenants/worksp
 | TypeScript 타입 | `packages/database/src/types/database.ts` |
 | 에이전트 간 요약 | `_workspace/01_db_schema.md` |
 
-> `packages/database/src/types/database.ts`는 `apps/app`과 `apps/admin` 양쪽이 `@spotcare/database`로 import한다.
+> `packages/database/src/types/database.ts`는 `apps/app`과 `apps/admin` 양쪽이 `@checklog/database`로 import한다.
 
 ## 테이블 구조
 

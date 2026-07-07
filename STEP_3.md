@@ -14,7 +14,7 @@
 - **Styling:** Tailwind CSS
 - **UI Components:** shadcn/ui (`Sheet`, `Dialog`, `Badge`, `Button`, `Textarea`, `Select`)
 - **파일 저장:** Supabase Storage (민원 첨부 사진, 기존 점검 사진과 동일한 버킷 정책 활용)
-- **공유 패키지:** `@spotcare/database` (타입/클라이언트), `@spotcare/ui` (shadcn 컴포넌트)
+- **공유 패키지:** `@checklog/database` (타입/클라이언트), `@checklog/ui` (shadcn 컴포넌트)
 
 ---
 

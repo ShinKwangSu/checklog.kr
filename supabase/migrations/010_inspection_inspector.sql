@@ -1,5 +1,5 @@
 -- =============================================================================
--- spotcare.kr MVP — Migration 010
+-- checklog.kr MVP — Migration 010
 -- inspection_sessions 에 inspector_id 추가
 -- =============================================================================
 -- verifyAndCreateSession 이 점검자를 확인하지만 기록하지 않던 문제를 수정.

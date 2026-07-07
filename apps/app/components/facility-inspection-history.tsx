@@ -6,18 +6,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { ClipboardList, ArrowLeft, CheckCircle2, XCircle, MinusCircle, User, Phone } from 'lucide-react'
-import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
+import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@spotcare/ui/components/sheet'
-import { Button } from '@spotcare/ui/components/button'
-import { Badge } from '@spotcare/ui/components/badge'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
-import { Separator } from '@spotcare/ui/components/separator'
+} from '@checklog/ui/components/sheet'
+import { Button } from '@checklog/ui/components/button'
+import { Badge } from '@checklog/ui/components/badge'
+import { Skeleton } from '@checklog/ui/components/skeleton'
+import { Separator } from '@checklog/ui/components/separator'
 import {
   getInspectionHistory,
   getInspectionDetail,

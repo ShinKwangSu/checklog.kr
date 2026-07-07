@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 로그인 페이지
+// checklog.kr MVP — 로그인 페이지
 // =============================================================================
 // loginAction(prevState, formData) 을 useActionState 로 연결한다.
 // 성공 시 액션 내부에서 /dashboard/workspaces 로 redirect(NEXT_REDIRECT) 되므로
@@ -19,10 +19,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+} from '@checklog/ui/components/card'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
 
 const initialState: AuthActionState = { success: false }
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">로그인</CardTitle>
           <CardDescription>
-            spotcare.kr 시설 관리 어드민에 로그인하세요.
+            checklog.kr 시설 관리 어드민에 로그인하세요.
           </CardDescription>
         </CardHeader>
 

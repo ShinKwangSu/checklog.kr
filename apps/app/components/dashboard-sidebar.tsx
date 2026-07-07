@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 대시보드 사이드바 네비게이션
+// checklog.kr MVP — 대시보드 사이드바 네비게이션
 // =============================================================================
 // - 상단: 워크스페이스 목록 링크
 // - 워크스페이스가 선택(URL 의 [workspaceId] 매칭)되면 하위 메뉴 노출:
@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Building2, LayoutGrid, Layers, Boxes } from 'lucide-react'
 
-import { cn } from '@spotcare/ui/lib/utils'
+import { cn } from '@checklog/ui/lib/utils'
 import type { Workspace } from '@/types/database'
 import { LogoutButton } from '@/components/logout-button'
 
@@ -29,7 +29,7 @@ export function DashboardSidebar({ workspaces, userName }: Props) {
     <aside className="flex h-full w-64 flex-col border-r bg-background">
       <div className="flex h-14 items-center gap-2 border-b px-4">
         <Building2 className="h-5 w-5 text-primary" />
-        <span className="font-semibold">spotcare.kr</span>
+        <span className="font-semibold">checklog.kr</span>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">

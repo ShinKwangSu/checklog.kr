@@ -7,7 +7,7 @@
 import { LogOutIcon, MoreVerticalIcon, UserCircleIcon } from 'lucide-react'
 
 import { logoutAction } from '@/app/actions/auth'
-import { Avatar, AvatarFallback } from '@spotcare/ui/components/avatar'
+import { Avatar, AvatarFallback } from '@checklog/ui/components/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +15,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@spotcare/ui/components/dropdown-menu'
+} from '@checklog/ui/components/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@spotcare/ui/components/sidebar'
+} from '@checklog/ui/components/sidebar'
 
 export function NavUser({
   user,

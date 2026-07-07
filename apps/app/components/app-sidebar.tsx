@@ -29,7 +29,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
   useSidebar,
-} from "@spotcare/ui/components/sidebar"
+} from "@checklog/ui/components/sidebar"
 
 type Workspace = { id: string; workspace_name: string }
 

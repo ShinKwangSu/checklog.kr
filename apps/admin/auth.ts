@@ -1,5 +1,5 @@
 // =============================================================================
-// spotcare.kr Admin — NextAuth 인스턴스 (Node 런타임)
+// checklog.kr Admin — NextAuth 인스턴스 (Node 런타임)
 // =============================================================================
 //
 // Credentials Provider 의 authorize() 는 bcryptjs 와 Supabase 서버 클라이언트를
@@ -11,7 +11,7 @@
 // 반드시 service_role 키 클라이언트(@/lib/supabase/server 의 createClient)로
 // 접근해야 한다(anon 키로는 0행 반환).
 //
-// Supabase 클라이언트는 @spotcare/database 의 서버 클라이언트를 사용한다.
+// Supabase 클라이언트는 @checklog/database 의 서버 클라이언트를 사용한다.
 // apps/admin tsconfig 의 path alias '@/lib/supabase/server' 가
 // packages/database/src/supabase/server.ts 로 매핑되어 있다.
 //

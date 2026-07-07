@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 점검표 입력 폼 (클라이언트 컴포넌트)
+// checklog.kr MVP — 점검표 입력 폼 (클라이언트 컴포넌트)
 // checklist 항목: 체크박스 / photo 항목: 카메라 촬영 또는 파일 선택
 // =============================================================================
 
@@ -11,8 +11,8 @@ import { Camera, CheckCircle2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitInspection, uploadInspectionPhoto } from '@/app/actions/inspection'
 import type { ChecklistItem } from '@/types/database'
-import { Button } from '@spotcare/ui/components/button'
-import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
+import { Button } from '@checklog/ui/components/button'
+import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 
 type Props = {
   sessionId: string

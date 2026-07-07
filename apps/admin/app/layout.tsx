@@ -4,7 +4,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
 
 import { ReactQueryProvider } from '@/components/providers/react-query-provider'
-import { Toaster } from '@spotcare/ui/components/sonner'
+import { Toaster } from '@checklog/ui/components/sonner'
 
 const pretendard = localFont({
   src: '../../../packages/ui/fonts/PretendardVariable.woff2',
@@ -14,8 +14,8 @@ const pretendard = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'spotcare Admin',
-  description: 'spotcare.kr 서비스 관리자 포털',
+  title: 'checklog Admin',
+  description: 'checklog.kr 서비스 관리자 포털',
 }
 
 export default function RootLayout({

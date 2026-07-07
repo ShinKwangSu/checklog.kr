@@ -112,8 +112,8 @@ Supabase는 실행 환경별로 클라이언트를 **반드시 분리**한다.
 
 | 클라이언트 | 생성 함수 | 용도 |
 |-----------|-----------|------|
-| **Server** | `@spotcare/database`의 server client | RSC, Server Action, Route Handler |
-| **Browser** | `@spotcare/database`의 browser client | Client Component 전용 |
+| **Server** | `@checklog/database`의 server client | RSC, Server Action, Route Handler |
+| **Browser** | `@checklog/database`의 browser client | Client Component 전용 |
 
 규칙:
 - 서버 클라이언트는 **요청 단위로 생성**한다. 모듈 전역 싱글톤 금지 (세션/쿠키 오염).
@@ -134,7 +134,7 @@ export const workspaceRepository = {
 }
 
 // action에서 클라이언트를 생성해 service로 전달
-import { createServerSupabase } from '@spotcare/database'
+import { createServerSupabase } from '@checklog/database'
 
 export async function getWorkspacesAction() {
     const supabase = createServerSupabase()
@@ -253,7 +253,7 @@ return <HydrationBoundary state={state}><PageContent /></HydrationBoundary>
 | **L2** – React Query cache | UI state 단일 출처. 모든 UI는 여기서만 읽는다. |
 
 ```ts
-// @spotcare/database 내부 또는 앱에서 — 요청 단위 캐싱
+// @checklog/database 내부 또는 앱에서 — 요청 단위 캐싱
 import { cache } from 'react'
 export const getServerSupabase = cache(() => createServerSupabase())
 ```

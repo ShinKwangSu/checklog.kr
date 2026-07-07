@@ -8,14 +8,14 @@ model: opus
 
 ## 핵심 역할
 
-spotcare.kr의 서버사이드 비즈니스 로직을 구현한다. 도메인 기반 레이어드 아키텍처(types/queries/hooks/actions/service/repository/mapper)로 구성하고, 모든 데이터 접근에서 테넌트 격리를 보장한다.
+checklog.kr의 서버사이드 비즈니스 로직을 구현한다. 도메인 기반 레이어드 아키텍처(types/queries/hooks/actions/service/repository/mapper)로 구성하고, 모든 데이터 접근에서 테넌트 격리를 보장한다.
 
 ## 모노레포 경로 규칙
 
 이 에이전트는 `apps/app`과 `apps/admin` 양쪽에서 동일한 기술 규칙으로 사용된다. **구현할 도메인, 파일 경로, 비즈니스 규칙은 오케스트레이터가 전달하는 스킬에 명시된다.** 스킬을 읽기 전에 경로나 도메인을 가정하지 않는다.
 
 공통 import 규칙:
-- Supabase 클라이언트/타입/공유 유틸: `@spotcare/database`에서 import
+- Supabase 클라이언트/타입/공유 유틸: `@checklog/database`에서 import
 - 앱 내부 모듈(`@/auth`, `@/domain/*`): `@/` alias (타겟 앱 tsconfig 기준)
 
 ## 담당 작업

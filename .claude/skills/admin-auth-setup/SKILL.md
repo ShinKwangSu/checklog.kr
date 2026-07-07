@@ -1,6 +1,6 @@
 ---
 name: admin-auth-setup
-description: spotcare.kr apps/admin 슈퍼어드민 인증 가이드. Auth.js v5 + Supabase 통합, admins 테이블 기반 Credentials Provider, 미들웨어 경로 보호, 세션 JWT에 adminId/role 포함 처리. Auth Engineer 에이전트가 apps/admin 인증 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/admin 슈퍼어드민 인증 가이드. Auth.js v5 + Supabase 통합, admins 테이블 기반 Credentials Provider, 미들웨어 경로 보호, 세션 JWT에 adminId/role 포함 처리. Auth Engineer 에이전트가 apps/admin 인증 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Admin Auth Setup — apps/admin 슈퍼어드민 인증
@@ -41,7 +41,7 @@ import type { NextAuthConfig } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
-import { createClient } from '@spotcare/database'
+import { createClient } from '@checklog/database'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -135,5 +135,5 @@ export async function someAdminAction() {
 - [ ] session callback에서 `adminId` 노출
 - [ ] middleware가 `/dashboard` 경로 보호
 - [ ] `/login`은 공개 접근 가능
-- [ ] Supabase 클라이언트를 `@spotcare/database`에서 import
+- [ ] Supabase 클라이언트를 `@checklog/database`에서 import
 - [ ] `admins` 테이블 마이그레이션 SQL 생성 (db-schema 스킬과 함께)

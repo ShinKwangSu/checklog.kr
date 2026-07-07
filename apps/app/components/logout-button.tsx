@@ -3,7 +3,7 @@
 import { LogOut } from 'lucide-react'
 
 import { logoutAction } from '@/app/actions/auth'
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 
 /**
  * 로그아웃 버튼. form action 으로 logoutAction 을 호출하면

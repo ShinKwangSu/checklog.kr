@@ -16,7 +16,7 @@ import { Pencil, Trash2 } from 'lucide-react'
 
 import { useAdmins, useDeleteAdmin, type AdminDto } from '@/domain/admin'
 import { Pagination } from '@/components/pagination'
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 import {
   Table,
   TableBody,
@@ -24,8 +24,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@spotcare/ui/components/table'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/table'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 import {
   Dialog,
   DialogContent,
@@ -33,7 +33,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@spotcare/ui/components/dialog'
+} from '@checklog/ui/components/dialog'
 
 export function AdminsTable({ currentAdminId }: { currentAdminId: string }) {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))

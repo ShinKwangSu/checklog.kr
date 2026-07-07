@@ -12,7 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@spotcare/ui/components/dropdown-menu"
+} from "@checklog/ui/components/dropdown-menu"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -21,7 +21,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@spotcare/ui/components/sidebar"
+} from "@checklog/ui/components/sidebar"
 
 export function NavDocuments({
   items,

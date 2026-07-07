@@ -14,17 +14,17 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 
 import { useAdmin, useUpdateAdmin } from '@/domain/admin'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/card'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 
 const schema = z.object({
   name: z.string().trim().min(1, '이름을 입력해주세요.'),

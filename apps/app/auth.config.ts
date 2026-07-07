@@ -1,5 +1,5 @@
 // =============================================================================
-// spotcare.kr MVP — Auth.js v5 설정 (Edge 호환)
+// checklog.kr MVP — Auth.js v5 설정 (Edge 호환)
 // =============================================================================
 //
 // 이 파일은 middleware(Edge 런타임)에서 그대로 사용된다.
@@ -24,7 +24,7 @@ export const authConfig = {
   },
   cookies: {
     sessionToken: {
-      name: 'spotcare-app.session-token',
+      name: 'checklog-app.session-token',
       options: { httpOnly: true, sameSite: 'lax', path: '/', secure: false },
     },
   },

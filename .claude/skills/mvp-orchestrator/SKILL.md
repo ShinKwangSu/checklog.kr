@@ -1,9 +1,9 @@
 ---
 name: mvp-orchestrator
-description: spotcare.kr MVP 전체 구현 오케스트레이터. DB 스키마 → 인증 → 백엔드 → UI → QA 순서로 5명의 전문 에이전트를 파이프라인으로 조율한다. '구현해줘', '만들어줘', '개발 시작', '다음 단계', '다시 실행', '재실행', '업데이트', '수정', '보완', '이어서', 'STEP_1', 'MVP', '시설 관리', '어드민' 등 spotcare.kr 개발 관련 모든 요청 시 반드시 이 스킬을 사용한다.
+description: checklog.kr MVP 전체 구현 오케스트레이터. DB 스키마 → 인증 → 백엔드 → UI → QA 순서로 5명의 전문 에이전트를 파이프라인으로 조율한다. '구현해줘', '만들어줘', '개발 시작', '다음 단계', '다시 실행', '재실행', '업데이트', '수정', '보완', '이어서', 'STEP_1', 'MVP', '시설 관리', '어드민' 등 checklog.kr 개발 관련 모든 요청 시 반드시 이 스킬을 사용한다.
 ---
 
-# MVP Orchestrator — spotcare.kr
+# MVP Orchestrator — checklog.kr
 
 ## 파이프라인 구조
 
@@ -62,7 +62,7 @@ _workspace/
 
 **프롬프트 구성:**
 ```
-db-schema 스킬과 STEP_1.md를 읽고 spotcare.kr MVP Supabase 스키마를 구현하라.
+db-schema 스킬과 STEP_1.md를 읽고 checklog.kr MVP Supabase 스키마를 구현하라.
 [admin 파이프라인 포함 시]: admin-auth-setup 스킬의 admins 테이블도 함께 생성한다.
 
 산출물:
@@ -135,7 +135,7 @@ apps/app 도메인 백엔드를 구현하라.
 
 타겟 앱: apps/app
 - nextjs-guide의 도메인 레이어드 아키텍처 구조를 반드시 따른다
-- Supabase 클라이언트는 @spotcare/database에서 import, repository에 주입
+- Supabase 클라이언트는 @checklog/database에서 import, repository에 주입
 - 변경 Action은 ActionResult 패턴, 조회 Action은 throw
 
 산출물:
@@ -157,7 +157,7 @@ apps/admin 도메인 백엔드를 구현하라.
 
 타겟 앱: apps/admin
 - nextjs-guide의 도메인 레이어드 아키텍처 구조를 반드시 따른다
-- Supabase 클라이언트는 @spotcare/database에서 import, repository에 주입
+- Supabase 클라이언트는 @checklog/database에서 import, repository에 주입
 - 슈퍼어드민은 tenant_id 필터 없이 전체 데이터 접근 (의도된 동작)
 - 변경 Action은 ActionResult 패턴, 조회 Action은 throw
 
@@ -188,7 +188,7 @@ apps/app 어드민 UI를 구현하라.
 - nextjs-guide의 서버/클라이언트 경계, prefetch, Suspense 정책을 반드시 따른다
 - 리스트/상세 페이지: Server Component에서 runPrefetch + HydrationBoundary
 - Client Component: 도메인 React Query 훅만 사용 (useEffect 데이터 패칭 금지)
-- UI 컴포넌트는 @spotcare/ui에서 import
+- UI 컴포넌트는 @checklog/ui에서 import
 - URL 상태(필터 등)는 nuqs 사용
 
 산출물:
@@ -213,7 +213,7 @@ apps/admin 슈퍼어드민 UI를 구현하라.
 - nextjs-guide의 서버/클라이언트 경계, prefetch, Suspense 정책을 반드시 따른다
 - 리스트/상세 페이지: Server Component에서 runPrefetch + HydrationBoundary
 - Client Component: 도메인 React Query 훅만 사용
-- UI 컴포넌트는 @spotcare/ui에서 import
+- UI 컴포넌트는 @checklog/ui에서 import
 - URL 상태(페이지네이션, 필터 등)는 nuqs 사용
 
 산출물:
@@ -248,7 +248,7 @@ _workspace/{target}/ 내 모든 산출물 요약을 읽고
 - repository 클라이언트 주입: 내부에서 직접 Supabase 생성 여부 확인
 - React Query 훅: Client Component에서 useEffect 데이터 패칭 없이 도메인 훅만 사용
 - ActionResult 패턴: 변경 Action이 { success, data?, error? } 반환 여부
-- @spotcare/database, @spotcare/ui import 사용 여부
+- @checklog/database, @checklog/ui import 사용 여부
 - 크로스 도메인 deep import 없는지
 
 apps/app 추가 검증:

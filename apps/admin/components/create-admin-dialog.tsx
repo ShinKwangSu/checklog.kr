@@ -15,9 +15,9 @@ import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
 import { useCreateAdmin } from '@/domain/admin'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@spotcare/ui/components/dialog'
+} from '@checklog/ui/components/dialog'
 
 const schema = z.object({
   name: z.string().trim().min(1, '이름을 입력해주세요.'),
@@ -113,7 +113,7 @@ export function CreateAdminDialog() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@spotcare.kr"
+                placeholder="admin@checklog.kr"
                 aria-invalid={!!errors.email}
                 {...register('email')}
               />

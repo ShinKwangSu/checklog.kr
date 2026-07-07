@@ -6,7 +6,7 @@ import { FaqAccordion } from '@/components/sections/faq-accordion'
 
 export const metadata: Metadata = {
   title: '요금안내',
-  description: '무료 플랜부터 Enterprise까지, spotcare의 요금제를 안내합니다.',
+  description: '무료 플랜부터 Enterprise까지, checklog의 요금제를 안내합니다.',
 }
 
 export default function PricingPage() {

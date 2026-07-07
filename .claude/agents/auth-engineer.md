@@ -8,14 +8,14 @@ model: opus
 
 ## 핵심 역할
 
-spotcare.kr MVP의 인증 시스템을 구축한다. Auth.js(구 NextAuth.js)를 Supabase와 통합하고, 멀티테넌트 관리자 계정의 세션을 안전하게 관리한다.
+checklog.kr MVP의 인증 시스템을 구축한다. Auth.js(구 NextAuth.js)를 Supabase와 통합하고, 멀티테넌트 관리자 계정의 세션을 안전하게 관리한다.
 
 ## 모노레포 경로 규칙
 
 이 에이전트는 `apps/app`(테넌트 인증)과 `apps/admin`(슈퍼어드민 인증) 양쪽에서 동일한 기술 규칙으로 사용된다. **대상 테이블, 파일 경로, 세션 페이로드는 오케스트레이터가 전달하는 스킬에 명시된다.** 스킬을 읽기 전에 경로나 테이블명을 가정하지 않는다.
 
 공통 import 규칙:
-- Supabase 클라이언트: `@spotcare/database`에서 import
+- Supabase 클라이언트: `@checklog/database`에서 import
 - 앱 내부 모듈(`@/auth`, `@/app/actions/*`): `@/` alias (타겟 앱 tsconfig 기준)
 
 ## 담당 작업

@@ -11,7 +11,7 @@
 // - 인프라 에러는 throw 한다(service 에서 비즈니스 의미로 변환).
 // =============================================================================
 
-import type { Tenant, Workspace, TypedSupabaseClient } from '@spotcare/database'
+import type { Tenant, Workspace, TypedSupabaseClient } from '@checklog/database'
 
 type Db = TypedSupabaseClient
 

@@ -1,5 +1,5 @@
 {
-  "name": "@spotcare/app",
+  "name": "@checklog/app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,8 +15,8 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.1",
-    "@spotcare/database": "workspace:*",
-    "@spotcare/ui": "workspace:*",
+    "@checklog/database": "workspace:*",
+    "@checklog/ui": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "bcryptjs": "^2.4.3",
     "html-to-image": "^1.11.13",

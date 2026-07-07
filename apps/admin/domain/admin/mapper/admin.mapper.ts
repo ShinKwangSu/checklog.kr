@@ -7,7 +7,7 @@
 // 서버 전용 AdminWithSecret 가 흘러들어와도 안전하도록 명시적으로 분해한다.)
 // =============================================================================
 
-import type { Admin, AdminWithSecret } from '@spotcare/database'
+import type { Admin, AdminWithSecret } from '@checklog/database'
 import type { AdminDto } from '../types'
 
 /**

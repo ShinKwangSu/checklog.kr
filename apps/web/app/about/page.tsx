@@ -6,7 +6,7 @@ import { siteConfig } from '@/config/site'
 
 export const metadata: Metadata = {
   title: '회사소개',
-  description: 'spotcare는 현장 시설 운영을 더 쉽고 투명하게 만드는 서비스를 지향합니다.',
+  description: 'checklog는 현장 시설 운영을 더 쉽고 투명하게 만드는 서비스를 지향합니다.',
 }
 
 const values = [

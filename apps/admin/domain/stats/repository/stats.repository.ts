@@ -8,7 +8,7 @@
 // - 슈퍼어드민 전역 집계이므로 tenant_id 필터를 적용하지 않는다(의도된 설계).
 // =============================================================================
 
-import type { TypedSupabaseClient } from '@spotcare/database'
+import type { TypedSupabaseClient } from '@checklog/database'
 
 type Db = TypedSupabaseClient
 type CountTable = 'admins' | 'tenants' | 'facilities' | 'workspaces'

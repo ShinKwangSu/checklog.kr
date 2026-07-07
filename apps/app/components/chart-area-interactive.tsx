@@ -3,31 +3,31 @@
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
-import { useIsMobile } from "@spotcare/ui/hooks/use-mobile"
+import { useIsMobile } from "@checklog/ui/hooks/use-mobile"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@spotcare/ui/components/card"
+} from "@checklog/ui/components/card"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@spotcare/ui/components/chart"
+} from "@checklog/ui/components/chart"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@spotcare/ui/components/select"
+} from "@checklog/ui/components/select"
 import {
   ToggleGroup,
   ToggleGroupItem,
-} from "@spotcare/ui/components/toggle-group"
+} from "@checklog/ui/components/toggle-group"
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
   { date: "2024-04-02", desktop: 97, mobile: 180 },

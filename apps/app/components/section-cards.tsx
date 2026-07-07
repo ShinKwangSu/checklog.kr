@@ -1,13 +1,13 @@
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react"
 
-import { Badge } from "@spotcare/ui/components/badge"
+import { Badge } from "@checklog/ui/components/badge"
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@spotcare/ui/components/card"
+} from "@checklog/ui/components/card"
 
 export function SectionCards() {
   return (

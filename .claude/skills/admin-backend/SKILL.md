@@ -1,6 +1,6 @@
 ---
 name: admin-backend
-description: spotcare.kr apps/admin 슈퍼어드민 도메인 백엔드 구현 가이드. tenant/stats 도메인의 레이어드 아키텍처, 전체 데이터 접근 패턴. Backend Engineer 에이전트가 apps/admin 백엔드 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/admin 슈퍼어드민 도메인 백엔드 구현 가이드. tenant/stats 도메인의 레이어드 아키텍처, 전체 데이터 접근 패턴. Backend Engineer 에이전트가 apps/admin 백엔드 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Admin Backend — apps/admin 도메인 구현
@@ -42,7 +42,7 @@ apps/admin/domain/
 
 ```typescript
 // Supabase 서버 클라이언트 — action 레이어에서만 생성
-import { createServerSupabase } from '@spotcare/database'
+import { createServerSupabase } from '@checklog/database'
 
 // 앱 내부 인증
 import { auth } from '@/auth'
@@ -88,7 +88,7 @@ export const tenantRepository = {
 // tenant.actions.ts
 'use server'
 import { auth } from '@/auth'
-import { createServerSupabase } from '@spotcare/database'
+import { createServerSupabase } from '@checklog/database'
 import { tenantService } from '../service/tenant.service'
 
 async function requireAdmin() {

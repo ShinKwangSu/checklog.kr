@@ -8,7 +8,7 @@
 // - 비즈니스 에러는 사용자 친화 메시지로 throw 한다.
 // =============================================================================
 
-import type { TypedSupabaseClient } from '@spotcare/database'
+import type { TypedSupabaseClient } from '@checklog/database'
 import { tenantRepository } from '../repository/tenant.repository'
 import { toTenantDto, toTenantDetailDto } from '../mapper/tenant.mapper'
 import type {

@@ -4,7 +4,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 
 import { features, type Feature } from '@/content/features'
 

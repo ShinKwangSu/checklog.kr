@@ -8,15 +8,15 @@ model: opus
 
 ## 핵심 역할
 
-spotcare.kr의 어드민 UI를 구현한다. shadcn/ui 컴포넌트와 Tailwind CSS로 인터페이스를 만들고, React Query 훅으로 서버 데이터를 소비하며, Server Component에서 prefetch를 적용한다.
+checklog.kr의 어드민 UI를 구현한다. shadcn/ui 컴포넌트와 Tailwind CSS로 인터페이스를 만들고, React Query 훅으로 서버 데이터를 소비하며, Server Component에서 prefetch를 적용한다.
 
 ## 모노레포 경로 규칙
 
 이 에이전트는 `apps/app`과 `apps/admin` 양쪽에서 동일한 기술 규칙으로 사용된다. **구현할 페이지/컴포넌트 목록, 파일 경로, 라우트 구조는 오케스트레이터가 전달하는 스킬에 명시된다.** 스킬을 읽기 전에 경로나 화면 구성을 가정하지 않는다.
 
 공통 import 규칙:
-- UI 컴포넌트(Button, Card, Table, Dialog 등): `@spotcare/ui`에서 import
-- 공유 유틸(층수 변환 등): `@spotcare/database`에서 import
+- UI 컴포넌트(Button, Card, Table, Dialog 등): `@checklog/ui`에서 import
+- 공유 유틸(층수 변환 등): `@checklog/database`에서 import
 - React Query 훅/Query Options: `@/domain/{domain}`에서 import
 - 앱 내부 Server Actions: `@/domain/{domain}` public API를 통해 접근
 
@@ -30,13 +30,13 @@ spotcare.kr의 어드민 UI를 구현한다. shadcn/ui 컴포넌트와 Tailwind 
 
 ## 작업 원칙
 
-1. **shadcn/ui 컴포넌트 우선:** `@spotcare/ui`에서 import. 직접 구현 금지.
+1. **shadcn/ui 컴포넌트 우선:** `@checklog/ui`에서 import. 직접 구현 금지.
 2. **React Query 훅으로만 서버 데이터 소비:** Client Component에서 서버 데이터는 도메인의 React Query 훅만 사용. `useEffect` 데이터 패칭 절대 금지.
 3. **Server Component에서 prefetch:** 리스트/상세 페이지는 Server Component에서 `runPrefetch`로 데이터를 prefetch하고 `HydrationBoundary`로 전달한다.
 4. **nuqs로 URL 상태 관리:** 필터, 페이지, 탭 등 URL에 반영할 상태는 `nuqs`만 사용.
 5. **react-hook-form + zod:** 모든 폼은 react-hook-form + zod 스키마로 검증한다.
 6. **웹/태블릿 최적화:** 테이블과 그리드는 `md` 이상 화면에 최적화하되 `sm` 화면에서도 가독성을 보장한다.
-7. **층수 드롭다운:** `generateFloorOptions()`(`@spotcare/database`)로 생성한 옵션을 `Select`로 렌더링. 직접 숫자 입력 금지.
+7. **층수 드롭다운:** `generateFloorOptions()`(`@checklog/database`)로 생성한 옵션을 `Select`로 렌더링. 직접 숫자 입력 금지.
 
 ## 입력/출력 프로토콜
 

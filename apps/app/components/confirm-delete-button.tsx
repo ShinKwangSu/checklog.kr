@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 삭제 확인 버튼 (재사용)
+// checklog.kr MVP — 삭제 확인 버튼 (재사용)
 // =============================================================================
 // Dialog 로 삭제 확인을 받고, 전달된 onConfirm(서버 액션 래퍼)을 실행한다.
 // onConfirm 은 ActionResult 를 반환해야 하며, 결과에 따라 toast 로 피드백한다.
@@ -21,8 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from '@spotcare/ui/components/dialog'
-import { Button } from '@spotcare/ui/components/button'
+} from '@checklog/ui/components/dialog'
+import { Button } from '@checklog/ui/components/button'
 
 type Props = {
   onConfirm: () => Promise<ActionResult>

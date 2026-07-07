@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '@spotcare/ui/components/accordion'
+} from '@checklog/ui/components/accordion'
 
 import { faqItems } from '@/content/faq'
 

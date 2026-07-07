@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
-import { Toaster } from '@spotcare/ui/components/sonner'
+import { Toaster } from '@checklog/ui/components/sonner'
 
 const pretendard = localFont({
   src: '../../../packages/ui/fonts/PretendardVariable.woff2',
@@ -11,7 +11,7 @@ const pretendard = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'spotcare.kr — 시설 관리 어드민',
+  title: 'checklog.kr — 시설 관리 어드민',
   description: '멀티테넌트 시설 관리 어드민 MVP',
 }
 

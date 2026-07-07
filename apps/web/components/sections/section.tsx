@@ -1,4 +1,4 @@
-import { cn } from '@spotcare/ui/lib/utils'
+import { cn } from '@checklog/ui/lib/utils'
 
 type SectionProps = {
   children: React.ReactNode

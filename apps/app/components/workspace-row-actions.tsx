@@ -5,13 +5,13 @@ import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 
 import { deleteWorkspace } from '@/app/actions/workspace'
 import type { Workspace } from '@/types/database'
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@spotcare/ui/components/dropdown-menu'
+} from '@checklog/ui/components/dropdown-menu'
 import { WorkspaceFormDialog } from '@/components/workspace-form-dialog'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
 

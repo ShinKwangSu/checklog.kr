@@ -1,5 +1,5 @@
-import { Separator } from "@spotcare/ui/components/separator"
-import { SidebarTrigger } from "@spotcare/ui/components/sidebar"
+import { Separator } from "@checklog/ui/components/separator"
+import { SidebarTrigger } from "@checklog/ui/components/sidebar"
 
 export function SiteHeader() {
   return (

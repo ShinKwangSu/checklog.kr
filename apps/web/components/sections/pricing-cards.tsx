@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 import {
   Card,
   CardHeader,
@@ -8,8 +8,8 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@spotcare/ui/components/card'
-import { cn } from '@spotcare/ui/lib/utils'
+} from '@checklog/ui/components/card'
+import { cn } from '@checklog/ui/lib/utils'
 
 import { pricingPlans } from '@/content/pricing'
 import { siteConfig } from '@/config/site'

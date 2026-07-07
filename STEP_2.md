@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 개요
 
-- **목적:** spotcare.kr 서비스를 운영·관리하는 내부 슈퍼어드민 포털 구축. 어드민 계정 및 테넌트(가입 업체) 데이터를 통합 관리한다.
+- **목적:** checklog.kr 서비스를 운영·관리하는 내부 슈퍼어드민 포털 구축. 어드민 계정 및 테넌트(가입 업체) 데이터를 통합 관리한다.
 - **타겟 앱:** `apps/admin` (모노레포 내 독립 Next.js 앱)
 - **접근 권한:** 슈퍼어드민 계정만 접근 가능. 테넌트 회원가입 경로 없음 — 모든 어드민 계정은 내부에서 직접 생성한다.
 - **UI 구조:** `apps/app`과 동일하게 사이드바(Sidebar)를 포함한 Dashboard 레이아웃으로 구성.
@@ -12,9 +12,9 @@
 ## 2. 기술 스택
 
 - **Framework:** Next.js App Router (`apps/admin`)
-- **Database:** Supabase (PostgreSQL) — `@spotcare/database` 공유 패키지
+- **Database:** Supabase (PostgreSQL) — `@checklog/database` 공유 패키지
 - **Authentication:** Auth.js v5 (Credentials Provider, `admins` 테이블 기반)
-- **Styling:** Tailwind CSS + shadcn/ui (`@spotcare/ui` 공유 패키지)
+- **Styling:** Tailwind CSS + shadcn/ui (`@checklog/ui` 공유 패키지)
 - **상태 관리:** React Query (TanStack Query) + nuqs (URL 상태)
 
 ---
@@ -34,11 +34,11 @@ CREATE TABLE admins (
 
 -- 초기 슈퍼어드민 시딩 (비밀번호: 1q2w#E$R, bcrypt 해싱 필요)
 INSERT INTO admins (email, password_hash, name)
-VALUES ('admin@spotcare.kr', '<bcrypt_hash>', '관리자');
+VALUES ('admin@checklog.kr', '<bcrypt_hash>', '관리자');
 ```
 
 - 회원가입 없음 — 어드민 계정은 슈퍼어드민이 직접 생성
-- 초기 계정: **이메일 `admin@spotcare.kr` / 비밀번호 `1q2w#E$R` / 이름 `관리자`**
+- 초기 계정: **이메일 `admin@checklog.kr` / 비밀번호 `1q2w#E$R` / 이름 `관리자`**
 - 신규 어드민 생성 시 임시 비밀번호: `12341234` (bcrypt 해싱 후 저장)
 
 ---

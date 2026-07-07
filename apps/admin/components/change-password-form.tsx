@@ -14,16 +14,16 @@ import { toast } from 'sonner'
 
 import { useChangePassword } from '@/domain/admin'
 import { logoutAction } from '@/app/actions/auth'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 
 const schema = z
   .object({

@@ -1,4 +1,4 @@
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 
 import { siteConfig } from '@/config/site'
 

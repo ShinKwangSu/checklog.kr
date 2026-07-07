@@ -1,11 +1,11 @@
 {
-  "name": "spotcare-monorepo",
+  "name": "checklog-monorepo",
   "private": true,
   "scripts": {
     "dev": "turbo dev",
-    "dev:app": "turbo dev --filter=@spotcare/app",
-    "dev:admin": "turbo dev --filter=@spotcare/admin",
-    "dev:web": "turbo dev --filter=@spotcare/web",
+    "dev:app": "turbo dev --filter=@checklog/app",
+    "dev:admin": "turbo dev --filter=@checklog/admin",
+    "dev:web": "turbo dev --filter=@checklog/web",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck"

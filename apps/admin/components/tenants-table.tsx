@@ -20,8 +20,8 @@ import { Eye, Search, Trash2 } from 'lucide-react'
 
 import { useTenants, useDeleteTenant, type TenantDto } from '@/domain/tenant'
 import { Pagination } from '@/components/pagination'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
 import {
   Table,
   TableBody,
@@ -29,8 +29,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@spotcare/ui/components/table'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/table'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@spotcare/ui/components/dialog'
+} from '@checklog/ui/components/dialog'
 
 export function TenantsTable() {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))

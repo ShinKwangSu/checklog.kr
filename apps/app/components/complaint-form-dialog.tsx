@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 방문자용 민원 접수 모달
+// checklog.kr MVP — 방문자용 민원 접수 모달
 // =============================================================================
 // /inspect/[facilityId] 페이지 하단 "민원 접수" 버튼 → Dialog
 // 민원 유형 4종(고정) Select + "직접 입력" 선택 시 추가 텍스트 필드
@@ -18,15 +18,15 @@ import {
   DialogTrigger,
   FormDialogContent as DialogContent,
 } from '@/components/form-dialog'
-import { Button } from '@spotcare/ui/components/button'
-import { Textarea } from '@spotcare/ui/components/textarea'
+import { Button } from '@checklog/ui/components/button'
+import { Textarea } from '@checklog/ui/components/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@spotcare/ui/components/select'
+} from '@checklog/ui/components/select'
 import { COMPLAINT_TYPE_OPTIONS } from '@/types/database'
 import { submitComplaint, uploadComplaintPhoto } from '@/app/actions/complaint'
 

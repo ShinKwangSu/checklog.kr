@@ -11,7 +11,7 @@ import { ChevronLeft } from 'lucide-react'
 import { runPrefetch } from '@/lib/react-query/prefetch'
 import { tenantPrefetch } from '@/domain/tenant'
 import { TenantDetailView } from '@/components/tenant-detail-view'
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 
 export default async function TenantDetailPage({
   params,

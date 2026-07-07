@@ -1,7 +1,7 @@
 'use server'
 
 // =============================================================================
-// spotcare.kr MVP — 민원 Server Actions
+// checklog.kr MVP — 민원 Server Actions
 // =============================================================================
 // 보안 모델:
 //   - submitComplaint / uploadComplaintPhoto: 인증 불필요 (방문자, /inspect/[facilityId])

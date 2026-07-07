@@ -1,35 +1,35 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 민원 관리 클라이언트 컴포넌트
+// checklog.kr MVP — 민원 관리 클라이언트 컴포넌트
 // =============================================================================
 
 import { useState, useCallback, useMemo } from 'react'
 import { MessageSquareText, ArrowLeft, ImageIcon } from 'lucide-react'
-import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
+import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '@spotcare/ui/components/sheet'
-import { Badge } from '@spotcare/ui/components/badge'
-import { Button } from '@spotcare/ui/components/button'
-import { Separator } from '@spotcare/ui/components/separator'
+} from '@checklog/ui/components/sheet'
+import { Badge } from '@checklog/ui/components/badge'
+import { Button } from '@checklog/ui/components/button'
+import { Separator } from '@checklog/ui/components/separator'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@spotcare/ui/components/select'
+} from '@checklog/ui/components/select'
 import {
   Table,
   TableBody,
@@ -37,7 +37,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@spotcare/ui/components/table'
+} from '@checklog/ui/components/table'
 import { toast } from 'sonner'
 import { updateComplaintStatus, type ComplaintWithFacility } from '@/app/actions/complaint'
 import type { Complaint } from '@/types/database'

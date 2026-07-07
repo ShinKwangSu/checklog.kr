@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 import { WorkspaceFormDialog } from '@/components/workspace-form-dialog'
 import { WorkspaceRowActions } from '@/components/workspace-row-actions'
 

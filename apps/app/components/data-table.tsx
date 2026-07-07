@@ -54,16 +54,16 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsMobile } from "@spotcare/ui/hooks/use-mobile"
-import { Badge } from "@spotcare/ui/components/badge"
-import { Button } from "@spotcare/ui/components/button"
+import { useIsMobile } from "@checklog/ui/hooks/use-mobile"
+import { Badge } from "@checklog/ui/components/badge"
+import { Button } from "@checklog/ui/components/button"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@spotcare/ui/components/chart"
-import { Checkbox } from "@spotcare/ui/components/checkbox"
+} from "@checklog/ui/components/chart"
+import { Checkbox } from "@checklog/ui/components/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -71,17 +71,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@spotcare/ui/components/dropdown-menu"
-import { Input } from "@spotcare/ui/components/input"
-import { Label } from "@spotcare/ui/components/label"
+} from "@checklog/ui/components/dropdown-menu"
+import { Input } from "@checklog/ui/components/input"
+import { Label } from "@checklog/ui/components/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@spotcare/ui/components/select"
-import { Separator } from "@spotcare/ui/components/separator"
+} from "@checklog/ui/components/select"
+import { Separator } from "@checklog/ui/components/separator"
 import {
   Sheet,
   SheetClose,
@@ -91,7 +91,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@spotcare/ui/components/sheet"
+} from "@checklog/ui/components/sheet"
 import {
   Table,
   TableBody,
@@ -99,13 +99,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@spotcare/ui/components/table"
+} from "@checklog/ui/components/table"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@spotcare/ui/components/tabs"
+} from "@checklog/ui/components/tabs"
 
 export const schema = z.object({
   id: z.number(),

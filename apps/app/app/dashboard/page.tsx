@@ -12,8 +12,8 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@spotcare/ui/components/card'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/card'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 
 async function getStats(tenantId: string) {
   const supabase = createClient()

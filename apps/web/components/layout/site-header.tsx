@@ -5,13 +5,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu } from 'lucide-react'
 
-import { Button } from '@spotcare/ui/components/button'
+import { Button } from '@checklog/ui/components/button'
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '@spotcare/ui/components/sheet'
+} from '@checklog/ui/components/sheet'
 
 import { siteConfig } from '@/config/site'
 

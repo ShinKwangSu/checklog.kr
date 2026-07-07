@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 시설별 민원이력 Sheet
+// checklog.kr MVP — 시설별 민원이력 Sheet
 // =============================================================================
 // facility-inspection-history.tsx 패턴과 동일한 구조:
 //   Sheet 트리거 버튼 → 목록 뷰 → 상세 뷰 (뒤로가기)
@@ -10,18 +10,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { MessageSquareText, ArrowLeft, ImageIcon } from 'lucide-react'
-import { Dialog, DialogContent } from '@spotcare/ui/components/dialog'
+import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@spotcare/ui/components/sheet'
-import { Button } from '@spotcare/ui/components/button'
-import { Badge } from '@spotcare/ui/components/badge'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
-import { Separator } from '@spotcare/ui/components/separator'
+} from '@checklog/ui/components/sheet'
+import { Button } from '@checklog/ui/components/button'
+import { Badge } from '@checklog/ui/components/badge'
+import { Skeleton } from '@checklog/ui/components/skeleton'
+import { Separator } from '@checklog/ui/components/separator'
 import { toast } from 'sonner'
 import {
   getComplaints,

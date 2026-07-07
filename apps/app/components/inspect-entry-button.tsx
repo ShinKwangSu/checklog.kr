@@ -1,13 +1,13 @@
 "use client";
 
 import { verifyAndCreateSession } from "@/app/actions/inspection";
-import { Button } from "@spotcare/ui/components/button";
+import { Button } from "@checklog/ui/components/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@spotcare/ui/components/dialog";
+} from "@checklog/ui/components/dialog";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 

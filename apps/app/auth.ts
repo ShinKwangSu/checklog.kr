@@ -1,5 +1,5 @@
 // =============================================================================
-// spotcare.kr MVP — NextAuth 인스턴스 (Node 런타임)
+// checklog.kr MVP — NextAuth 인스턴스 (Node 런타임)
 // =============================================================================
 //
 // Credentials Provider 의 authorize() 는 bcryptjs 와 Supabase 서버 클라이언트를

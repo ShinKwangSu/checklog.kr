@@ -1,13 +1,13 @@
-# spotcare.kr — 시설 관리 어드민 MVP
+# checklog.kr — 시설 관리 어드민 MVP
 
-## 하네스: spotcare.kr MVP
+## 하네스: checklog.kr MVP
 
 **목표:** 모노레포(`apps/app` + `apps/admin`) 기반 멀티테넌트 시설 관리 시스템을 5명의 전문 에이전트 팀이 DB → Auth → Backend → UI → QA 파이프라인으로 구현
 
 **구조 원칙:**
 - **에이전트** (5개): 기술 규칙 담당 — `apps/app`과 `apps/admin` 양쪽에 동일하게 적용
 - **스킬**: 도메인 정책 + 경로 담당 — 앱별로 분리 (`facility-*` vs `admin-*`)
-- **공유 패키지**: `@spotcare/database` (Supabase 클라이언트/타입/유틸), `@spotcare/ui` (shadcn 컴포넌트)
+- **공유 패키지**: `@checklog/database` (Supabase 클라이언트/타입/유틸), `@checklog/ui` (shadcn 컴포넌트)
 
 **파이프라인:**
 ```
@@ -16,7 +16,7 @@
 [admin] auth-engineer(admin-auth-setup) → backend-engineer(admin-backend) → ui-engineer(admin-ui) → qa-engineer
 ```
 
-**트리거:** spotcare.kr 개발/구현 관련 작업 요청 시 `mvp-orchestrator` 스킬을 사용하라. 단순 개념 질문은 직접 응답 가능.
+**트리거:** checklog.kr 개발/구현 관련 작업 요청 시 `mvp-orchestrator` 스킬을 사용하라. 단순 개념 질문은 직접 응답 가능.
 
 ## 코딩 컨벤션
 
@@ -47,7 +47,7 @@ CREATE INDEX idx_new_table_active ON new_table (tenant_id) WHERE deleted_at IS N
 입력 폼이 포함된 Dialog는 반드시 `FormDialogContent`를 사용한다.
 
 **규칙:**
-- `@spotcare/ui/components/dialog`의 `DialogContent` 직접 사용 금지 (폼 다이얼로그에 한함)
+- `@checklog/ui/components/dialog`의 `DialogContent` 직접 사용 금지 (폼 다이얼로그에 한함)
 - 대신 `@/components/form-dialog`에서 `FormDialogContent`를 import해 사용
 - `FormDialogContent`는 바깥 영역 클릭 시 닫힘을 기본 차단한다 (입력 데이터 보호)
 - 조회/확인용 다이얼로그(QR 코드, 삭제 확인 등)는 기존 `DialogContent` 그대로 사용
@@ -71,6 +71,6 @@ import {
 | 날짜 | 변경 내용 | 대상 | 사유 |
 |------|----------|------|------|
 | 2026-06-16 | 초기 구성 | 전체 | STEP_1.md 기반 MVP 구현 하네스 신규 구축 |
-| 2026-06-16 | 모노레포 전환 반영 | 전체 | apps/app + apps/admin 이중 파이프라인, @spotcare/database/@spotcare/ui 공유 패키지 도입 |
+| 2026-06-16 | 모노레포 전환 반영 | 전체 | apps/app + apps/admin 이중 파이프라인, @checklog/database/@checklog/ui 공유 패키지 도입 |
 | 2026-06-19 | 소프트 딜리트 컨벤션 추가 | 전체 | 모든 삭제 기능에 deleted_at 방식 의무화 |
 | 2026-06-22 | 폼 다이얼로그 컨벤션 추가 | apps/app | FormDialogContent 래퍼 도입, 바깥 클릭 닫힘 방지 정책 |

@@ -21,7 +21,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 import {
   Table,
   TableBody,
@@ -29,7 +29,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@spotcare/ui/components/table'
+} from '@checklog/ui/components/table'
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@spotcare/ui/components/dialog'
+} from '@checklog/ui/components/dialog'
 import {
   Form,
   FormControl,
@@ -46,15 +46,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@spotcare/ui/components/form'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
+} from '@checklog/ui/components/form'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@spotcare/ui/components/dropdown-menu'
+} from '@checklog/ui/components/dropdown-menu'
 import { ConfirmDeleteButton } from '@/components/confirm-delete-button'
 
 type Props = {

@@ -5,8 +5,8 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@spotcare/ui/components/sidebar'
-import { Separator } from '@spotcare/ui/components/separator'
+} from '@checklog/ui/components/sidebar'
+import { Separator } from '@checklog/ui/components/separator'
 
 export default async function DashboardLayout({
   children,

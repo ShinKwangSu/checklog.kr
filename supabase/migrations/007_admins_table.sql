@@ -1,5 +1,5 @@
 -- =============================================================================
--- spotcare.kr MVP — 007_admins_table.sql
+-- checklog.kr MVP — 007_admins_table.sql
 -- 슈퍼어드민(apps/admin) 인증용 admins 테이블.
 -- STEP_2.md 기반. 001_initial_schema.sql 이후 적용한다.
 -- =============================================================================
@@ -54,7 +54,7 @@ REVOKE ALL ON TABLE admins FROM anon, authenticated;
 -- -----------------------------------------------------------------------------
 INSERT INTO admins (email, password_hash, name)
 VALUES (
-  'admin@spotcare.kr',
+  'admin@checklog.kr',
   '$2a$10$Rd0fUcLbXXN.A9vbYSKJmOxYjLXTOW/0o4h54nmtHpJX8CREffUZa',
   '관리자'
 )

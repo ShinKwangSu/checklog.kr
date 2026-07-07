@@ -1,5 +1,5 @@
 -- =============================================================================
--- spotcare.kr MVP — Migration 011
+-- checklog.kr MVP — Migration 011
 -- checklist_items.response_type 에 'photo' 추가 + inspection-photos 버킷 생성
 -- =============================================================================
 

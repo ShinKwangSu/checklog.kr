@@ -14,8 +14,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/card'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 
 type StatCard = {
   key: 'adminCount' | 'tenantCount' | 'facilityCount'

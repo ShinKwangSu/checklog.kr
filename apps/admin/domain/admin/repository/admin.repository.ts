@@ -16,7 +16,7 @@ import type {
   AdminInsert,
   AdminUpdate,
   TypedSupabaseClient,
-} from '@spotcare/database'
+} from '@checklog/database'
 
 type Db = TypedSupabaseClient
 

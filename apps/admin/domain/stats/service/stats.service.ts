@@ -2,7 +2,7 @@
 // stats 도메인 — service (비즈니스 로직)
 // =============================================================================
 
-import type { TypedSupabaseClient } from '@spotcare/database'
+import type { TypedSupabaseClient } from '@checklog/database'
 import { statsRepository } from '../repository/stats.repository'
 import type { DashboardStatsDto } from '../types'
 

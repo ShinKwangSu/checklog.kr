@@ -6,7 +6,7 @@
 // 결과에 포함하지 않는다(명시적 필드 분해).
 // =============================================================================
 
-import type { Tenant, Workspace } from '@spotcare/database'
+import type { Tenant, Workspace } from '@checklog/database'
 import type {
   TenantDto,
   TenantDetailDto,

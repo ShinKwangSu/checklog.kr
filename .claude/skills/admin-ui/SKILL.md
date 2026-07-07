@@ -1,6 +1,6 @@
 ---
 name: admin-ui
-description: spotcare.kr apps/admin 슈퍼어드민 UI 구현 가이드. React Query 훅 + shadcn/ui + Tailwind CSS. 로그인, 테넌트 목록/상세, 운영 통계 화면. UI Engineer 에이전트가 apps/admin 화면 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/admin 슈퍼어드민 UI 구현 가이드. React Query 훅 + shadcn/ui + Tailwind CSS. 로그인, 테넌트 목록/상세, 운영 통계 화면. UI Engineer 에이전트가 apps/admin 화면 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Admin UI — apps/admin 슈퍼어드민 화면
@@ -33,9 +33,9 @@ apps/admin/
 
 ```typescript
 // UI 컴포넌트
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@spotcare/ui'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@spotcare/ui'
-import { Badge, Input } from '@spotcare/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@checklog/ui'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@checklog/ui'
+import { Badge, Input } from '@checklog/ui'
 
 // 도메인 훅/타입
 import { useTenants, useTenantDetail } from '@/domain/tenant'
@@ -73,7 +73,7 @@ export default async function TenantsPage() {
 'use client'
 import { useTenants } from '@/domain/tenant'
 import { useQueryState, parseAsInteger } from 'nuqs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@spotcare/ui'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@checklog/ui'
 
 export function TenantList() {
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -144,14 +144,14 @@ export function StatCards() {
 ```typescript
 // 회원가입 링크 없음 — 슈퍼어드민은 DB 직접 등록
 // react-hook-form + loginAction 직접 호출 (React Query 불필요)
-import { Card, CardContent, CardHeader, CardTitle } from '@spotcare/ui'
-import { Input, Button } from '@spotcare/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@checklog/ui'
+import { Input, Button } from '@checklog/ui'
 import { loginAction } from '@/domain/auth'
 ```
 
 ## 체크리스트
 
-- [ ] UI 컴포넌트를 `@spotcare/ui`에서 import
+- [ ] UI 컴포넌트를 `@checklog/ui`에서 import
 - [ ] Client Component에서 서버 데이터는 도메인 React Query 훅만 사용
 - [ ] 리스트/상세 페이지는 Server Component에서 prefetch + HydrationBoundary
 - [ ] 페이지네이션 상태는 nuqs로 URL에 반영

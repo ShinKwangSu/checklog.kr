@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// spotcare.kr MVP — 워크스페이스 생성/수정 Dialog
+// checklog.kr MVP — 워크스페이스 생성/수정 Dialog
 // =============================================================================
 // - 층수 입력 규약(UI 계약): 지상은 max_floor(0 이상), 지하는 "깊이"를 양수로 입력.
 //   Server Action 이 지하 값을 음수로 변환 저장한다.
@@ -35,10 +35,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@spotcare/ui/components/form'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Textarea } from '@spotcare/ui/components/textarea'
+} from '@checklog/ui/components/form'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Textarea } from '@checklog/ui/components/textarea'
 
 // -----------------------------------------------------------------------------
 // Daum 주소 검색 타입

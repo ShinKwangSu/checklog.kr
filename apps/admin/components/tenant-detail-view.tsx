@@ -15,17 +15,17 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 
 import { useTenant, useUpdateTenant } from '@/domain/tenant'
-import { floorToDisplay } from '@spotcare/database'
-import { Button } from '@spotcare/ui/components/button'
-import { Input } from '@spotcare/ui/components/input'
-import { Label } from '@spotcare/ui/components/label'
+import { floorToDisplay } from '@checklog/database'
+import { Button } from '@checklog/ui/components/button'
+import { Input } from '@checklog/ui/components/input'
+import { Label } from '@checklog/ui/components/label'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@spotcare/ui/components/card'
+} from '@checklog/ui/components/card'
 import {
   Table,
   TableBody,
@@ -33,8 +33,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@spotcare/ui/components/table'
-import { Skeleton } from '@spotcare/ui/components/skeleton'
+} from '@checklog/ui/components/table'
+import { Skeleton } from '@checklog/ui/components/skeleton'
 
 const schema = z.object({
   companyName: z.string().trim().min(1, '업체명을 입력해주세요.'),

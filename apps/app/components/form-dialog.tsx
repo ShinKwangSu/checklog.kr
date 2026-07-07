@@ -5,7 +5,7 @@
 // =============================================================================
 
 import type { ComponentPropsWithoutRef } from 'react'
-import { DialogContent } from '@spotcare/ui/components/dialog'
+import { DialogContent } from '@checklog/ui/components/dialog'
 
 type Props = ComponentPropsWithoutRef<typeof DialogContent>
 
@@ -28,4 +28,4 @@ export {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@spotcare/ui/components/dialog'
+} from '@checklog/ui/components/dialog'

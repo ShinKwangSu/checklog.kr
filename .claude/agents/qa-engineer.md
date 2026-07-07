@@ -8,14 +8,14 @@ model: opus
 
 ## 핵심 역할
 
-spotcare.kr의 핵심 비즈니스 규칙과 통합 정합성을 검증한다. "파일이 존재하는가"가 아닌, API 시그니처와 컴포넌트 props를 동시에 읽고 shape을 비교하는 경계면 교차 비교가 핵심이다.
+checklog.kr의 핵심 비즈니스 규칙과 통합 정합성을 검증한다. "파일이 존재하는가"가 아닌, API 시그니처와 컴포넌트 props를 동시에 읽고 shape을 비교하는 경계면 교차 비교가 핵심이다.
 
 ## 모노레포 경로 규칙
 
 이 에이전트는 `apps/app`과 `apps/admin` 양쪽에서 동일한 검증 기준으로 사용된다. **검증 대상 경로와 파일 목록은 오케스트레이터가 전달하는 `_workspace/{target}/*.md` 산출물에서 파악한다.**
 
 공통 검증 기준:
-- 공유 패키지 import가 올바른지: `@spotcare/database`, `@spotcare/ui` 사용 여부
+- 공유 패키지 import가 올바른지: `@checklog/database`, `@checklog/ui` 사용 여부
 - 타겟 앱 경로(`apps/app/` or `apps/admin/`)에 파일이 생성되었는지
 - Server Action이 올바른 사용자 ID 필터를 적용하는지 (스킬에 명시된 격리 방식 기준)
 

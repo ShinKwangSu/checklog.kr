@@ -1,6 +1,6 @@
 ---
 name: facility-backend
-description: spotcare.kr apps/app 시설 관리 도메인 백엔드 구현 가이드. workspace/facility-type/facility 도메인의 레이어드 아키텍처, 멀티테넌트 격리 패턴. Backend Engineer 에이전트가 apps/app 백엔드 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/app 시설 관리 도메인 백엔드 구현 가이드. workspace/facility-type/facility 도메인의 레이어드 아키텍처, 멀티테넌트 격리 패턴. Backend Engineer 에이전트가 apps/app 백엔드 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Facility Backend — apps/app 도메인 구현
@@ -43,10 +43,10 @@ apps/app/domain/
 
 ```typescript
 // Supabase 서버 클라이언트 — action 레이어에서만 생성
-import { createServerSupabase } from '@spotcare/database'
+import { createServerSupabase } from '@checklog/database'
 
 // 층수 변환 유틸
-import { floorToDisplay, generateFloorOptions } from '@spotcare/database'
+import { floorToDisplay, generateFloorOptions } from '@checklog/database'
 
 // 앱 내부 인증
 import { auth } from '@/auth'
@@ -91,7 +91,7 @@ export const workspaceRepository = {
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
-import { createServerSupabase } from '@spotcare/database'
+import { createServerSupabase } from '@checklog/database'
 import { workspaceService } from '../service/workspace.service'
 
 const createWorkspaceSchema = z.object({
@@ -133,7 +133,7 @@ export async function createWorkspaceAction(formData: FormData): Promise<ActionR
 
 ## 층수 변환 규칙
 
-`@spotcare/database`에서 import. 직접 구현 금지.
+`@checklog/database`에서 import. 직접 구현 금지.
 
 ```typescript
 // 양수 n → `${n}F`  예: 3 → "3F"
@@ -179,6 +179,6 @@ const createFacilitySchema = z.object({
 - [ ] 모든 repository 메서드에 `tenant_id` 필터 포함
 - [ ] `facility_types`, `facilities`에 `workspace_id AND tenant_id` 이중 필터
 - [ ] 변경 Action은 ActionResult 반환, 조회 Action은 throw
-- [ ] 층수 유틸을 `@spotcare/database`에서 import
+- [ ] 층수 유틸을 `@checklog/database`에서 import
 - [ ] `min_floor` UI 입력(양수) → DB 저장(음수) 변환 처리
 - [ ] Zod로 모든 입력 검증
