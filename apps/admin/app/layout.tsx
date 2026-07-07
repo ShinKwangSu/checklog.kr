@@ -14,7 +14,7 @@ const pretendard = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'checklog Admin',
+  title: 'CheckLog Admin',
   description: 'checklog.kr 서비스 관리자 포털',
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// checklog 관리자 포털 — 로그인 페이지
+// CheckLog 관리자 포털 — 로그인 페이지
 // =============================================================================
 // loginAction(prevState, formData) 를 useActionState 로 연결한다.
 // 성공 시 액션 내부에서 /dashboard 로 redirect(NEXT_REDIRECT) 되므로
@@ -36,7 +36,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">checklog 관리자 포털</CardTitle>
+          <CardTitle className="text-2xl">CheckLog 관리자 포털</CardTitle>
           <CardDescription>
             슈퍼어드민 계정으로 로그인하세요.
           </CardDescription>

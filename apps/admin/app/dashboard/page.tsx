@@ -18,7 +18,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold">대시보드</h1>
         <p className="text-sm text-muted-foreground">
-          checklog 서비스 운영 현황을 한눈에 확인합니다.
+          CheckLog 서비스 운영 현황을 한눈에 확인합니다.
         </p>
       </div>
 
