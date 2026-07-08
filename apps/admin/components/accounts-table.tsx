@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { Eye, Search, Trash2 } from 'lucide-react'
 
 import { useAccounts, useDeleteAccount, type AccountDto } from '@/domain/account'
+import { useDebouncedValue } from '@/lib/use-debounced-value'
 import { Pagination } from '@/components/pagination'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
@@ -49,6 +50,7 @@ export function AccountsTable() {
 
   // 검색 입력 로컬 상태 → debounce 후 URL 반영
   const [searchInput, setSearchInput] = useState(search)
+  const debouncedSearchInput = useDebouncedValue(searchInput, 300)
 
   useEffect(() => {
     // URL(search)이 외부에서 바뀌면 입력값도 동기화
@@ -56,15 +58,12 @@ export function AccountsTable() {
   }, [search])
 
   useEffect(() => {
-    const trimmed = searchInput.trim()
+    const trimmed = debouncedSearchInput.trim()
     if (trimmed === search) return
-    const timer = setTimeout(() => {
-      setSearch(trimmed || null)
-      setPage(1)
-    }, 300)
-    return () => clearTimeout(timer)
+    setSearch(trimmed || null)
+    setPage(1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchInput])
+  }, [debouncedSearchInput])
 
   const { data, isLoading, isError } = useAccounts(page, search || undefined)
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()

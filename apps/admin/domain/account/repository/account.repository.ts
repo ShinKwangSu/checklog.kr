@@ -156,15 +156,4 @@ export const accountRepository = {
       .is('deleted_at', null)
     if (error) throw error
   },
-
-  /** 활성 고객 전체 카운트 (대시보드용) */
-  async count(supabase: Db): Promise<number> {
-    const { count, error } = await supabase
-      .from('accounts')
-      .select('id', { count: 'exact', head: true })
-      .is('deleted_at', null)
-
-    if (error) throw error
-    return count ?? 0
-  },
 }

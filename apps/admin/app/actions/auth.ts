@@ -15,6 +15,7 @@
 import { z } from 'zod'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
+import { isRedirectError } from '@/lib/is-redirect-error'
 
 export type AuthActionState = {
   success: boolean
@@ -78,22 +79,4 @@ export async function loginAction(
  */
 export async function logoutAction() {
   await signOut({ redirectTo: '/login' })
-}
-
-// -----------------------------------------------------------------------------
-// 내부 유틸
-// -----------------------------------------------------------------------------
-
-/**
- * Next.js redirect()/signIn redirect 는 NEXT_REDIRECT 라는 특수 예외를 던진다.
- * 이를 일반 에러로 잡아버리면 리다이렉트가 동작하지 않으므로 식별해 재던진다.
- */
-function isRedirectError(err: unknown): boolean {
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    'digest' in err &&
-    typeof (err as { digest?: unknown }).digest === 'string' &&
-    (err as { digest: string }).digest.startsWith('NEXT_REDIRECT')
-  )
 }

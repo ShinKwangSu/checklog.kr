@@ -138,15 +138,4 @@ export const adminRepository = {
       .is('deleted_at', null)
     if (error) throw error
   },
-
-  /** 활성 어드민 전체 카운트 (대시보드용) */
-  async count(supabase: Db): Promise<number> {
-    const { count, error } = await supabase
-      .from('admins')
-      .select('id', { count: 'exact', head: true })
-      .is('deleted_at', null)
-
-    if (error) throw error
-    return count ?? 0
-  },
 }

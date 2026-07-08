@@ -79,9 +79,4 @@ export const accountService = {
     await accountRepository.softDeleteChildren(supabase, accountId)
     await accountRepository.delete(supabase, accountId)
   },
-
-  /** 전체 고객 수 (대시보드용) */
-  async countAccounts(supabase: Db): Promise<number> {
-    return accountRepository.count(supabase)
-  },
 }

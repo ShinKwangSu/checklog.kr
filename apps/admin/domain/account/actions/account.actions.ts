@@ -14,13 +14,9 @@
 
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-function isRedirectError(e: unknown): boolean {
-  return typeof e === 'object' && e !== null && 'digest' in e &&
-    typeof (e as { digest?: unknown }).digest === 'string' &&
-    (e as { digest: string }).digest.startsWith('NEXT_REDIRECT')
-}
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
+import { isRedirectError } from '@/lib/is-redirect-error'
 import { accountService } from '../service/account.service'
 import type {
   AccountActionResult,

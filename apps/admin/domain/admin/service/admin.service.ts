@@ -129,9 +129,4 @@ export const adminService = {
     const newHash = await bcrypt.hash(newPassword, SALT_ROUNDS)
     await adminRepository.updatePassword(supabase, adminId, newHash)
   },
-
-  /** 전체 어드민 수 (대시보드용) */
-  async countAdmins(supabase: Db): Promise<number> {
-    return adminRepository.count(supabase)
-  },
 }
