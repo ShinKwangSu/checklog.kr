@@ -1,22 +1,10 @@
 # checklog.kr — 시설 관리 어드민 MVP
 
-## 하네스: checklog.kr MVP
+## 하네스: 아키텍처 리뷰 에이전트 풀
 
-**목표:** 모노레포(`apps/app` + `apps/admin`) 기반 멀티고객 시설 관리 시스템을 5명의 전문 에이전트 팀이 DB → Auth → Backend → UI → QA 파이프라인으로 구현
+**목표:** 스택 무관 설계/코드 리뷰 원칙을 담은 독립 호출형 에이전트 7종(시스템/백엔드/DB/프론트/디자인시스템 아키텍처 + 백엔드/프론트 QA)으로 checklog.kr(`apps/app`, `apps/admin`, `apps/web`)의 설계·리뷰를 지원
 
-**구조 원칙:**
-- **에이전트** (5개): 기술 규칙 담당 — `apps/app`과 `apps/admin` 양쪽에 동일하게 적용
-- **스킬**: 도메인 정책 + 경로 담당 — 앱별로 분리 (`facility-*` vs `admin-*`)
-- **공유 패키지**: `@checklog/database` (Supabase 클라이언트/타입/유틸), `@checklog/ui` (shadcn 컴포넌트)
-
-**파이프라인:**
-```
-[공통] db-architect (db-schema)
-[app]  auth-engineer(auth-setup) → backend-engineer(facility-backend) → ui-engineer(facility-ui) → qa-engineer
-[admin] auth-engineer(admin-auth-setup) → backend-engineer(admin-backend) → ui-engineer(admin-ui) → qa-engineer
-```
-
-**트리거:** checklog.kr 개발/구현 관련 작업 요청 시 `mvp-orchestrator` 스킬을 사용하라. 단순 개념 질문은 직접 응답 가능.
+**트리거:** 아키텍처 설계나 코드 리뷰가 필요하면 해당 영역의 에이전트(`.claude/agents/`)를 상황에 맞춰 개별 호출하라. 에이전트는 서로 통신하지 않으며, 여러 영역이 걸치면 필요한 에이전트를 순서대로 개별 호출한다. 단순 개념 질문은 직접 응답 가능.
 
 ## 코딩 컨벤션
 
@@ -74,3 +62,4 @@ import {
 | 2026-06-16 | 모노레포 전환 반영 | 전체 | apps/app + apps/admin 이중 파이프라인, @checklog/database/@checklog/ui 공유 패키지 도입 |
 | 2026-06-19 | 소프트 딜리트 컨벤션 추가 | 전체 | 모든 삭제 기능에 deleted_at 방식 의무화 |
 | 2026-06-22 | 폼 다이얼로그 컨벤션 추가 | apps/app | FormDialogContent 래퍼 도입, 바깥 클릭 닫힘 방지 정책 |
+| 2026-07-08 | 5-에이전트 빌드 파이프라인 하네스 폐기, ai-guide 기반 7-에이전트 리뷰 풀로 전면 교체 | 전체 | MVP 빌드 완료로 파이프라인 역할 종료, 기존 기술 스킬(db-schema/auth-setup 등)이 스키마·구조 드리프트로 실효성 상실 — 스택 무관 아키텍처 리뷰 원칙 기반 독립 호출형 에이전트로 전환 |
