@@ -9,8 +9,8 @@
 //
 // - pages: 로그인 페이지 경로
 // - callbacks.authorized: 미들웨어 경로 보호 (/dashboard 이하 인증 필요)
-// - callbacks.jwt: JWT 토큰에 tenantId 포함 (Server Action 에서 테넌트 컨텍스트 확보)
-// - callbacks.session: 세션에 tenantId 노출
+// - callbacks.jwt: JWT 토큰에 accountId 포함 (Server Action 에서 고객 컨텍스트 확보)
+// - callbacks.session: 세션에 accountId 노출
 // =============================================================================
 
 import type { NextAuthConfig } from 'next-auth'
@@ -55,20 +55,20 @@ export const authConfig = {
       return true
     },
 
-    // 로그인(authorize 반환값)이 user 로 전달될 때 JWT 에 tenantId 적재.
+    // 로그인(authorize 반환값)이 user 로 전달될 때 JWT 에 accountId 적재.
     // 이후 모든 요청에서 token 으로 유지된다.
     jwt({ token, user }) {
       if (user) {
-        token.tenantId = (user as { tenantId?: string }).tenantId
+        token.accountId = (user as { accountId?: string }).accountId
       }
       return token
     },
 
-    // JWT 의 tenantId 를 세션(session.user.tenantId)으로 노출.
+    // JWT 의 accountId 를 세션(session.user.accountId)으로 노출.
     // Server Action 에서 const session = await auth() 로 접근한다.
     session({ session, token }) {
-      if (token.tenantId && session.user) {
-        session.user.tenantId = token.tenantId as string
+      if (token.accountId && session.user) {
+        session.user.accountId = token.accountId as string
       }
       return session
     },

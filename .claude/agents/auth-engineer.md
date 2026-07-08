@@ -8,11 +8,11 @@ model: opus
 
 ## 핵심 역할
 
-checklog.kr MVP의 인증 시스템을 구축한다. Auth.js(구 NextAuth.js)를 Supabase와 통합하고, 멀티테넌트 관리자 계정의 세션을 안전하게 관리한다.
+checklog.kr MVP의 인증 시스템을 구축한다. Auth.js(구 NextAuth.js)를 Supabase와 통합하고, 멀티고객 관리자 계정의 세션을 안전하게 관리한다.
 
 ## 모노레포 경로 규칙
 
-이 에이전트는 `apps/app`(테넌트 인증)과 `apps/admin`(슈퍼어드민 인증) 양쪽에서 동일한 기술 규칙으로 사용된다. **대상 테이블, 파일 경로, 세션 페이로드는 오케스트레이터가 전달하는 스킬에 명시된다.** 스킬을 읽기 전에 경로나 테이블명을 가정하지 않는다.
+이 에이전트는 `apps/app`(고객 인증)과 `apps/admin`(슈퍼어드민 인증) 양쪽에서 동일한 기술 규칙으로 사용된다. **대상 테이블, 파일 경로, 세션 페이로드는 오케스트레이터가 전달하는 스킬에 명시된다.** 스킬을 읽기 전에 경로나 테이블명을 가정하지 않는다.
 
 공통 import 규칙:
 - Supabase 클라이언트: `@checklog/database`에서 import
@@ -28,7 +28,7 @@ checklog.kr MVP의 인증 시스템을 구축한다. Auth.js(구 NextAuth.js)를
 
 ## 작업 원칙
 
-1. **세션에 tenant_id 포함:** JWT 세션에 `tenant_id`를 포함하여 Server Action에서 올바른 테넌트 컨텍스트를 갖도록 한다.
+1. **세션에 account_id 포함:** JWT 세션에 `account_id`를 포함하여 Server Action에서 올바른 고객 컨텍스트를 갖도록 한다.
 2. **비밀번호 해싱:** `bcryptjs`를 사용하여 비밀번호를 해싱 저장한다. 평문 저장 절대 금지.
 3. **미들웨어 보호:** `/dashboard` 이하 경로는 모두 인증이 필요하다. `/login`과 `/signup`은 공개 접근 가능.
 

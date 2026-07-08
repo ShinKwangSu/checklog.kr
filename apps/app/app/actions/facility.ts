@@ -4,8 +4,8 @@
 // checklog.kr MVP — 시설 정보 CRUD Server Actions
 // =============================================================================
 //
-// 격리 패턴: 모든 쿼리에 tenant_id 와 workspace_id 를 함께 필터한다.
-//   추가로 facility_type_id 가 같은 테넌트/워크스페이스 소속인지 검증한다
+// 격리 패턴: 모든 쿼리에 account_id 와 workspace_id 를 함께 필터한다.
+//   추가로 facility_type_id 가 같은 고객/워크스페이스 소속인지 검증한다
 //   (타 워크스페이스의 타입으로 시설을 분류하는 것을 차단).
 //
 // floor: UI Select(generateFloorOptions)에서 정수로 전달된다. 역변환 불필요.
@@ -25,9 +25,9 @@ import { facilitySchema } from '@/lib/validations/facility'
 import type { Facility, FacilityWithChecklists } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 function facilitiesPath(workspaceId: string): string {
@@ -36,20 +36,20 @@ function facilitiesPath(workspaceId: string): string {
 }
 
 /**
- * facility_type_id 가 현재 테넌트 + 지정 워크스페이스 소속인지 확인한다.
- * 타 워크스페이스/테넌트의 타입으로 시설을 분류하는 것을 차단한다.
+ * facility_type_id 가 현재 고객 + 지정 워크스페이스 소속인지 확인한다.
+ * 타 워크스페이스/고객의 타입으로 시설을 분류하는 것을 차단한다.
  */
 async function assertFloorInRange(
   supabase: ReturnType<typeof createClient>,
   workspaceId: string,
-  tenantId: string,
+  accountId: string,
   floor: number
 ): Promise<boolean> {
   const { data: ws } = await supabase
     .from('workspaces')
     .select('min_floor, max_floor')
     .eq('id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
 
@@ -62,14 +62,14 @@ async function assertFacilityTypeOwned(
   supabase: ReturnType<typeof createClient>,
   facilityTypeId: string,
   workspaceId: string,
-  tenantId: string
+  accountId: string
 ): Promise<boolean> {
   const { data } = await supabase
     .from('facility_types')
     .select('id')
     .eq('id', facilityTypeId)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
   return !!data
@@ -82,20 +82,20 @@ async function assertFacilityTypeOwned(
 /**
  * 지정 워크스페이스의 시설 목록을 반환한다.
  * 정렬: 층수 내림차순(상층 우선) → 생성순. INT 컬럼으로 SQL 정렬(추가 연산 불필요).
- * tenant_id + workspace_id 이중 필터로 격리를 보장한다.
+ * account_id + workspace_id 이중 필터로 격리를 보장한다.
  */
 export async function getFacilities(
   workspaceId: string
 ): Promise<FacilityWithChecklists[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('facilities')
     .select('*, facility_checklists(checklist_id)')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('floor', { ascending: false })
     .order('created_at', { ascending: true })
@@ -110,15 +110,15 @@ export async function getFacilities(
 export async function getFacility(
   id: string
 ): Promise<ActionResult<Facility>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('facilities')
     .select('*')
     .eq('id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
 
@@ -138,8 +138,8 @@ export async function createFacility(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Facility>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
   const parsed = facilitySchema.safeParse(raw)
@@ -153,17 +153,17 @@ export async function createFacility(
 
   const supabase = createClient()
 
-  if (!(await assertFloorInRange(supabase, workspaceId, tenantId, floor))) {
+  if (!(await assertFloorInRange(supabase, workspaceId, accountId, floor))) {
     return { success: false, error: '유효하지 않은 층수입니다.' }
   }
 
-  // 선택한 타입이 이 워크스페이스/테넌트 소속인지 검증.
+  // 선택한 타입이 이 워크스페이스/고객 소속인지 검증.
   if (
     !(await assertFacilityTypeOwned(
       supabase,
       facility_type_id,
       workspaceId,
-      tenantId
+      accountId
     ))
   ) {
     return { success: false, error: '올바른 시설 타입을 선택해주세요.' }
@@ -172,7 +172,7 @@ export async function createFacility(
   const { data, error } = await supabase
     .from('facilities')
     .insert({
-      tenant_id: tenantId,
+      account_id: accountId,
       workspace_id: workspaceId,
       facility_type_id,
       facility_name,
@@ -191,7 +191,7 @@ export async function createFacility(
       facility_id: data.id,
       checklist_id: checklistId,
       workspace_id: workspaceId,
-      tenant_id: tenantId,
+      account_id: accountId,
     })
   }
 
@@ -205,15 +205,15 @@ export async function createFacility(
 
 /**
  * 시설 수정.
- * tenant_id + workspace_id 를 WHERE 에 포함하고, 변경된 타입의 소속도 재검증한다.
+ * account_id + workspace_id 를 WHERE 에 포함하고, 변경된 타입의 소속도 재검증한다.
  */
 export async function updateFacility(
   id: string,
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Facility>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
   const parsed = facilitySchema.safeParse(raw)
@@ -227,7 +227,7 @@ export async function updateFacility(
 
   const supabase = createClient()
 
-  if (!(await assertFloorInRange(supabase, workspaceId, tenantId, floor))) {
+  if (!(await assertFloorInRange(supabase, workspaceId, accountId, floor))) {
     return { success: false, error: '유효하지 않은 층수입니다.' }
   }
 
@@ -236,7 +236,7 @@ export async function updateFacility(
       supabase,
       facility_type_id,
       workspaceId,
-      tenantId
+      accountId
     ))
   ) {
     return { success: false, error: '올바른 시설 타입을 선택해주세요.' }
@@ -252,7 +252,7 @@ export async function updateFacility(
     })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .select()
     .maybeSingle()
@@ -269,14 +269,14 @@ export async function updateFacility(
     .from('facility_checklists')
     .delete()
     .eq('facility_id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
 
   if (checklistId) {
     await supabase.from('facility_checklists').insert({
       facility_id: id,
       checklist_id: checklistId,
       workspace_id: workspaceId,
-      tenant_id: tenantId,
+      account_id: accountId,
     })
   }
 
@@ -292,8 +292,8 @@ export async function deleteFacility(
   id: string,
   workspaceId: string
 ): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
   const { error } = await supabase
@@ -301,7 +301,7 @@ export async function deleteFacility(
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) {

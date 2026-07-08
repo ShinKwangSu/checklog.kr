@@ -15,22 +15,22 @@ import {
 } from '@checklog/ui/components/card'
 import { Skeleton } from '@checklog/ui/components/skeleton'
 
-async function getStats(tenantId: string) {
+async function getStats(accountId: string) {
   const supabase = createClient()
   const [{ count: wsCount }, { count: typeCount }, { count: facilityCount }] =
     await Promise.all([
       supabase
         .from('workspaces')
         .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId),
+        .eq('account_id', accountId),
       supabase
         .from('facility_types')
         .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId),
+        .eq('account_id', accountId),
       supabase
         .from('facilities')
         .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId),
+        .eq('account_id', accountId),
     ])
   return {
     wsCount: wsCount ?? 0,
@@ -41,10 +41,10 @@ async function getStats(tenantId: string) {
 
 export default async function DashboardPage() {
   const session = await auth()
-  const tenantId = (session?.user as any)?.tenantId as string | undefined
+  const accountId = (session?.user as any)?.accountId as string | undefined
 
-  const stats = tenantId
-    ? await getStats(tenantId)
+  const stats = accountId
+    ? await getStats(accountId)
     : { wsCount: 0, typeCount: 0, facilityCount: 0 }
 
   const summaryCards = [

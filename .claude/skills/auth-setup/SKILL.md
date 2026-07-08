@@ -1,9 +1,9 @@
 ---
 name: auth-setup
-description: checklog.kr apps/app 테넌트 인증 가이드. Auth.js v5 + Supabase 통합, Credentials Provider, 회원가입 Server Action, 미들웨어 경로 보호, 세션 JWT에 tenantId 포함 처리. Auth Engineer 에이전트가 apps/app 인증 구현 시 반드시 이 스킬을 사용한다. '인증', '로그인', '회원가입', 'Auth.js', 'session' 관련 작업 시 트리거.
+description: checklog.kr apps/app 고객 인증 가이드. Auth.js v5 + Supabase 통합, Credentials Provider, 회원가입 Server Action, 미들웨어 경로 보호, 세션 JWT에 accountId 포함 처리. Auth Engineer 에이전트가 apps/app 인증 구현 시 반드시 이 스킬을 사용한다. '인증', '로그인', '회원가입', 'Auth.js', 'session' 관련 작업 시 트리거.
 ---
 
-# Auth Setup — apps/app 테넌트 인증
+# Auth Setup — apps/app 고객 인증
 
 ## 대상 앱 및 파일 경로
 
@@ -45,15 +45,15 @@ export const authConfig: NextAuthConfig = {
       return true
     },
     jwt({ token, user }) {
-      // 세션 JWT에 tenantId 포함 — Server Action에서 auth()로 접근 가능
+      // 세션 JWT에 accountId 포함 — Server Action에서 auth()로 접근 가능
       if (user) {
-        token.tenantId = (user as any).tenantId
+        token.accountId = (user as any).accountId
       }
       return token
     },
     session({ session, token }) {
-      if (token.tenantId) {
-        (session.user as any).tenantId = token.tenantId
+      if (token.accountId) {
+        (session.user as any).accountId = token.accountId
       }
       return session
     },
@@ -65,21 +65,21 @@ export const authConfig: NextAuthConfig = {
         if (!parsed.success) return null
 
         const supabase = createClient()
-        const { data: tenant } = await supabase
-          .from('tenants')
+        const { data: account } = await supabase
+          .from('accounts')
           .select('id, email, password_hash, admin_name, company_name')
           .eq('email', parsed.data.email)
           .single()
 
-        if (!tenant) return null
-        const passwordMatch = await bcrypt.compare(parsed.data.password, tenant.password_hash)
+        if (!account) return null
+        const passwordMatch = await bcrypt.compare(parsed.data.password, account.password_hash)
         if (!passwordMatch) return null
 
         return {
-          id: tenant.id,
-          email: tenant.email,
-          name: tenant.admin_name,
-          tenantId: tenant.id,  // JWT callback에서 token에 추가됨
+          id: account.id,
+          email: account.email,
+          name: account.admin_name,
+          accountId: account.id,  // JWT callback에서 token에 추가됨
         }
       },
     }),
@@ -137,7 +137,7 @@ export async function signUpAction(formData: FormData) {
 
   const supabase = createClient()
   const { error } = await supabase
-    .from('tenants')
+    .from('accounts')
     .insert({ company_name, admin_name, phone, email, password_hash })
 
   if (error) {
@@ -151,7 +151,7 @@ export async function signUpAction(formData: FormData) {
 }
 ```
 
-## Server Action에서 tenantId 접근
+## Server Action에서 accountId 접근
 
 ```typescript
 import { auth } from '@/auth'
@@ -160,16 +160,16 @@ export async function someAction() {
   const session = await auth()
   if (!session?.user) throw new Error('Unauthorized')
 
-  const tenantId = (session.user as any).tenantId
-  // 모든 쿼리에 tenantId 필터 적용
+  const accountId = (session.user as any).accountId
+  // 모든 쿼리에 accountId 필터 적용
 }
 ```
 
 ## 체크리스트
 
 - [ ] `bcryptjs`로 비밀번호 해싱 (평문 저장 금지)
-- [ ] JWT callback에서 `tenantId` 추가
-- [ ] session callback에서 `tenantId` 노출
+- [ ] JWT callback에서 `accountId` 추가
+- [ ] session callback에서 `accountId` 노출
 - [ ] middleware가 `/dashboard` 경로 보호
 - [ ] `/login`, `/signup`은 공개 접근 가능
 - [ ] 회원가입 Server Action에서 중복 이메일 처리

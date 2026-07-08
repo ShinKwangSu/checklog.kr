@@ -3,7 +3,7 @@
 // =============================================================================
 // AdminSidebar — 슈퍼어드민 포털 사이드바
 // =============================================================================
-// 단일 컨텍스트(전역 운영). 대시보드 / 어드민 관리 / 테넌트 관리 메뉴.
+// 단일 컨텍스트(전역 운영). 대시보드 / 어드민 관리 / 고객 관리 메뉴.
 // =============================================================================
 
 import * as React from 'react'
@@ -35,7 +35,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { title: '대시보드', href: '/dashboard', icon: LayoutDashboard, exact: true },
   { title: '어드민 관리', href: '/dashboard/admins', icon: ShieldCheck },
-  { title: '테넌트 관리', href: '/dashboard/tenants', icon: Building2 },
+  { title: '고객 관리', href: '/dashboard/accounts', icon: Building2 },
 ]
 
 type Props = React.ComponentProps<typeof Sidebar> & {

@@ -1,7 +1,7 @@
 'use client'
 
 // =============================================================================
-// DashboardStatsCards — 운영 통계 카드 (총 어드민/테넌트/시설 수)
+// DashboardStatsCards — 운영 통계 카드 (총 어드민/고객/시설 수)
 // =============================================================================
 // useDashboardStats() 훅으로 서버 데이터를 소비한다.
 // =============================================================================
@@ -18,14 +18,14 @@ import {
 import { Skeleton } from '@checklog/ui/components/skeleton'
 
 type StatCard = {
-  key: 'adminCount' | 'tenantCount' | 'facilityCount'
+  key: 'adminCount' | 'accountCount' | 'facilityCount'
   label: string
   icon: React.ComponentType<{ className?: string }>
 }
 
 const CARDS: StatCard[] = [
   { key: 'adminCount', label: '총 어드민 수', icon: ShieldCheck },
-  { key: 'tenantCount', label: '총 테넌트 수', icon: Building2 },
+  { key: 'accountCount', label: '총 고객 수', icon: Building2 },
   { key: 'facilityCount', label: '총 시설 수', icon: Wrench },
 ]
 

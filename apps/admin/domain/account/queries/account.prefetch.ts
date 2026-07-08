@@ -1,21 +1,21 @@
 // =============================================================================
-// tenant 도메인 — Prefetch
+// account 도메인 — Prefetch
 // =============================================================================
 // Server Component 에서 runPrefetch 와 조합해 사용한다.
 // =============================================================================
 
 import type { QueryClient } from '@tanstack/react-query'
-import { tenantQueryOptions } from './tenant.query-options'
+import { accountQueryOptions } from './account.query-options'
 
-export const tenantPrefetch = {
+export const accountPrefetch = {
   list(page = 1, search?: string) {
     return async (queryClient: QueryClient) => {
-      await queryClient.prefetchQuery(tenantQueryOptions.list(page, search))
+      await queryClient.prefetchQuery(accountQueryOptions.list(page, search))
     }
   },
-  detail(tenantId: string) {
+  detail(accountId: string) {
     return async (queryClient: QueryClient) => {
-      await queryClient.prefetchQuery(tenantQueryOptions.detail(tenantId))
+      await queryClient.prefetchQuery(accountQueryOptions.detail(accountId))
     }
   },
 }

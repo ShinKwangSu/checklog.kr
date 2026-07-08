@@ -7,9 +7,9 @@ import { inspectorSchema } from '@/lib/validations/inspector'
 import type { Inspector } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 function inspectorsPath(workspaceId: string): string {
@@ -17,15 +17,15 @@ function inspectorsPath(workspaceId: string): string {
 }
 
 export async function getInspectors(workspaceId: string): Promise<Inspector[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('inspectors')
     .select('*')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: true })
 
@@ -37,8 +37,8 @@ export async function createInspector(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Inspector>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = inspectorSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -51,7 +51,7 @@ export async function createInspector(
     .from('inspectors')
     .insert({
       workspace_id: workspaceId,
-      tenant_id: tenantId,
+      account_id: accountId,
       name,
       phone: phone || null,
       email: email || null,
@@ -70,8 +70,8 @@ export async function updateInspector(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<Inspector>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = inspectorSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -85,7 +85,7 @@ export async function updateInspector(
     .update({ name, phone: phone || null, email: email || null })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .select()
     .maybeSingle()
@@ -101,8 +101,8 @@ export async function deleteInspector(
   id: string,
   workspaceId: string
 ): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
   const { error } = await supabase
@@ -110,7 +110,7 @@ export async function deleteInspector(
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) return { success: false, error: '점검자 삭제 중 오류가 발생했습니다.' }

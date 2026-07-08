@@ -2,9 +2,9 @@
 
 ## 1. 프로젝트 개요
 
-- **목적:** checklog.kr 서비스를 운영·관리하는 내부 슈퍼어드민 포털 구축. 어드민 계정 및 테넌트(가입 업체) 데이터를 통합 관리한다.
+- **목적:** checklog.kr 서비스를 운영·관리하는 내부 슈퍼어드민 포털 구축. 어드민 계정 및 고객(가입 업체) 데이터를 통합 관리한다.
 - **타겟 앱:** `apps/admin` (모노레포 내 독립 Next.js 앱)
-- **접근 권한:** 슈퍼어드민 계정만 접근 가능. 테넌트 회원가입 경로 없음 — 모든 어드민 계정은 내부에서 직접 생성한다.
+- **접근 권한:** 슈퍼어드민 계정만 접근 가능. 고객 회원가입 경로 없음 — 모든 어드민 계정은 내부에서 직접 생성한다.
 - **UI 구조:** `apps/app`과 동일하게 사이드바(Sidebar)를 포함한 Dashboard 레이아웃으로 구성.
 
 ---
@@ -69,17 +69,17 @@ apps/admin/app/
 │       └── page.tsx              — 슈퍼어드민 로그인
 └── dashboard/
     ├── layout.tsx                — 사이드바 포함 레이아웃 (apps/app과 동일 구조)
-    ├── page.tsx                  — 홈 (어드민/테넌트 카운트 통계 카드)
+    ├── page.tsx                  — 홈 (어드민/고객 카운트 통계 카드)
     ├── admins/
     │   ├── page.tsx              — 어드민 목록 (Table + 페이지네이션)
     │   ├── [adminId]/
     │   │   └── page.tsx          — 어드민 상세/수정
     │   └── password/
     │       └── page.tsx          — 내 비밀번호 변경
-    └── tenants/
-        ├── page.tsx              — 테넌트 목록 (Table + 검색 + 페이지네이션)
-        └── [tenantId]/
-            └── page.tsx          — 테넌트 상세/수정 (워크스페이스 목록 포함)
+    └── accounts/
+        ├── page.tsx              — 고객 목록 (Table + 검색 + 페이지네이션)
+        └── [accountId]/
+            └── page.tsx          — 고객 상세/수정 (워크스페이스 목록 포함)
 ```
 
 ### 사이드바 메뉴 구성
@@ -88,7 +88,7 @@ apps/admin/app/
 |------|------|--------|
 | 대시보드 | `/dashboard` | LayoutDashboard |
 | 어드민 관리 | `/dashboard/admins` | ShieldUser |
-| 테넌트 관리 | `/dashboard/tenants` | Building2 |
+| 고객 관리 | `/dashboard/accounts` | Building2 |
 
 ---
 
@@ -125,22 +125,22 @@ apps/admin/app/
 
 ---
 
-## 7. 테넌트 관리 페이지
+## 7. 고객 관리 페이지
 
-### 목록 (`/dashboard/tenants`)
+### 목록 (`/dashboard/accounts`)
 
 - shadcn/ui `Table` 컴포넌트로 목록 표시
 - **컬럼:** 업체명, 관리자명, 이메일, 전화번호, 가입일, 액션(상세 / 삭제)
 - 검색: 업체명 또는 이메일 기준 (`?search=` URL 파라미터, nuqs)
 - 페이지네이션: 20건 단위, URL 파라미터(`?page=1`)로 상태 관리 (nuqs)
 
-### 테넌트 상세 (`/dashboard/tenants/[tenantId]`)
+### 고객 상세 (`/dashboard/accounts/[accountId]`)
 
-- **테넌트 기본 정보:** 업체명, 관리자명, 이메일, 전화번호, 가입일
+- **고객 기본 정보:** 업체명, 관리자명, 이메일, 전화번호, 가입일
 - **수정 가능 필드:** 업체명, 관리자명, 전화번호
-- **하단 섹션:** 해당 테넌트의 워크스페이스 목록 (이름, 지상/지하 층수, 생성일) — 읽기 전용
+- **하단 섹션:** 해당 고객의 워크스페이스 목록 (이름, 지상/지하 층수, 생성일) — 읽기 전용
 
-### 테넌트 삭제
+### 고객 삭제
 
 - 목록에서 삭제 버튼 클릭 → `AlertDialog`로 확인 후 삭제
 - 삭제 시 연관된 워크스페이스, 시설 타입, 시설 정보 CASCADE 삭제 (Supabase FK 설정)
@@ -151,7 +151,7 @@ apps/admin/app/
 
 - 운영 통계 카드 3종:
   - 총 어드민 수 (admins 테이블 count)
-  - 총 테넌트 수 (tenants 테이블 count)
+  - 총 고객 수 (accounts 테이블 count)
   - 총 시설 수 (facilities 테이블 count)
 - shadcn/ui `Card` 컴포넌트 3열 그리드 레이아웃
 
@@ -159,7 +159,7 @@ apps/admin/app/
 
 ## 9. 데이터 접근 규칙
 
-- **슈퍼어드민 전체 접근:** `tenant_id` 필터 없음 — 모든 테넌트 데이터에 접근
+- **슈퍼어드민 전체 접근:** `account_id` 필터 없음 — 모든 고객 데이터에 접근
 - **비밀번호 노출 금지:** `password_hash` 컬럼은 mapper에서 반드시 제외
 - **모든 Server Action:** `requireAdmin()` 헬퍼로 세션 검증 후 실행
 
@@ -170,7 +170,7 @@ apps/admin/app/
 ```
 db-architect  → admins 테이블 마이그레이션 + 초기 시딩 SQL
 auth-engineer → Auth.js Credentials Provider (admins 테이블 기반)
-backend-engineer → domain/admin + domain/tenant + domain/stats 레이어드 구현
-ui-engineer   → 로그인, 대시보드, 어드민 CRUD, 테넌트 CRUD 화면
+backend-engineer → domain/admin + domain/account + domain/stats 레이어드 구현
+ui-engineer   → 로그인, 대시보드, 어드민 CRUD, 고객 CRUD 화면
 qa-engineer   → 인증 보호, CRUD 정합성, 페이지네이션, 비밀번호 해싱 검증
 ```

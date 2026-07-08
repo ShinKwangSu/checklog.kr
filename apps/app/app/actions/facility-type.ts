@@ -4,7 +4,7 @@
 // checklog.kr MVP — 시설 타입 CRUD Server Actions
 // =============================================================================
 //
-// 격리 패턴: 모든 쿼리에 tenant_id 와 workspace_id 를 함께 필터한다(이중 격리).
+// 격리 패턴: 모든 쿼리에 account_id 와 workspace_id 를 함께 필터한다(이중 격리).
 //
 // 소프트 딜리트: .delete() 대신 deleted_at = NOW() 업데이트.
 //   - 모든 SELECT 에 .is('deleted_at', null) 필터 추가.
@@ -24,9 +24,9 @@ import { facilityTypeSchema } from '@/lib/validations/facility-type'
 import type { FacilityType } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 function facilityTypesPath(workspaceId: string): string {
@@ -36,13 +36,13 @@ function facilityTypesPath(workspaceId: string): string {
 async function assertWorkspaceOwned(
   supabase: ReturnType<typeof createClient>,
   workspaceId: string,
-  tenantId: string
+  accountId: string
 ): Promise<boolean> {
   const { data } = await supabase
     .from('workspaces')
     .select('id')
     .eq('id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
   return !!data
@@ -53,15 +53,15 @@ async function assertWorkspaceOwned(
 // -----------------------------------------------------------------------------
 
 export async function getFacilityTypes(workspaceId: string): Promise<FacilityType[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('facility_types')
     .select('*')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: true })
 
@@ -77,8 +77,8 @@ export async function createFacilityType(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<FacilityType>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = facilityTypeSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -88,13 +88,13 @@ export async function createFacilityType(
 
   const supabase = createClient()
 
-  if (!(await assertWorkspaceOwned(supabase, workspaceId, tenantId))) {
+  if (!(await assertWorkspaceOwned(supabase, workspaceId, accountId))) {
     return { success: false, error: '워크스페이스를 찾을 수 없습니다.' }
   }
 
   const { data, error } = await supabase
     .from('facility_types')
-    .insert({ tenant_id: tenantId, workspace_id: workspaceId, type_name: parsed.data.type_name })
+    .insert({ account_id: accountId, workspace_id: workspaceId, type_name: parsed.data.type_name })
     .select()
     .single()
 
@@ -118,8 +118,8 @@ export async function updateFacilityType(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<FacilityType>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = facilityTypeSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -133,7 +133,7 @@ export async function updateFacilityType(
     .update({ type_name: parsed.data.type_name })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .select()
     .maybeSingle()
@@ -158,8 +158,8 @@ export async function deleteFacilityType(
   id: string,
   workspaceId: string
 ): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
 
@@ -168,7 +168,7 @@ export async function deleteFacilityType(
     .from('facilities')
     .select('id', { count: 'exact', head: true })
     .eq('facility_type_id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (countError) return { success: false, error: '시설 타입 삭제 중 오류가 발생했습니다.' }
@@ -184,7 +184,7 @@ export async function deleteFacilityType(
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) return { success: false, error: '시설 타입 삭제 중 오류가 발생했습니다.' }

@@ -7,9 +7,9 @@ import { checklistSchema } from '@/lib/validations/checklist'
 import type { ChecklistWithItems } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 function checklistsPath(workspaceId: string): string {
@@ -17,15 +17,15 @@ function checklistsPath(workspaceId: string): string {
 }
 
 export async function getChecklists(workspaceId: string): Promise<ChecklistWithItems[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('checklists')
     .select('*, checklist_items(id, item_name, response_type, is_required, sort_order, deleted_at)')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: true })
 
@@ -45,8 +45,8 @@ export async function createChecklist(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<ChecklistWithItems>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
   const parsed = checklistSchema.safeParse({
@@ -65,7 +65,7 @@ export async function createChecklist(
     .from('checklists')
     .insert({
       workspace_id: workspaceId,
-      tenant_id: tenantId,
+      account_id: accountId,
       checklist_name,
       description: description || null,
       repeat_cycle,
@@ -81,7 +81,7 @@ export async function createChecklist(
     items.map((item, idx) => ({
       checklist_id: checklist.id,
       workspace_id: workspaceId,
-      tenant_id: tenantId,
+      account_id: accountId,
       item_name: item.item_name,
       response_type: item.response_type,
       is_required: item.is_required,
@@ -100,8 +100,8 @@ export async function updateChecklist(
   workspaceId: string,
   formData: FormData
 ): Promise<ActionResult<ChecklistWithItems>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const raw = Object.fromEntries(formData)
   const parsed = checklistSchema.safeParse({
@@ -127,7 +127,7 @@ export async function updateChecklist(
     })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) return { success: false, error: '점검표 수정 중 오류가 발생했습니다.' }
@@ -137,7 +137,7 @@ export async function updateChecklist(
     .from('checklist_items')
     .select('id')
     .eq('checklist_id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   const existingIds = new Set((existingRows ?? []).map((i) => i.id))
@@ -151,7 +151,7 @@ export async function updateChecklist(
       .from('checklist_items')
       .update({ deleted_at: now })
       .in('id', toDelete)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
   }
 
   // 기존 항목 업데이트 (UUID 유지)
@@ -167,7 +167,7 @@ export async function updateChecklist(
           sort_order: items.indexOf(item),
         })
         .eq('id', item.id!)
-        .eq('tenant_id', tenantId)
+        .eq('account_id', accountId)
         .is('deleted_at', null)
     )
   )
@@ -179,7 +179,7 @@ export async function updateChecklist(
       toInsert.map((item) => ({
         checklist_id: id,
         workspace_id: workspaceId,
-        tenant_id: tenantId,
+        account_id: accountId,
         item_name: item.item_name,
         response_type: item.response_type,
         is_required: item.is_required,
@@ -197,8 +197,8 @@ export async function deleteChecklist(
   id: string,
   workspaceId: string
 ): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const now = new Date().toISOString()
   const supabase = createClient()
@@ -208,7 +208,7 @@ export async function deleteChecklist(
     .from('checklist_items')
     .update({ deleted_at: now })
     .eq('checklist_id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   const { error } = await supabase
@@ -216,7 +216,7 @@ export async function deleteChecklist(
     .update({ deleted_at: now })
     .eq('id', id)
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) return { success: false, error: '점검표 삭제 중 오류가 발생했습니다.' }

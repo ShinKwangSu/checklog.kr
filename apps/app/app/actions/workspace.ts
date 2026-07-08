@@ -4,9 +4,9 @@
 // checklog.kr MVP — 워크스페이스 CRUD Server Actions
 // =============================================================================
 //
-// 멀티테넌트 격리 1차 방어선: 모든 쿼리에 tenant_id 필터를 명시한다.
-//   - SELECT/UPDATE/DELETE → .eq('tenant_id', tenantId)
-//   - INSERT → tenant_id 값 주입
+// 멀티고객 격리 1차 방어선: 모든 쿼리에 account_id 필터를 명시한다.
+//   - SELECT/UPDATE/DELETE → .eq('account_id', accountId)
+//   - INSERT → account_id 값 주입
 // (service_role 키는 RLS 를 우회하므로 이 코드 레벨 필터가 실질 격리선이다.)
 //
 // 소프트 딜리트: .delete() 대신 deleted_at = NOW() 업데이트.
@@ -31,9 +31,9 @@ export type ActionResult<T = undefined> =
 
 const WORKSPACES_PATH = '/dashboard/workspaces'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 // -----------------------------------------------------------------------------
@@ -41,14 +41,14 @@ async function getTenantId(): Promise<string | null> {
 // -----------------------------------------------------------------------------
 
 export async function getWorkspaces(): Promise<Workspace[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('workspaces')
     .select('*')
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
@@ -57,15 +57,15 @@ export async function getWorkspaces(): Promise<Workspace[]> {
 }
 
 export async function getWorkspace(id: string): Promise<ActionResult<Workspace>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
   const { data, error } = await supabase
     .from('workspaces')
     .select('*')
     .eq('id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
 
@@ -79,8 +79,8 @@ export async function getWorkspace(id: string): Promise<ActionResult<Workspace>>
 // -----------------------------------------------------------------------------
 
 export async function createWorkspace(formData: FormData): Promise<ActionResult<Workspace>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = workspaceSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -95,7 +95,7 @@ export async function createWorkspace(formData: FormData): Promise<ActionResult<
   const { data, error } = await supabase
     .from('workspaces')
     .insert({
-      tenant_id: tenantId,
+      account_id: accountId,
       workspace_name,
       max_floor,
       min_floor: minFloorValue,
@@ -121,8 +121,8 @@ export async function updateWorkspace(
   id: string,
   formData: FormData
 ): Promise<ActionResult<Workspace>> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const parsed = workspaceSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
@@ -145,7 +145,7 @@ export async function updateWorkspace(
       memo: memo ?? null,
     })
     .eq('id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .select()
     .maybeSingle()
@@ -166,8 +166,8 @@ export async function updateWorkspace(
  * DB CASCADE 대신 코드에서 하위 엔티티를 일괄 soft delete 처리한다.
  */
 export async function deleteWorkspace(id: string): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const now = new Date().toISOString()
   const supabase = createClient()
@@ -178,31 +178,31 @@ export async function deleteWorkspace(id: string): Promise<ActionResult> {
       .from('checklist_items')
       .update({ deleted_at: now })
       .eq('workspace_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
       .is('deleted_at', null),
     supabase
       .from('facilities')
       .update({ deleted_at: now })
       .eq('workspace_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
       .is('deleted_at', null),
     supabase
       .from('facility_types')
       .update({ deleted_at: now })
       .eq('workspace_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
       .is('deleted_at', null),
     supabase
       .from('inspectors')
       .update({ deleted_at: now })
       .eq('workspace_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
       .is('deleted_at', null),
     supabase
       .from('checklists')
       .update({ deleted_at: now })
       .eq('workspace_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('account_id', accountId)
       .is('deleted_at', null),
   ])
 
@@ -210,7 +210,7 @@ export async function deleteWorkspace(id: string): Promise<ActionResult> {
     .from('workspaces')
     .update({ deleted_at: now })
     .eq('id', id)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) return { success: false, error: '워크스페이스 삭제 중 오류가 발생했습니다.' }

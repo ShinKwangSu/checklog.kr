@@ -1,20 +1,20 @@
 // =============================================================================
-// tenant 도메인 — mapper (DB Row → 도메인 DTO)
+// account 도메인 — mapper (DB Row → 도메인 DTO)
 // =============================================================================
 //
-// password_hash 노출 금지: Tenant Row 에 password_hash 가 흘러들어와도 매핑
+// password_hash 노출 금지: Account Row 에 password_hash 가 흘러들어와도 매핑
 // 결과에 포함하지 않는다(명시적 필드 분해).
 // =============================================================================
 
-import type { Tenant, Workspace } from '@checklog/database'
+import type { Account, Workspace } from '@checklog/database'
 import type {
-  TenantDto,
-  TenantDetailDto,
+  AccountDto,
+  AccountDetailDto,
   WorkspaceSummaryDto,
 } from '../types'
 
-/** Tenant Row(password_hash 가 섞여 있어도) → TenantDto */
-export function toTenantDto(row: Tenant): TenantDto {
+/** Account Row(password_hash 가 섞여 있어도) → AccountDto */
+export function toAccountDto(row: Account): AccountDto {
   return {
     id: row.id,
     companyName: row.company_name,
@@ -37,12 +37,12 @@ export function toWorkspaceSummaryDto(row: Workspace): WorkspaceSummaryDto {
   }
 }
 
-/** workspaces 가 조인된 Tenant Row → TenantDetailDto */
-export function toTenantDetailDto(
-  row: Tenant & { workspaces?: Workspace[] | null }
-): TenantDetailDto {
+/** workspaces 가 조인된 Account Row → AccountDetailDto */
+export function toAccountDetailDto(
+  row: Account & { workspaces?: Workspace[] | null }
+): AccountDetailDto {
   return {
-    ...toTenantDto(row),
+    ...toAccountDto(row),
     workspaces: (row.workspaces ?? []).map(toWorkspaceSummaryDto),
   }
 }

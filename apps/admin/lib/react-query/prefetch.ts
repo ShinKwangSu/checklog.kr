@@ -19,8 +19,8 @@ export const getQueryClient = cache(() => new QueryClient())
  * 전달받은 prefetch 함수들을 병렬 실행한 뒤 dehydrate 상태를 반환한다.
  *
  * @example
- * const state = await runPrefetch(tenantPrefetch.list(1))
- * return <HydrationBoundary state={state}><TenantsTable /></HydrationBoundary>
+ * const state = await runPrefetch(accountPrefetch.list(1))
+ * return <HydrationBoundary state={state}><AccountsTable /></HydrationBoundary>
  */
 export async function runPrefetch(
   ...prefetchers: Array<(qc: QueryClient) => Promise<void>>

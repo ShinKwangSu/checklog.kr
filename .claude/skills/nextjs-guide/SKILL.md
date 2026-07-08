@@ -123,11 +123,11 @@ Supabase는 실행 환경별로 클라이언트를 **반드시 분리**한다.
 ```ts
 // repository는 클라이언트를 주입받는다
 export const workspaceRepository = {
-    async findList(supabase: SupabaseClient, tenantId: string) {
+    async findList(supabase: SupabaseClient, accountId: string) {
         const { data, error } = await supabase
             .from('workspaces')
             .select('*')
-            .eq('tenant_id', tenantId)
+            .eq('account_id', accountId)
         if (error) throw error
         return data
     },
@@ -138,7 +138,7 @@ import { createServerSupabase } from '@checklog/database'
 
 export async function getWorkspacesAction() {
     const supabase = createServerSupabase()
-    return workspaceService.findList(supabase, tenantId)
+    return workspaceService.findList(supabase, accountId)
 }
 ```
 
@@ -300,16 +300,16 @@ type ActionResult<T = void> =
 
 ```ts
 // repository: 인프라 에러는 throw
-async findList(supabase, tenantId) {
-    const { data, error } = await supabase.from('workspaces').select('*').eq('tenant_id', tenantId)
+async findList(supabase, accountId) {
+    const { data, error } = await supabase.from('workspaces').select('*').eq('account_id', accountId)
     if (error) throw error
     return data
 }
 
 // service: 비즈니스 의미로 변환
-async findList(supabase, tenantId) {
+async findList(supabase, accountId) {
     try {
-        return await workspaceRepository.findList(supabase, tenantId)
+        return await workspaceRepository.findList(supabase, accountId)
     } catch {
         throw new Error('워크스페이스 목록을 불러오는 중 오류가 발생했습니다.')
     }

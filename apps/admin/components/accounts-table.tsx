@@ -1,11 +1,11 @@
 'use client'
 
 // =============================================================================
-// TenantsTable — 테넌트 목록 테이블 + 검색 + 페이지네이션 + 삭제
+// AccountsTable — 고객 목록 테이블 + 검색 + 페이지네이션 + 삭제
 // =============================================================================
-// nuqs 로 page/search URL 상태 관리, useTenants(page, search) 로 데이터 소비.
+// nuqs 로 page/search URL 상태 관리, useAccounts(page, search) 로 데이터 소비.
 // 검색은 로컬 입력값을 debounce 해 URL(search)에 반영하고 page 를 1로 리셋한다.
-// 삭제는 확인 Dialog 후 useDeleteTenant() 뮤테이션.
+// 삭제는 확인 Dialog 후 useDeleteAccount() 뮤테이션.
 // =============================================================================
 
 import { useEffect, useState } from 'react'
@@ -18,7 +18,7 @@ import {
 import { toast } from 'sonner'
 import { Eye, Search, Trash2 } from 'lucide-react'
 
-import { useTenants, useDeleteTenant, type TenantDto } from '@/domain/tenant'
+import { useAccounts, useDeleteAccount, type AccountDto } from '@/domain/account'
 import { Pagination } from '@/components/pagination'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
@@ -40,7 +40,7 @@ import {
   DialogTitle,
 } from '@checklog/ui/components/dialog'
 
-export function TenantsTable() {
+export function AccountsTable() {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState(
     'search',
@@ -66,17 +66,17 @@ export function TenantsTable() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput])
 
-  const { data, isLoading, isError } = useTenants(page, search || undefined)
-  const { mutate: deleteTenant, isPending: isDeleting } = useDeleteTenant()
+  const { data, isLoading, isError } = useAccounts(page, search || undefined)
+  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()
 
-  const [target, setTarget] = useState<TenantDto | null>(null)
+  const [target, setTarget] = useState<AccountDto | null>(null)
 
   const handleDelete = () => {
     if (!target) return
-    deleteTenant(target.id, {
+    deleteAccount(target.id, {
       onSuccess: (result) => {
         if (result.success) {
-          toast.success('테넌트가 삭제되었습니다.')
+          toast.success('고객이 삭제되었습니다.')
           setTarget(null)
         } else {
           toast.error(result.error ?? '삭제에 실패했습니다.')
@@ -129,30 +129,30 @@ export function TenantsTable() {
                   colSpan={6}
                   className="h-24 text-center text-destructive"
                 >
-                  테넌트 목록을 불러오는 중 오류가 발생했습니다.
+                  고객 목록을 불러오는 중 오류가 발생했습니다.
                 </TableCell>
               </TableRow>
-            ) : data && data.tenants.length > 0 ? (
-              data.tenants.map((tenant) => (
-                <TableRow key={tenant.id}>
+            ) : data && data.accounts.length > 0 ? (
+              data.accounts.map((account) => (
+                <TableRow key={account.id}>
                   <TableCell className="font-medium">
-                    {tenant.companyName}
+                    {account.companyName}
                   </TableCell>
-                  <TableCell>{tenant.adminName}</TableCell>
+                  <TableCell>{account.adminName}</TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {tenant.email}
+                    {account.email}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {tenant.phone}
+                    {account.phone}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell text-muted-foreground">
-                    {new Date(tenant.createdAt).toLocaleDateString('ko-KR')}
+                    {new Date(account.createdAt).toLocaleDateString('ko-KR')}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" asChild>
                         <Link
-                          href={`/dashboard/tenants/${tenant.id}`}
+                          href={`/dashboard/accounts/${account.id}`}
                           aria-label="상세"
                         >
                           <Eye className="h-4 w-4" />
@@ -162,7 +162,7 @@ export function TenantsTable() {
                         variant="ghost"
                         size="icon"
                         aria-label="삭제"
-                        onClick={() => setTarget(tenant)}
+                        onClick={() => setTarget(account)}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -178,7 +178,7 @@ export function TenantsTable() {
                 >
                   {search
                     ? '검색 결과가 없습니다.'
-                    : '등록된 테넌트가 없습니다.'}
+                    : '등록된 고객이 없습니다.'}
                 </TableCell>
               </TableRow>
             )}
@@ -195,7 +195,7 @@ export function TenantsTable() {
       <Dialog open={!!target} onOpenChange={(open) => !open && setTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>테넌트 삭제</DialogTitle>
+            <DialogTitle>고객 삭제</DialogTitle>
             <DialogDescription>
               <span className="font-medium text-foreground">
                 {target?.companyName}

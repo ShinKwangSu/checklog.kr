@@ -1,6 +1,6 @@
 ---
 name: facility-backend
-description: checklog.kr apps/app 시설 관리 도메인 백엔드 구현 가이드. workspace/facility-type/facility 도메인의 레이어드 아키텍처, 멀티테넌트 격리 패턴. Backend Engineer 에이전트가 apps/app 백엔드 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/app 시설 관리 도메인 백엔드 구현 가이드. workspace/facility-type/facility 도메인의 레이어드 아키텍처, 멀티고객 격리 패턴. Backend Engineer 에이전트가 apps/app 백엔드 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Facility Backend — apps/app 도메인 구현
@@ -52,29 +52,29 @@ import { floorToDisplay, generateFloorOptions } from '@checklog/database'
 import { auth } from '@/auth'
 ```
 
-## 비즈니스 규칙 — tenant_id 격리
+## 비즈니스 규칙 — account_id 격리
 
-**모든 데이터 접근에 `tenant_id` 필터 필수.** repository 레이어에서 적용한다.
+**모든 데이터 접근에 `account_id` 필터 필수.** repository 레이어에서 적용한다.
 
 ```typescript
 // workspace.repository.ts
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const workspaceRepository = {
-    async findAll(supabase: SupabaseClient, tenantId: string) {
+    async findAll(supabase: SupabaseClient, accountId: string) {
         const { data, error } = await supabase
             .from('workspaces')
             .select('*')
-            .eq('tenant_id', tenantId)   // tenant_id 필터 필수
+            .eq('account_id', accountId)   // account_id 필터 필수
             .order('created_at', { ascending: false })
         if (error) throw error
         return data
     },
 
-    async create(supabase: SupabaseClient, tenantId: string, dto: CreateWorkspaceDto) {
+    async create(supabase: SupabaseClient, accountId: string, dto: CreateWorkspaceDto) {
         const { data, error } = await supabase
             .from('workspaces')
-            .insert({ tenant_id: tenantId, ...dto })
+            .insert({ account_id: accountId, ...dto })
             .select()
             .single()
         if (error) throw error
@@ -103,15 +103,15 @@ const createWorkspaceSchema = z.object({
 export async function getWorkspacesAction() {
     const session = await auth()
     if (!session?.user) throw new Error('Unauthorized')
-    const tenantId = (session.user as any).tenantId
+    const accountId = (session.user as any).accountId
     const supabase = createServerSupabase()
-    return workspaceService.findAll(supabase, tenantId)
+    return workspaceService.findAll(supabase, accountId)
 }
 
 export async function createWorkspaceAction(formData: FormData): Promise<ActionResult> {
     const session = await auth()
     if (!session?.user) return { success: false, error: '로그인이 필요합니다.' }
-    const tenantId = (session.user as any).tenantId
+    const accountId = (session.user as any).accountId
 
     const parsed = createWorkspaceSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) return { success: false, error: '입력값을 확인해주세요.' }
@@ -122,7 +122,7 @@ export async function createWorkspaceAction(formData: FormData): Promise<ActionR
 
     try {
         const supabase = createServerSupabase()
-        await workspaceService.create(supabase, tenantId, { workspace_name, max_floor, min_floor: minFloorValue })
+        await workspaceService.create(supabase, accountId, { workspace_name, max_floor, min_floor: minFloorValue })
         revalidatePath('/dashboard/workspaces')
         return { success: true, data: undefined }
     } catch (e) {
@@ -143,16 +143,16 @@ export async function createWorkspaceAction(formData: FormData): Promise<ActionR
 
 ## 시설 타입 도메인 (`facility-type/`)
 
-동일 레이어 구조. **이중 필터 필수:** `workspace_id AND tenant_id` 모두 WHERE 조건에 포함.
+동일 레이어 구조. **이중 필터 필수:** `workspace_id AND account_id` 모두 WHERE 조건에 포함.
 
 ```typescript
 // facility-type.repository.ts
-async findAll(supabase, tenantId: string, workspaceId: string) {
+async findAll(supabase, accountId: string, workspaceId: string) {
     const { data, error } = await supabase
         .from('facility_types')
         .select('*')
         .eq('workspace_id', workspaceId)
-        .eq('tenant_id', tenantId)  // 이중 필터로 격리 보장
+        .eq('account_id', accountId)  // 이중 필터로 격리 보장
     if (error) throw error
     return data
 }
@@ -176,8 +176,8 @@ const createFacilitySchema = z.object({
 
 - [ ] 도메인별 레이어드 구조(`nextjs-guide` 참조) 준수
 - [ ] repository가 Supabase 클라이언트를 주입받음 (직접 생성 금지)
-- [ ] 모든 repository 메서드에 `tenant_id` 필터 포함
-- [ ] `facility_types`, `facilities`에 `workspace_id AND tenant_id` 이중 필터
+- [ ] 모든 repository 메서드에 `account_id` 필터 포함
+- [ ] `facility_types`, `facilities`에 `workspace_id AND account_id` 이중 필터
 - [ ] 변경 Action은 ActionResult 반환, 조회 Action은 throw
 - [ ] 층수 유틸을 `@checklog/database`에서 import
 - [ ] `min_floor` UI 입력(양수) → DB 저장(음수) 변환 처리

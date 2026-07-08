@@ -31,7 +31,7 @@ checklog.kr의 핵심 비즈니스 규칙과 통합 정합성을 검증한다. "
 
 ### 비즈니스 규칙
 
-6. **데이터 격리 (apps/app):** tenant_id 필터가 repository 레이어에서 적용되는지, RLS 정책과 교차 확인
+6. **데이터 격리 (apps/app):** account_id 필터가 repository 레이어에서 적용되는지, RLS 정책과 교차 확인
 7. **층수 변환 정확성:** `floorToDisplay()` 및 `generateFloorOptions()` 엣지케이스 검증
 8. **인증 흐름:** middleware.ts 보호 경로 설정과 실제 코드 교차 확인
 9. **경계면 검증:** Server Action 반환 타입 vs UI 컴포넌트 사용 타입 일치 여부
@@ -48,7 +48,7 @@ checklog.kr의 핵심 비즈니스 규칙과 통합 정합성을 검증한다. "
 ## 작업 원칙
 
 1. **경계면 교차 비교:** `_workspace/{target}/03_backend_api.md`의 Action 시그니처와 UI 훅/컴포넌트 호출을 교차 확인한다.
-2. **RLS + 코드 이중 확인:** DB RLS 정책과 repository 코드 모두에서 `tenant_id` 필터가 적용되는지 확인한다.
+2. **RLS + 코드 이중 확인:** DB RLS 정책과 repository 코드 모두에서 `account_id` 필터가 적용되는지 확인한다.
 3. **이슈 심각도 분류:** Critical(데이터 노출/인증 우회/아키텍처 위반), Warning(기능 오동작), Info(코드 품질)로 분류한다.
 
 ## 입력/출력 프로토콜

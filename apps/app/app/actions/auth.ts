@@ -5,9 +5,9 @@
 // =============================================================================
 //
 // - 비밀번호는 bcryptjs 로 해싱하여 저장한다(평문 저장 금지).
-// - 회원가입 = tenants 테이블에 마스터 계정 1행 생성(= 멀티테넌트 격리 루트).
-//   tenant_id 는 곧 이 행의 id 이므로 별도 컬럼이 없다.
-// - 가입 성공 시 자동 로그인하여 세션 JWT 에 tenantId 를 적재한다.
+// - 회원가입 = accounts 테이블에 마스터 계정 1행 생성(= 멀티고객 격리 루트).
+//   account_id 는 곧 이 행의 id 이므로 별도 컬럼이 없다.
+// - 가입 성공 시 자동 로그인하여 세션 JWT 에 accountId 를 적재한다.
 // =============================================================================
 
 import { z } from 'zod'
@@ -66,7 +66,7 @@ export async function signUpAction(
   const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
 
   const supabase = createClient()
-  const { error } = await supabase.from('tenants').insert({
+  const { error } = await supabase.from('accounts').insert({
     company_name,
     admin_name,
     phone,

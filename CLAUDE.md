@@ -2,7 +2,7 @@
 
 ## 하네스: checklog.kr MVP
 
-**목표:** 모노레포(`apps/app` + `apps/admin`) 기반 멀티테넌트 시설 관리 시스템을 5명의 전문 에이전트 팀이 DB → Auth → Backend → UI → QA 파이프라인으로 구현
+**목표:** 모노레포(`apps/app` + `apps/admin`) 기반 멀티고객 시설 관리 시스템을 5명의 전문 에이전트 팀이 DB → Auth → Backend → UI → QA 파이프라인으로 구현
 
 **구조 원칙:**
 - **에이전트** (5개): 기술 규칙 담당 — `apps/app`과 `apps/admin` 양쪽에 동일하게 적용
@@ -37,7 +37,7 @@
 **마이그레이션 패턴:**
 ```sql
 ALTER TABLE new_table ADD COLUMN deleted_at TIMESTAMPTZ;
-CREATE INDEX idx_new_table_active ON new_table (tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_new_table_active ON new_table (account_id) WHERE deleted_at IS NULL;
 ```
 
 ---

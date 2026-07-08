@@ -124,7 +124,7 @@ export async function someAdminAction() {
   if (!session?.user) throw new Error('Unauthorized')
 
   const adminId = (session.user as any).adminId
-  // 슈퍼어드민은 모든 데이터에 접근 가능 — tenant_id 필터 불필요
+  // 슈퍼어드민은 모든 데이터에 접근 가능 — account_id 필터 불필요
 }
 ```
 

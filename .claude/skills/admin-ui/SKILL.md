@@ -1,6 +1,6 @@
 ---
 name: admin-ui
-description: checklog.kr apps/admin 슈퍼어드민 UI 구현 가이드. React Query 훅 + shadcn/ui + Tailwind CSS. 로그인, 테넌트 목록/상세, 운영 통계 화면. UI Engineer 에이전트가 apps/admin 화면 구현 시 반드시 이 스킬을 사용한다.
+description: checklog.kr apps/admin 슈퍼어드민 UI 구현 가이드. React Query 훅 + shadcn/ui + Tailwind CSS. 로그인, 고객 목록/상세, 운영 통계 화면. UI Engineer 에이전트가 apps/admin 화면 구현 시 반드시 이 스킬을 사용한다.
 ---
 
 # Admin UI — apps/admin 슈퍼어드민 화면
@@ -20,10 +20,10 @@ apps/admin/
 │   └── dashboard/
 │       ├── layout.tsx            — 사이드바 포함 레이아웃
 │       ├── page.tsx              — 운영 통계 대시보드
-│       ├── tenants/
-│       │   ├── page.tsx          — 테넌트 목록 (Table + 검색/페이지네이션)
-│       │   └── [tenantId]/
-│       │       └── page.tsx      — 테넌트 상세 (워크스페이스 목록 포함)
+│       ├── accounts/
+│       │   ├── page.tsx          — 고객 목록 (Table + 검색/페이지네이션)
+│       │   └── [accountId]/
+│       │       └── page.tsx      — 고객 상세 (워크스페이스 목록 포함)
 │       └── settings/
 │           └── page.tsx          — 서비스 정책 관리 (향후 확장)
 └── components/
@@ -38,7 +38,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge, Input } from '@checklog/ui'
 
 // 도메인 훅/타입
-import { useTenants, useTenantDetail } from '@/domain/tenant'
+import { useAccounts, useAccountDetail } from '@/domain/account'
 import { useServiceStats } from '@/domain/stats'
 
 // URL 상태 (필터, 페이지네이션)
@@ -50,17 +50,17 @@ import { useQueryState, parseAsInteger } from 'nuqs'
 ### Server Component — prefetch
 
 ```typescript
-// app/dashboard/tenants/page.tsx (Server Component)
+// app/dashboard/accounts/page.tsx (Server Component)
 import { runPrefetch } from '@/lib/react-query/prefetch'
-import { tenantPrefetch } from '@/domain/tenant'
+import { accountPrefetch } from '@/domain/account'
 import { HydrationBoundary } from '@tanstack/react-query'
-import { TenantList } from '@/components/tenant-list'
+import { AccountList } from '@/components/account-list'
 
-export default async function TenantsPage() {
-    const state = await runPrefetch(tenantPrefetch.list({ page: 1, pageSize: 20 }))
+export default async function AccountsPage() {
+    const state = await runPrefetch(accountPrefetch.list({ page: 1, pageSize: 20 }))
     return (
         <HydrationBoundary state={state}>
-            <TenantList />
+            <AccountList />
         </HydrationBoundary>
     )
 }
@@ -69,15 +69,15 @@ export default async function TenantsPage() {
 ### Client Component — React Query 훅 + nuqs
 
 ```typescript
-// components/tenant-list.tsx (Client Component)
+// components/account-list.tsx (Client Component)
 'use client'
-import { useTenants } from '@/domain/tenant'
+import { useAccounts } from '@/domain/account'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@checklog/ui'
 
-export function TenantList() {
+export function AccountList() {
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
-    const { data, isLoading } = useTenants({ page, pageSize: 20 })
+    const { data, isLoading } = useAccounts({ page, pageSize: 20 })
 
     return (
         <>
@@ -92,14 +92,14 @@ export function TenantList() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data?.data.map((tenant) => (
-                        <TableRow key={tenant.id}>
-                            <TableCell>{tenant.companyName}</TableCell>
-                            <TableCell>{tenant.adminName}</TableCell>
-                            <TableCell>{tenant.email}</TableCell>
-                            <TableCell>{new Date(tenant.createdAt).toLocaleDateString('ko-KR')}</TableCell>
+                    {data?.data.map((account) => (
+                        <TableRow key={account.id}>
+                            <TableCell>{account.companyName}</TableCell>
+                            <TableCell>{account.adminName}</TableCell>
+                            <TableCell>{account.email}</TableCell>
+                            <TableCell>{new Date(account.createdAt).toLocaleDateString('ko-KR')}</TableCell>
                             <TableCell>
-                                <a href={`/dashboard/tenants/${tenant.id}`}>보기</a>
+                                <a href={`/dashboard/accounts/${account.id}`}>보기</a>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -131,7 +131,7 @@ export function StatCards() {
     return (
         <div className="grid gap-4 md:grid-cols-3">
             <Card><CardHeader><CardTitle>총 업체 수</CardTitle></CardHeader>
-                <CardContent><p className="text-3xl font-bold">{stats?.tenantCount}</p></CardContent>
+                <CardContent><p className="text-3xl font-bold">{stats?.accountCount}</p></CardContent>
             </Card>
             {/* workspaceCount, facilityCount */}
         </div>
@@ -155,6 +155,6 @@ import { loginAction } from '@/domain/auth'
 - [ ] Client Component에서 서버 데이터는 도메인 React Query 훅만 사용
 - [ ] 리스트/상세 페이지는 Server Component에서 prefetch + HydrationBoundary
 - [ ] 페이지네이션 상태는 nuqs로 URL에 반영
-- [ ] 테넌트 목록에 페이지네이션 적용
+- [ ] 고객 목록에 페이지네이션 적용
 - [ ] 로그인 페이지에 회원가입 링크 없음
 - [ ] `md` 이상 화면에 Table 최적화

@@ -449,7 +449,7 @@ export async function getInspectionDetail(
 }
 
 // =============================================================================
-// 워크스페이스 전체 점검 이력 — 점검 관리 페이지에서 호출 (테넌트 인증 필요)
+// 워크스페이스 전체 점검 이력 — 점검 관리 페이지에서 호출 (고객 인증 필요)
 // =============================================================================
 
 export type WorkspaceInspectionHistoryItem = InspectionHistoryItem & {
@@ -461,8 +461,8 @@ export async function getWorkspaceInspectionHistory(
   workspaceId: string
 ): Promise<WorkspaceInspectionHistoryItem[]> {
   const session = await auth()
-  const tenantId = session?.user?.tenantId
-  if (!tenantId) return []
+  const accountId = session?.user?.accountId
+  if (!accountId) return []
 
   const supabase = createClient()
 
@@ -470,7 +470,7 @@ export async function getWorkspaceInspectionHistory(
     .from('facilities')
     .select('id, facility_name')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (!facilities?.length) return []

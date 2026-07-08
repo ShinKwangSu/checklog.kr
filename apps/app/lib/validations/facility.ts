@@ -7,8 +7,8 @@
 // floor: UI 의 Select 에서 정수로 전달된다(generateFloorOptions 의 value).
 //   지상 N층 → N, 지하 N층 → -N, 층 없음 → 0. 표시 변환은 floorToDisplay.
 //   (UI 가 워크스페이스 범위 내 옵션만 노출하므로 여기서는 정수 여부만 검증)
-// facility_type_id: 같은 워크스페이스/테넌트에 속한 타입이어야 한다.
-//   소속 검증은 Server Action 에서 tenant_id + workspace_id 로 추가 확인한다.
+// facility_type_id: 같은 워크스페이스/고객에 속한 타입이어야 한다.
+//   소속 검증은 Server Action 에서 account_id + workspace_id 로 추가 확인한다.
 // =============================================================================
 
 import { z } from 'zod'

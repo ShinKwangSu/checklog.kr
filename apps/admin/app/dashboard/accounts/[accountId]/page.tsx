@@ -1,7 +1,7 @@
 // =============================================================================
-// 테넌트 상세/수정 페이지
+// 고객 상세/수정 페이지
 // =============================================================================
-// Server Component. tenantPrefetch.detail(tenantId) 후 HydrationBoundary 전달.
+// Server Component. accountPrefetch.detail(accountId) 후 HydrationBoundary 전달.
 // =============================================================================
 
 import { HydrationBoundary } from '@tanstack/react-query'
@@ -9,29 +9,29 @@ import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 
 import { runPrefetch } from '@/lib/react-query/prefetch'
-import { tenantPrefetch } from '@/domain/tenant'
-import { TenantDetailView } from '@/components/tenant-detail-view'
+import { accountPrefetch } from '@/domain/account'
+import { AccountDetailView } from '@/components/account-detail-view'
 import { Button } from '@checklog/ui/components/button'
 
-export default async function TenantDetailPage({
+export default async function AccountDetailPage({
   params,
 }: {
-  params: Promise<{ tenantId: string }>
+  params: Promise<{ accountId: string }>
 }) {
-  const { tenantId } = await params
-  const state = await runPrefetch(tenantPrefetch.detail(tenantId))
+  const { accountId } = await params
+  const state = await runPrefetch(accountPrefetch.detail(accountId))
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
         <Button variant="ghost" size="sm" asChild className="-ml-2">
-          <Link href="/dashboard/tenants">
+          <Link href="/dashboard/accounts">
             <ChevronLeft className="h-4 w-4" />
-            테넌트 목록
+            고객 목록
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">테넌트 상세</h1>
+          <h1 className="text-2xl font-bold">고객 상세</h1>
           <p className="text-sm text-muted-foreground">
             업체 정보 수정 및 워크스페이스 현황을 확인합니다.
           </p>
@@ -39,7 +39,7 @@ export default async function TenantDetailPage({
       </div>
 
       <HydrationBoundary state={state}>
-        <TenantDetailView tenantId={tenantId} />
+        <AccountDetailView accountId={accountId} />
       </HydrationBoundary>
     </div>
   )

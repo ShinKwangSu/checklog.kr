@@ -36,27 +36,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { email, password } = parsed.data
 
-        // service_role 클라이언트로 tenants 조회(로그인 전이라 RLS-respecting 불가).
+        // service_role 클라이언트로 accounts 조회(로그인 전이라 RLS-respecting 불가).
         // password_hash 는 서버에서만 SELECT — 클라이언트로 절대 반환하지 않는다.
         const supabase = createClient()
-        const { data: tenant, error } = await supabase
-          .from('tenants')
+        const { data: account, error } = await supabase
+          .from('accounts')
           .select('id, email, password_hash, admin_name, company_name')
           .eq('email', email)
           .single()
 
-        if (error || !tenant) return null
+        if (error || !account) return null
 
-        const passwordMatch = await bcrypt.compare(password, tenant.password_hash)
+        const passwordMatch = await bcrypt.compare(password, account.password_hash)
         if (!passwordMatch) return null
 
         // 여기서 반환되는 객체가 jwt() 콜백의 user 로 전달된다.
         // password_hash 는 절대 포함하지 않는다(세션/토큰 누출 방지).
         return {
-          id: tenant.id,
-          email: tenant.email,
-          name: tenant.admin_name,
-          tenantId: tenant.id, // jwt 콜백에서 token.tenantId 로 적재됨
+          id: account.id,
+          email: account.email,
+          name: account.admin_name,
+          accountId: account.id, // jwt 콜백에서 token.accountId 로 적재됨
         }
       },
     }),

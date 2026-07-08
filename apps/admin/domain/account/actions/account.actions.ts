@@ -1,15 +1,15 @@
 'use server'
 
 // =============================================================================
-// tenant 도메인 — Server Actions (진입점)
+// account 도메인 — Server Actions (진입점)
 // =============================================================================
 //
 // 규칙:
 // - 모든 액션 진입부에서 requireAdmin() 으로 인증을 강제한다.
-// - 변경 액션: TenantActionResult 반환. 조회 액션: 실패 시 throw.
+// - 변경 액션: AccountActionResult 반환. 조회 액션: 실패 시 throw.
 // - 입력은 Zod 로 검증한다.
 // - Supabase 클라이언트(service_role)는 이 레이어에서만 생성해 service 로 주입한다.
-// - 슈퍼어드민은 전역 권한이므로 tenant_id 필터가 없다(의도된 설계).
+// - 슈퍼어드민은 전역 권한이므로 account_id 필터가 없다(의도된 설계).
 // =============================================================================
 
 import { z } from 'zod'
@@ -21,19 +21,19 @@ function isRedirectError(e: unknown): boolean {
 }
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
-import { tenantService } from '../service/tenant.service'
+import { accountService } from '../service/account.service'
 import type {
-  TenantActionResult,
-  TenantDto,
-  TenantDetailDto,
-  TenantListDto,
+  AccountActionResult,
+  AccountDto,
+  AccountDetailDto,
+  AccountListDto,
 } from '../types'
 
 // -----------------------------------------------------------------------------
 // 검증 스키마
 // -----------------------------------------------------------------------------
 
-const updateTenantSchema = z.object({
+const updateAccountSchema = z.object({
   companyName: z
     .string()
     .trim()
@@ -58,32 +58,32 @@ const updateTenantSchema = z.object({
 // 조회 액션 (실패 시 throw)
 // -----------------------------------------------------------------------------
 
-export async function getTenantsAction(
+export async function getAccountsAction(
   page = 1,
   search?: string
-): Promise<TenantListDto> {
+): Promise<AccountListDto> {
   await requireAdmin()
   const supabase = createClient()
-  return tenantService.listTenants(supabase, page, search)
+  return accountService.listAccounts(supabase, page, search)
 }
 
-export async function getTenantDetailAction(
-  tenantId: string
-): Promise<TenantDetailDto> {
+export async function getAccountDetailAction(
+  accountId: string
+): Promise<AccountDetailDto> {
   await requireAdmin()
   const supabase = createClient()
-  return tenantService.getTenantDetail(supabase, tenantId)
+  return accountService.getAccountDetail(supabase, accountId)
 }
 
 // -----------------------------------------------------------------------------
-// 변경 액션 (TenantActionResult 반환)
+// 변경 액션 (AccountActionResult 반환)
 // -----------------------------------------------------------------------------
 
-export async function updateTenantAction(
-  tenantId: string,
-  _prevState: TenantActionResult<TenantDto> | undefined,
+export async function updateAccountAction(
+  accountId: string,
+  _prevState: AccountActionResult<AccountDto> | undefined,
   formData: FormData
-): Promise<TenantActionResult<TenantDto>> {
+): Promise<AccountActionResult<AccountDto>> {
   try {
     await requireAdmin()
     const raw = {
@@ -91,7 +91,7 @@ export async function updateTenantAction(
       adminName: formData.get('adminName') ?? undefined,
       phone: formData.get('phone') ?? undefined,
     }
-    const parsed = updateTenantSchema.safeParse(raw)
+    const parsed = updateAccountSchema.safeParse(raw)
     if (!parsed.success) {
       return {
         success: false,
@@ -100,37 +100,37 @@ export async function updateTenantAction(
     }
 
     const supabase = createClient()
-    const tenant = await tenantService.updateTenant(
+    const account = await accountService.updateAccount(
       supabase,
-      tenantId,
+      accountId,
       parsed.data
     )
-    revalidatePath('/dashboard/tenants')
-    revalidatePath(`/dashboard/tenants/${tenantId}`)
-    return { success: true, data: tenant }
+    revalidatePath('/dashboard/accounts')
+    revalidatePath(`/dashboard/accounts/${accountId}`)
+    return { success: true, data: account }
   } catch (e) {
     if (isRedirectError(e)) throw e
     return {
       success: false,
-      error: e instanceof Error ? e.message : '테넌트 수정 중 오류가 발생했습니다.',
+      error: e instanceof Error ? e.message : '고객 수정 중 오류가 발생했습니다.',
     }
   }
 }
 
-export async function deleteTenantAction(
-  tenantId: string
-): Promise<TenantActionResult> {
+export async function deleteAccountAction(
+  accountId: string
+): Promise<AccountActionResult> {
   try {
     await requireAdmin()
     const supabase = createClient()
-    await tenantService.deleteTenant(supabase, tenantId)
-    revalidatePath('/dashboard/tenants')
+    await accountService.deleteAccount(supabase, accountId)
+    revalidatePath('/dashboard/accounts')
     return { success: true, data: undefined }
   } catch (e) {
     if (isRedirectError(e)) throw e
     return {
       success: false,
-      error: e instanceof Error ? e.message : '테넌트 삭제 중 오류가 발생했습니다.',
+      error: e instanceof Error ? e.message : '고객 삭제 중 오류가 발생했습니다.',
     }
   }
 }

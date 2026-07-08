@@ -6,8 +6,8 @@
 // 보안 모델:
 //   - submitComplaint / uploadComplaintPhoto: 인증 불필요 (방문자, /inspect/[facilityId])
 //     - service_role 키 사용이지만 facilityId 존재 여부 검증으로 무결성 확보.
-//   - getComplaints / updateComplaintStatus: 테넌트 인증 필수.
-//     - tenant_id + facility 소유권 이중 검증.
+//   - getComplaints / updateComplaintStatus: 고객 인증 필수.
+//     - account_id + facility 소유권 이중 검증.
 // =============================================================================
 
 import { auth } from '@/auth'
@@ -15,9 +15,9 @@ import { createClient } from '@/lib/supabase/server'
 import type { Complaint } from '@/types/database'
 import type { ActionResult } from '@/app/actions/workspace'
 
-async function getTenantId(): Promise<string | null> {
+async function getAccountId(): Promise<string | null> {
   const session = await auth()
-  return session?.user?.tenantId ?? null
+  return session?.user?.accountId ?? null
 }
 
 // =============================================================================
@@ -32,7 +32,7 @@ export type SubmitComplaintInput = {
 
 /**
  * 방문자 민원 접수.
- * facilityId로 시설 존재 여부 + workspace_id/tenant_id 조회 후 complaints INSERT.
+ * facilityId로 시설 존재 여부 + workspace_id/account_id 조회 후 complaints INSERT.
  */
 export async function submitComplaint(
   facilityId: string,
@@ -51,7 +51,7 @@ export async function submitComplaint(
 
   const { data: facility } = await supabase
     .from('facilities')
-    .select('id, workspace_id, tenant_id')
+    .select('id, workspace_id, account_id')
     .eq('id', facilityId)
     .is('deleted_at', null)
     .maybeSingle()
@@ -63,7 +63,7 @@ export async function submitComplaint(
   const { error } = await supabase.from('complaints').insert({
     facility_id: facilityId,
     workspace_id: facility.workspace_id,
-    tenant_id: facility.tenant_id,
+    account_id: facility.account_id,
     complaint_type: complaint_type.trim(),
     content: content.trim(),
     photo_urls,
@@ -123,7 +123,7 @@ export async function uploadComplaintPhoto(
 }
 
 // =============================================================================
-// 워크스페이스 전체 민원 조회 (테넌트 인증) — 민원 관리 페이지
+// 워크스페이스 전체 민원 조회 (고객 인증) — 민원 관리 페이지
 // =============================================================================
 
 export type ComplaintWithFacility = Complaint & {
@@ -133,8 +133,8 @@ export type ComplaintWithFacility = Complaint & {
 export async function getWorkspaceComplaints(
   workspaceId: string
 ): Promise<ComplaintWithFacility[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
 
@@ -142,7 +142,7 @@ export async function getWorkspaceComplaints(
     .from('facilities')
     .select('id, facility_name')
     .eq('workspace_id', workspaceId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (!facilities?.length) return []
@@ -154,7 +154,7 @@ export async function getWorkspaceComplaints(
     .from('complaints')
     .select('*')
     .in('facility_id', facilityIds)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(200)
@@ -168,16 +168,16 @@ export async function getWorkspaceComplaints(
 }
 
 // =============================================================================
-// 민원 목록 조회 (테넌트 인증)
+// 민원 목록 조회 (고객 인증)
 // =============================================================================
 
 /**
  * 시설별 민원 목록 조회.
- * facility가 현재 테넌트 소유인지 함께 검증한다.
+ * facility가 현재 고객 소유인지 함께 검증한다.
  */
 export async function getComplaints(facilityId: string): Promise<Complaint[]> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return []
+  const accountId = await getAccountId()
+  if (!accountId) return []
 
   const supabase = createClient()
 
@@ -186,7 +186,7 @@ export async function getComplaints(facilityId: string): Promise<Complaint[]> {
     .from('facilities')
     .select('id')
     .eq('id', facilityId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .maybeSingle()
 
@@ -196,7 +196,7 @@ export async function getComplaints(facilityId: string): Promise<Complaint[]> {
     .from('complaints')
     .select('*')
     .eq('facility_id', facilityId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(100)
@@ -206,7 +206,7 @@ export async function getComplaints(facilityId: string): Promise<Complaint[]> {
 }
 
 // =============================================================================
-// 민원 처리 상태 변경 (테넌트 인증)
+// 민원 처리 상태 변경 (고객 인증)
 // =============================================================================
 
 /**
@@ -217,8 +217,8 @@ export async function updateComplaintStatus(
   complaintId: string,
   status: 'received' | 'in_progress' | 'resolved'
 ): Promise<ActionResult> {
-  const tenantId = await getTenantId()
-  if (!tenantId) return { success: false, error: '로그인이 필요합니다.' }
+  const accountId = await getAccountId()
+  if (!accountId) return { success: false, error: '로그인이 필요합니다.' }
 
   const supabase = createClient()
 
@@ -229,7 +229,7 @@ export async function updateComplaintStatus(
     .from('complaints')
     .update({ status, resolved_at: resolvedAt })
     .eq('id', complaintId)
-    .eq('tenant_id', tenantId)
+    .eq('account_id', accountId)
     .is('deleted_at', null)
 
   if (error) {

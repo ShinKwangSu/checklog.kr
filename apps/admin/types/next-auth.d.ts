@@ -6,7 +6,7 @@
 // 이 선언 덕분에 Server Action 에서 session.user.adminId 를 any 캐스팅 없이
 // 타입 안전하게 사용할 수 있다.
 //
-// 슈퍼어드민은 테넌트 격리 대상이 아니므로 tenantId 가 없다(전역 접근).
+// 슈퍼어드민은 고객 격리 대상이 아니므로 accountId 가 없다(전역 접근).
 // =============================================================================
 
 import type { DefaultSession } from 'next-auth'

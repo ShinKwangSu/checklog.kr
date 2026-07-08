@@ -2,8 +2,8 @@
 
 ## 1. 프로젝트 개요
 
-- **목적:** 시설 방문자가 QR 코드로 진입한 `/inspect/[facilityId]` 페이지에서 로그인 없이 불편 사항·의견을 간편하게 제출하고, 테넌트 어드민(`apps/app`)이 접수된 민원을 시설별로 확인할 수 있는 민원 관리 기능 구축.
-- **핵심 흐름:** `민원 접수(방문자, 비로그인)` → `시설별 민원 내역 확인(테넌트 어드민)` → `처리 완료 표시`
+- **목적:** 시설 방문자가 QR 코드로 진입한 `/inspect/[facilityId]` 페이지에서 로그인 없이 불편 사항·의견을 간편하게 제출하고, 고객 어드민(`apps/app`)이 접수된 민원을 시설별로 확인할 수 있는 민원 관리 기능 구축.
+- **핵심 흐름:** `민원 접수(방문자, 비로그인)` → `시설별 민원 내역 확인(고객 어드민)` → `처리 완료 표시`
 - **기존 기능과의 연계:** Phase 1·2의 `workspaces`, `facilities` 구조를 그대로 활용. 점검이력(`FacilityInspectionHistory`) 패턴과 동일하게 시설별로 민원 이력을 Sheet 사이드바로 표시.
 
 ## 2. 기술 스택 (Tech Stack)
@@ -81,7 +81,7 @@
 | `id` | UUID PK | |
 | `facility_id` | UUID FK | facilities.id |
 | `workspace_id` | UUID FK | workspaces.id (격리 키 이중화) |
-| `tenant_id` | UUID FK | tenants.id (격리 키) |
+| `account_id` | UUID FK | accounts.id (격리 키) |
 | `complaint_type` | VARCHAR(100) | 민원 유형 문자열 (고정값 또는 직접입력 텍스트) |
 | `content` | TEXT | 민원 내용 (필수, NOT NULL) |
 | `photo_urls` | TEXT[] | 첨부 사진 URL 배열 (기본값 `{}`) |
@@ -94,7 +94,7 @@
 
 **RLS:**
 - `INSERT`: anon 역할 허용 (비로그인 방문자 제출)
-- `SELECT`, `UPDATE`: 인증된 테넌트(`app_current_tenant_id()`)만 허용, `tenant_id` 격리
+- `SELECT`, `UPDATE`: 인증된 고객(`app_current_account_id()`)만 허용, `account_id` 격리
 
 ### 마이그레이션 패턴
 
@@ -105,7 +105,7 @@ CREATE TABLE complaints (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   facility_id UUID NOT NULL REFERENCES facilities(id),
   workspace_id UUID NOT NULL REFERENCES workspaces(id),
-  tenant_id UUID NOT NULL REFERENCES tenants(id),
+  account_id UUID NOT NULL REFERENCES accounts(id),
   complaint_type VARCHAR(100) NOT NULL,
   content TEXT NOT NULL,
   photo_urls TEXT[] NOT NULL DEFAULT '{}',
@@ -115,7 +115,7 @@ CREATE TABLE complaints (
   deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX idx_complaints_active ON complaints (tenant_id, facility_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_complaints_active ON complaints (account_id, facility_id) WHERE deleted_at IS NULL;
 ```
 
 ### TypeScript 타입 추가 (`packages/database/src/types/database.ts`)
@@ -135,7 +135,7 @@ export type Complaint = {
   id: string
   facility_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   complaint_type: string
   content: string
   photo_urls: string[]
@@ -149,7 +149,7 @@ export type ComplaintInsert = {
   id?: string
   facility_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   complaint_type: string
   content: string
   photo_urls?: string[]
@@ -206,8 +206,8 @@ db-architect
 backend-engineer (apps/app)
   → app/actions/complaint.ts
       - submitComplaint(facilityId, data) — anon 허용, complaint_type/content 빈값 차단
-      - getComplaints(facilityId) — 테넌트 인증
-      - updateComplaintStatus(complaintId, status) — 테넌트 인증
+      - getComplaints(facilityId) — 고객 인증
+      - updateComplaintStatus(complaintId, status) — 고객 인증
 
 ui-engineer (apps/app)
   → components/complaint-form-dialog.tsx
@@ -220,7 +220,7 @@ ui-engineer (apps/app)
 qa-engineer
   → 비로그인 제출 보안 (anon INSERT만 허용, SELECT/UPDATE 차단)
   → 유형·내용 빈값 제출 차단 검증 (앱 레이어 + DB NOT NULL)
-  → tenant_id + workspace_id 데이터 격리
+  → account_id + workspace_id 데이터 격리
   → 상태 전이 정합성 (received → in_progress → resolved)
   → 소프트 딜리트 적용 여부 (complaints)
 ```

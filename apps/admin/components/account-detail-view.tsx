@@ -1,9 +1,9 @@
 'use client'
 
 // =============================================================================
-// TenantDetailView — 테넌트 상세 (수정 폼 + 워크스페이스 목록)
+// AccountDetailView — 고객 상세 (수정 폼 + 워크스페이스 목록)
 // =============================================================================
-// useTenant(tenantId) 로 데이터 소비, useUpdateTenant(tenantId) 뮤테이션(FormData).
+// useAccount(accountId) 로 데이터 소비, useUpdateAccount(accountId) 뮤테이션(FormData).
 // 수정: 업체명/관리자명/전화번호 · 읽기 전용: 이메일/가입일.
 // 하단: 워크스페이스 목록(읽기 전용). 층수는 floorToDisplay 로 표시.
 // =============================================================================
@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 
-import { useTenant, useUpdateTenant } from '@/domain/tenant'
+import { useAccount, useUpdateAccount } from '@/domain/account'
 import { floorToDisplay } from '@checklog/database'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
@@ -44,9 +44,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-export function TenantDetailView({ tenantId }: { tenantId: string }) {
-  const { data, isLoading, isError } = useTenant(tenantId)
-  const { mutate: updateTenant, isPending } = useUpdateTenant(tenantId)
+export function AccountDetailView({ accountId }: { accountId: string }) {
+  const { data, isLoading, isError } = useAccount(accountId)
+  const { mutate: updateAccount, isPending } = useUpdateAccount(accountId)
 
   const {
     register,
@@ -74,10 +74,10 @@ export function TenantDetailView({ tenantId }: { tenantId: string }) {
     formData.set('adminName', values.adminName)
     formData.set('phone', values.phone)
 
-    updateTenant(formData, {
+    updateAccount(formData, {
       onSuccess: (result) => {
         if (result.success) {
-          toast.success('테넌트 정보가 수정되었습니다.')
+          toast.success('고객 정보가 수정되었습니다.')
         } else {
           toast.error(result.error ?? '수정에 실패했습니다.')
         }
@@ -89,7 +89,7 @@ export function TenantDetailView({ tenantId }: { tenantId: string }) {
   if (isError) {
     return (
       <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-        테넌트 정보를 불러오는 중 오류가 발생했습니다.
+        고객 정보를 불러오는 중 오류가 발생했습니다.
       </p>
     )
   }

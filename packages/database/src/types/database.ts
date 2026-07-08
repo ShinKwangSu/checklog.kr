@@ -11,10 +11,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 // -----------------------------------------------------------------------------
 
 /**
- * tenants — 마스터 계정/업체.
+ * accounts — 마스터 계정/업체.
  * password_hash 는 절대 클라이언트로 전달하지 않는다(서버 전용).
  */
-export type Tenant = {
+export type Account = {
   id: string
   company_name: string
   admin_name: string
@@ -25,10 +25,10 @@ export type Tenant = {
 }
 
 /**
- * password_hash 를 포함한 서버 전용 Tenant 형태.
+ * password_hash 를 포함한 서버 전용 Account 형태.
  * 로그인 검증 등 서버 컨텍스트에서만 사용한다.
  */
-export type TenantWithSecret = Tenant & {
+export type AccountWithSecret = Account & {
   password_hash: string
 }
 
@@ -39,7 +39,7 @@ export type TenantWithSecret = Tenant & {
  */
 export type Workspace = {
   id: string
-  tenant_id: string
+  account_id: string
   workspace_name: string
   max_floor: number
   min_floor: number
@@ -56,7 +56,7 @@ export type Workspace = {
 export type FacilityType = {
   id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   type_name: string
   created_at: string
   deleted_at?: string | null
@@ -69,7 +69,7 @@ export type FacilityType = {
 export type Facility = {
   id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   facility_type_id: string
   facility_name: string
   floor: number
@@ -79,12 +79,12 @@ export type Facility = {
 }
 
 /**
- * inspectors — 점검 담당자. 테넌트 레벨 엔티티.
+ * inspectors — 점검 담당자. 고객 레벨 엔티티.
  */
 export type Inspector = {
   id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   name: string
   phone: string | null
   email: string | null
@@ -99,7 +99,7 @@ export type Inspector = {
 export type Checklist = {
   id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   checklist_name: string
   description: string | null
   repeat_cycle: 'daily' | 'weekly' | 'monthly'
@@ -117,7 +117,7 @@ export type ChecklistItem = {
   id: string
   checklist_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   item_name: string
   response_type: 'checklist' | 'photo'
   is_required: boolean
@@ -139,7 +139,7 @@ export type FacilityChecklist = {
   facility_id: string
   checklist_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   created_at: string
 }
 
@@ -150,7 +150,7 @@ export type FacilityWithChecklists = Facility & {
 
 /**
  * admins — 플랫폼 운영자(슈퍼어드민, apps/admin).
- * 테넌트 격리 대상이 아니다(tenant_id 없음). service_role 전용 테이블.
+ * 고객 격리 대상이 아니다(account_id 없음). service_role 전용 테이블.
  * password_hash 는 절대 클라이언트로 전달하지 않는다(서버 전용).
  */
 export type Admin = {
@@ -173,7 +173,7 @@ export type AdminWithSecret = Admin & {
 // Insert 타입 (INSERT 시 입력 형태 — DB 기본값/자동생성 컬럼은 선택적)
 // -----------------------------------------------------------------------------
 
-export type TenantInsert = {
+export type AccountInsert = {
   id?: string
   company_name: string
   admin_name: string
@@ -186,7 +186,7 @@ export type TenantInsert = {
 
 export type WorkspaceInsert = {
   id?: string
-  tenant_id: string
+  account_id: string
   workspace_name: string
   max_floor?: number
   min_floor?: number
@@ -200,7 +200,7 @@ export type WorkspaceInsert = {
 export type FacilityTypeInsert = {
   id?: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   type_name: string
   created_at?: string
   deleted_at?: string | null
@@ -209,7 +209,7 @@ export type FacilityTypeInsert = {
 export type FacilityInsert = {
   id?: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   facility_type_id: string
   facility_name: string
   floor: number
@@ -220,25 +220,25 @@ export type FacilityInsert = {
 
 // -----------------------------------------------------------------------------
 // Update 타입 (UPDATE 시 부분 갱신 — 모든 필드 선택적)
-// 격리 키(tenant_id) 와 PK(id) 는 갱신 대상에서 제외한다.
+// 격리 키(account_id) 와 PK(id) 는 갱신 대상에서 제외한다.
 // -----------------------------------------------------------------------------
 
 export type WorkspaceUpdate = Partial<
-  Omit<Workspace, 'id' | 'tenant_id' | 'created_at'>
+  Omit<Workspace, 'id' | 'account_id' | 'created_at'>
 >
 
 export type FacilityTypeUpdate = Partial<
-  Omit<FacilityType, 'id' | 'tenant_id' | 'workspace_id' | 'created_at'>
+  Omit<FacilityType, 'id' | 'account_id' | 'workspace_id' | 'created_at'>
 >
 
 export type FacilityUpdate = Partial<
-  Omit<Facility, 'id' | 'tenant_id' | 'workspace_id' | 'created_at'>
+  Omit<Facility, 'id' | 'account_id' | 'workspace_id' | 'created_at'>
 >
 
 export type InspectorInsert = {
   id?: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   name: string
   phone?: string | null
   email?: string | null
@@ -250,7 +250,7 @@ export type ChecklistItemInsert = {
   id?: string
   checklist_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   item_name: string
   response_type?: 'checklist' | 'photo'
   is_required?: boolean
@@ -262,7 +262,7 @@ export type ChecklistItemInsert = {
 export type ChecklistInsert = {
   id?: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   checklist_name: string
   description?: string | null
   repeat_cycle: 'daily' | 'weekly' | 'monthly'
@@ -277,7 +277,7 @@ export type FacilityChecklistInsert = {
   facility_id: string
   checklist_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   created_at?: string
 }
 
@@ -356,7 +356,7 @@ export type Complaint = {
   id: string
   facility_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   complaint_type: string
   content: string
   photo_urls: string[]
@@ -370,7 +370,7 @@ export type ComplaintInsert = {
   id?: string
   facility_id: string
   workspace_id: string
-  tenant_id: string
+  account_id: string
   complaint_type: string
   content: string
   photo_urls?: string[]
@@ -381,7 +381,7 @@ export type ComplaintInsert = {
 }
 
 export type ComplaintUpdate = Partial<
-  Omit<Complaint, 'id' | 'tenant_id' | 'workspace_id' | 'facility_id' | 'created_at'>
+  Omit<Complaint, 'id' | 'account_id' | 'workspace_id' | 'facility_id' | 'created_at'>
 >
 
 // -----------------------------------------------------------------------------
@@ -395,10 +395,10 @@ export type Database = {
     // Views/Functions 키가 반드시 존재해야 한다(없으면 insert/update 가 never 추론).
     Views: Record<string, never>
     Tables: {
-      tenants: {
-        Row: TenantWithSecret
-        Insert: TenantInsert
-        Update: Partial<TenantInsert>
+      accounts: {
+        Row: AccountWithSecret
+        Insert: AccountInsert
+        Update: Partial<AccountInsert>
         Relationships: []
       }
       workspaces: {
@@ -469,7 +469,7 @@ export type Database = {
       }
     }
     Functions: {
-      app_current_tenant_id: {
+      app_current_account_id: {
         Args: Record<string, never>
         Returns: string
       }
