@@ -106,6 +106,7 @@ export const adminRepository = {
       .from('admins')
       .update(input)
       .eq('id', id)
+      .is('deleted_at', null)
       .select(PUBLIC_COLUMNS)
       .single()
 
@@ -123,6 +124,7 @@ export const adminRepository = {
       .from('admins')
       .update({ password_hash: passwordHash })
       .eq('id', id)
+      .is('deleted_at', null)
 
     if (error) throw error
   },

@@ -20,13 +20,13 @@ import { Input } from '@checklog/ui/components/input'
 import { Label } from '@checklog/ui/components/label'
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@checklog/ui/components/dialog'
+  FormDialogContent as DialogContent,
+} from '@/components/form-dialog'
 
 const schema = z.object({
   name: z.string().trim().min(1, '이름을 입력해주세요.'),

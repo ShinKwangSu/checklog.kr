@@ -69,8 +69,14 @@ export const accountService = {
     return toAccountDto(updated)
   },
 
-  /** 고객 삭제 (연관 데이터는 DB FK CASCADE) */
+  /**
+   * 고객 삭제.
+   * 소프트 딜리트는 UPDATE라 DB의 ON DELETE CASCADE가 발동하지 않으므로,
+   * 워크스페이스 이하 자식 엔티티를 먼저 코드에서 cascade soft delete 한 뒤
+   * 계정 자체를 삭제한다(CLAUDE.md 소프트 딜리트 컨벤션).
+   */
   async deleteAccount(supabase: Db, accountId: string): Promise<void> {
+    await accountRepository.softDeleteChildren(supabase, accountId)
     await accountRepository.delete(supabase, accountId)
   },
 

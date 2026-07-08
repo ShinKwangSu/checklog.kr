@@ -54,6 +54,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .from('admins')
           .select('id, email, password_hash, name')
           .eq('email', email)
+          .is('deleted_at', null)
           .single()
 
         if (error || !admin) return null

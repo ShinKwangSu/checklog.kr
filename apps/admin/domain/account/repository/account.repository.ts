@@ -78,6 +78,7 @@ export const accountRepository = {
       .from('accounts')
       .update(input)
       .eq('id', accountId)
+      .is('deleted_at', null)
       .select(PUBLIC_COLUMNS)
       .single()
 
@@ -85,7 +86,68 @@ export const accountRepository = {
     return data as Account
   },
 
-  /** 소프트 딜리트 */
+  /**
+   * 계정 소유 자식 엔티티를 전부 소프트 딜리트한다 (CLAUDE.md cascade soft delete 규칙).
+   *
+   * DB에는 ON DELETE CASCADE가 걸려 있지만 계정 삭제는 하드 딜리트가 아니라
+   * UPDATE(deleted_at)이므로 FK CASCADE는 발동하지 않는다 — 코드에서 명시적으로
+   * account_id 스코프 테이블(워크스페이스 이하 전부)을 순회하며 cascade soft delete 한다.
+   * facility_checklists는 조인 테이블(deleted_at 없음)이라 제외한다.
+   */
+  async softDeleteChildren(supabase: Db, accountId: string): Promise<void> {
+    const deletedAt = new Date().toISOString()
+
+    const { error: workspacesError } = await supabase
+      .from('workspaces')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (workspacesError) throw workspacesError
+
+    const { error: facilityTypesError } = await supabase
+      .from('facility_types')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (facilityTypesError) throw facilityTypesError
+
+    const { error: facilitiesError } = await supabase
+      .from('facilities')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (facilitiesError) throw facilitiesError
+
+    const { error: inspectorsError } = await supabase
+      .from('inspectors')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (inspectorsError) throw inspectorsError
+
+    const { error: checklistsError } = await supabase
+      .from('checklists')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (checklistsError) throw checklistsError
+
+    const { error: checklistItemsError } = await supabase
+      .from('checklist_items')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (checklistItemsError) throw checklistItemsError
+
+    const { error: complaintsError } = await supabase
+      .from('complaints')
+      .update({ deleted_at: deletedAt })
+      .eq('account_id', accountId)
+      .is('deleted_at', null)
+    if (complaintsError) throw complaintsError
+  },
+
+  /** 소프트 딜리트 (자식 엔티티는 softDeleteChildren으로 먼저 처리한 뒤 호출한다) */
   async delete(supabase: Db, accountId: string): Promise<void> {
     const { error } = await supabase
       .from('accounts')
