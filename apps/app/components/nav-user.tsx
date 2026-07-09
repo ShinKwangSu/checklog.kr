@@ -2,7 +2,7 @@
 
 import { LogOutIcon, MoreVerticalIcon, UserCircleIcon } from "lucide-react"
 
-import { logoutAction } from "@/app/actions/auth"
+import { logoutAction } from "@/domain/auth"
 import {
   Avatar,
   AvatarFallback,

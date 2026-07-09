@@ -26,7 +26,7 @@ import { toast } from 'sonner'
 import {
   getComplaints,
   updateComplaintStatus,
-} from '@/app/actions/complaint'
+} from '@/domain/complaint'
 import type { Complaint, FacilityWithChecklists } from '@/types/database'
 
 // -----------------------------------------------------------------------------

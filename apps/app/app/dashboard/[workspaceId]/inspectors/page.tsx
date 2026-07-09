@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
-import { getWorkspace } from '@/app/actions/workspace'
-import { getInspectors } from '@/app/actions/inspector'
+import { getWorkspace } from '@/domain/workspace'
+import { getInspectors } from '@/domain/inspector'
 import { InspectorManager } from '@/components/inspector-manager'
 
 export default async function InspectorsPage({

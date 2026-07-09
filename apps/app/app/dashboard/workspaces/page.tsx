@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { BuildingIcon } from 'lucide-react'
 
-import { getWorkspaces } from '@/app/actions/workspace'
+import { getWorkspaces } from '@/domain/workspace'
 import { floorToDisplay, generateFloorOptions } from '@/lib/utils/floor'
 import {
   Card,

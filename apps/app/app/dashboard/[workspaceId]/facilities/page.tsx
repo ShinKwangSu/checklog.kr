@@ -8,10 +8,10 @@
 
 import { notFound } from 'next/navigation'
 
-import { getWorkspace } from '@/app/actions/workspace'
-import { getFacilityTypes } from '@/app/actions/facility-type'
-import { getFacilities } from '@/app/actions/facility'
-import { getChecklists } from '@/app/actions/checklist'
+import { getWorkspace } from '@/domain/workspace'
+import { getFacilityTypes } from '@/domain/facility-type'
+import { getFacilities } from '@/domain/facility'
+import { getChecklists } from '@/domain/checklist'
 import { FacilityManager } from '@/components/facility-manager'
 
 export default async function FacilitiesPage({

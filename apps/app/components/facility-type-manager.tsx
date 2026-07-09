@@ -21,7 +21,7 @@ import {
   createFacilityType,
   updateFacilityType,
   deleteFacilityType,
-} from '@/app/actions/facility-type'
+} from '@/domain/facility-type'
 import {
   facilityTypeSchema,
   type FacilityTypeInput,

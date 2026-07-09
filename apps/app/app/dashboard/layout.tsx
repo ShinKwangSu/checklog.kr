@@ -1,5 +1,5 @@
 import { auth } from '@/auth'
-import { getWorkspaces } from '@/app/actions/workspace'
+import { getWorkspaces } from '@/domain/workspace'
 import { AppSidebar } from '@/components/app-sidebar'
 import {
   SidebarInset,

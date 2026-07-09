@@ -10,7 +10,7 @@ import {
   createInspector,
   updateInspector,
   deleteInspector,
-} from '@/app/actions/inspector'
+} from '@/domain/inspector'
 
 import { inspectorSchema, type InspectorInput } from '@/lib/validations/inspector'
 import { formatPhone } from '@/lib/utils/phone'

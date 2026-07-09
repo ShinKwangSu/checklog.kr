@@ -16,7 +16,7 @@ import { z } from 'zod'
 import { Plus, Search, MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { createWorkspace, updateWorkspace } from '@/app/actions/workspace'
+import { createWorkspace, updateWorkspace } from '@/domain/workspace'
 import type { Workspace } from '@/types/database'
 import {
   Dialog,

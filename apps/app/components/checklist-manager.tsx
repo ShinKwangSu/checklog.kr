@@ -10,7 +10,7 @@ import {
   createChecklist,
   updateChecklist,
   deleteChecklist,
-} from '@/app/actions/checklist'
+} from '@/domain/checklist'
 import { checklistSchema, type ChecklistInput } from '@/lib/validations/checklist'
 import type { ChecklistWithItems } from '@/types/database'
 import {

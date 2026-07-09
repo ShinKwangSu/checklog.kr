@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
-import { signUpAction, type AuthActionState } from "@/app/actions/auth";
+import { signUpAction, type AuthActionState } from "@/domain/auth";
 import { formatPhone, rawPhone } from "@/lib/utils/phone";
 import { Button } from "@checklog/ui/components/button";
 import {

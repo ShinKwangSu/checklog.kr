@@ -2,7 +2,7 @@
 // /inspect/[facilityId]/[sessionId] — 점검표 폼 페이지
 // =============================================================================
 
-import { getInspectionSession } from '@/app/actions/inspection'
+import { getInspectionSession } from '@/domain/inspection'
 import { floorToDisplay } from '@/lib/utils/floor'
 import { InspectionForm } from '@/components/inspection-form'
 

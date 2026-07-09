@@ -39,7 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from '@checklog/ui/components/table'
-import { getInspectionDetail, type InspectionHistoryDetail, type WorkspaceInspectionHistoryItem } from '@/app/actions/inspection'
+import { getInspectionDetail, type InspectionHistoryDetail, type WorkspaceInspectionHistoryItem } from '@/domain/inspection'
 import { formatPhone, rawPhone } from '@/lib/utils/phone'
 
 function formatDateTime(iso: string) {

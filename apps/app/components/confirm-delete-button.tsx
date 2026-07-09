@@ -11,7 +11,7 @@ import { useState, useTransition } from 'react'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { ActionResult } from '@/app/actions/workspace'
+import type { ActionResult } from '@/lib/action-result'
 import {
   Dialog,
   DialogContent,

@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyAndCreateSession } from "@/app/actions/inspection";
+import { verifyAndCreateSession } from "@/domain/inspection";
 import { Button } from "@checklog/ui/components/button";
 import {
   Dialog,

@@ -25,7 +25,7 @@ import {
   createFacility,
   updateFacility,
   deleteFacility,
-} from '@/app/actions/facility'
+} from '@/domain/facility'
 import {
   floorToDisplay,
   generateFloorOptions,

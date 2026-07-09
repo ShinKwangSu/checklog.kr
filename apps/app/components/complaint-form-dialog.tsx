@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from '@checklog/ui/components/select'
 import { COMPLAINT_TYPE_OPTIONS } from '@/types/database'
-import { submitComplaint, uploadComplaintPhoto } from '@/app/actions/complaint'
+import { submitComplaint, uploadComplaintPhoto } from '@/domain/complaint'
 
 const MAX_PHOTOS = 3
 

@@ -39,7 +39,7 @@ import {
   TableRow,
 } from '@checklog/ui/components/table'
 import { toast } from 'sonner'
-import { updateComplaintStatus, type ComplaintWithFacility } from '@/app/actions/complaint'
+import { updateComplaintStatus, type ComplaintWithFacility } from '@/domain/complaint'
 import type { Complaint } from '@/types/database'
 
 function formatDateTime(iso: string) {

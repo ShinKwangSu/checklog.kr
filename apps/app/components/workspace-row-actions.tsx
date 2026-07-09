@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 
-import { deleteWorkspace } from '@/app/actions/workspace'
+import { deleteWorkspace } from '@/domain/workspace'
 import type { Workspace } from '@/types/database'
 import { Button } from '@checklog/ui/components/button'
 import {

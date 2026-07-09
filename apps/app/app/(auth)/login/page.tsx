@@ -11,7 +11,7 @@
 import { useActionState } from 'react'
 import Link from 'next/link'
 
-import { loginAction, type AuthActionState } from '@/app/actions/auth'
+import { loginAction, type AuthActionState } from '@/domain/auth'
 import {
   Card,
   CardContent,

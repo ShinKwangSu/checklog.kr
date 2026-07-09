@@ -1,29 +1,23 @@
 'use server'
 
 // =============================================================================
-// checklog.kr MVP — 인증 Server Action (회원가입 / 로그인 / 로그아웃)
+// auth 도메인 — Server Actions (진입점)
 // =============================================================================
 //
-// - 비밀번호는 bcryptjs 로 해싱하여 저장한다(평문 저장 금지).
-// - 회원가입 = accounts 테이블에 마스터 계정 1행 생성(= 멀티고객 격리 루트).
-//   account_id 는 곧 이 행의 id 이므로 별도 컬럼이 없다.
-// - 가입 성공 시 자동 로그인하여 세션 JWT 에 accountId 를 적재한다.
+// - 회원가입 = accounts 마스터 계정 1행 생성(= 멀티고객 격리 루트). 가입 성공 시
+//   자동 로그인하여 세션 JWT 에 accountId 를 적재한다.
+// - signIn/signOut 의 redirectTo 는 NEXT_REDIRECT 예외를 throw 하므로 반드시 재던진다.
+// - 반환 타입은 AuthActionState(fieldErrors 포함)라 runAction 봉투를 쓰지 않는다.
 // =============================================================================
 
 import { z } from 'zod'
-import bcrypt from 'bcryptjs'
 import { AuthError } from 'next-auth'
 import { createClient } from '@/lib/supabase/server'
 import { signIn, signOut } from '@/auth'
-
-const SALT_ROUNDS = 10
-
-export type AuthActionState = {
-  success: boolean
-  error?: string
-  // 필드별 검증 오류(폼 인라인 표시용)
-  fieldErrors?: Record<string, string[]>
-}
+import { isRedirectError } from '@/lib/is-redirect-error'
+import { DomainError } from '@/lib/domain-error'
+import { authService } from '../service/auth.service'
+import type { AuthActionState } from '../types'
 
 // -----------------------------------------------------------------------------
 // 회원가입
@@ -42,13 +36,6 @@ const signUpSchema = z.object({
   password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
 })
 
-/**
- * 회원가입 Server Action.
- * useActionState(signUpAction, initialState) 또는 form action 으로 사용한다.
- *
- * 성공 시 자동 로그인 후 /dashboard/workspaces 로 redirect 된다
- * (redirect 는 내부적으로 예외를 throw 하므로 정상 흐름이며 그대로 통과시킨다).
- */
 export async function signUpAction(
   _prevState: AuthActionState | undefined,
   formData: FormData
@@ -63,36 +50,28 @@ export async function signUpAction(
   }
 
   const { company_name, admin_name, phone, email, password } = parsed.data
-  const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
 
-  const supabase = createClient()
-  const { error } = await supabase.from('accounts').insert({
-    company_name,
-    admin_name,
-    phone,
-    email,
-    password_hash,
-  })
-
-  if (error) {
-    // 23505 = unique_violation (이메일 중복)
-    if (error.code === '23505') {
-      return { success: false, error: '이미 사용 중인 이메일입니다.' }
-    }
+  try {
+    const supabase = createClient()
+    await authService.registerAccount(supabase, {
+      companyName: company_name,
+      adminName: admin_name,
+      phone,
+      email,
+      password,
+    })
+  } catch (e) {
+    if (e instanceof DomainError) return { success: false, error: e.message }
+    console.error('[signUpAction]', e)
     return { success: false, error: '회원가입 중 오류가 발생했습니다.' }
   }
 
   // 가입 후 자동 로그인. 성공하면 redirectTo 로 이동(NEXT_REDIRECT throw).
   try {
-    await signIn('credentials', {
-      email,
-      password,
-      redirectTo: '/dashboard/workspaces',
-    })
+    await signIn('credentials', { email, password, redirectTo: '/dashboard/workspaces' })
   } catch (err) {
     // signIn 의 redirect 예외는 상위로 다시 던져 실제 리다이렉트가 일어나게 한다.
     if (isRedirectError(err)) throw err
-    // 자격 검증 실패 등(가입 직후라 사실상 발생하지 않음)
     return {
       success: false,
       error: '가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인해주세요.',
@@ -111,10 +90,6 @@ const loginSchema = z.object({
   password: z.string().min(1, '비밀번호를 입력해주세요.'),
 })
 
-/**
- * 로그인 Server Action.
- * 성공 시 /dashboard/workspaces 로 redirect 된다.
- */
 export async function loginAction(
   _prevState: AuthActionState | undefined,
   formData: FormData
@@ -152,22 +127,4 @@ export async function loginAction(
 
 export async function logoutAction() {
   await signOut({ redirectTo: '/login' })
-}
-
-// -----------------------------------------------------------------------------
-// 내부 유틸
-// -----------------------------------------------------------------------------
-
-/**
- * Next.js redirect()/signIn redirect 는 NEXT_REDIRECT 라는 특수 예외를 던진다.
- * 이를 일반 에러로 잡아버리면 리다이렉트가 동작하지 않으므로 식별해 재던진다.
- */
-function isRedirectError(err: unknown): boolean {
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    'digest' in err &&
-    typeof (err as { digest?: unknown }).digest === 'string' &&
-    (err as { digest: string }).digest.startsWith('NEXT_REDIRECT')
-  )
 }

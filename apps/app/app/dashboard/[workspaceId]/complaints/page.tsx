@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getWorkspace } from '@/app/actions/workspace'
-import { getWorkspaceComplaints } from '@/app/actions/complaint'
+import { getWorkspace } from '@/domain/workspace'
+import { getWorkspaceComplaints } from '@/domain/complaint'
 import { ComplaintsManager } from '@/components/complaints-manager'
 
 export default async function ComplaintsPage({

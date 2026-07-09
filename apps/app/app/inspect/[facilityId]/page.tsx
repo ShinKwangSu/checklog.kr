@@ -1,4 +1,4 @@
-import { getInspectStatus } from '@/app/actions/inspection'
+import { getInspectStatus } from '@/domain/inspection'
 import { floorToDisplay } from '@/lib/utils/floor'
 import { InspectEntryButton } from '@/components/inspect-entry-button'
 import { ComplaintFormDialog } from '@/components/complaint-form-dialog'

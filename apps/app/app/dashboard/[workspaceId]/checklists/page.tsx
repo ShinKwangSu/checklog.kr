@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
-import { getWorkspace } from '@/app/actions/workspace'
-import { getChecklists } from '@/app/actions/checklist'
+import { getWorkspace } from '@/domain/workspace'
+import { getChecklists } from '@/domain/checklist'
 import { ChecklistManager } from '@/components/checklist-manager'
 // getChecklists now returns ChecklistWithItems[] — ChecklistManager accepts it directly
 

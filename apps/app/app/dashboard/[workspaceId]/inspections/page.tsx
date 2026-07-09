@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getWorkspace } from '@/app/actions/workspace'
-import { getWorkspaceInspectionHistory } from '@/app/actions/inspection'
+import { getWorkspace } from '@/domain/workspace'
+import { getWorkspaceInspectionHistory } from '@/domain/inspection'
 import { InspectionsManager } from '@/components/inspections-manager'
 
 export default async function InspectionsPage({

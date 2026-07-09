@@ -7,8 +7,8 @@
 
 import { notFound } from 'next/navigation'
 
-import { getWorkspace } from '@/app/actions/workspace'
-import { getFacilityTypes } from '@/app/actions/facility-type'
+import { getWorkspace } from '@/domain/workspace'
+import { getFacilityTypes } from '@/domain/facility-type'
 import { FacilityTypeManager } from '@/components/facility-type-manager'
 
 export default async function FacilityTypesPage({

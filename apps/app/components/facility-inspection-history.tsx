@@ -23,7 +23,7 @@ import {
   getInspectionDetail,
   type InspectionHistoryItem,
   type InspectionHistoryDetail,
-} from '@/app/actions/inspection'
+} from '@/domain/inspection'
 import { formatPhone, rawPhone } from '@/lib/utils/phone'
 import type { FacilityWithChecklists } from '@/types/database'
 
