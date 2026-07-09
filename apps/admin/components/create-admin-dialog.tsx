@@ -4,7 +4,8 @@
 // CreateAdminDialog — 어드민 생성 Dialog
 // =============================================================================
 // react-hook-form + zod 검증, useCreateAdmin() 뮤테이션(FormData).
-// 성공 시 Dialog 닫기 + toast. 임시 비밀번호(12341234)는 서버가 발급한다.
+// 성공 시 Dialog 닫기 + toast. 임시 비밀번호는 서버가 계정마다 랜덤 발급하며,
+// 생성 결과로 1회만 반환되므로 toast 로 즉시 표시한다(관리자가 신규 어드민에게 전달).
 // =============================================================================
 
 import { useState } from 'react'
@@ -56,8 +57,16 @@ export function CreateAdminDialog() {
 
     createAdmin(formData, {
       onSuccess: (result) => {
-        if (result.success) {
-          toast.success('어드민이 생성되었습니다. (임시 비밀번호: 12341234)')
+        if (result.success && result.data) {
+          toast.success(
+            `어드민이 생성되었습니다. 임시 비밀번호: ${result.data.tempPassword}`,
+            {
+              description:
+                '이 비밀번호는 다시 표시되지 않습니다. 신규 어드민에게 전달하고 최초 로그인 후 변경하도록 안내하세요.',
+              duration: Infinity,
+              closeButton: true,
+            }
+          )
           reset()
           setOpen(false)
         } else {
@@ -87,8 +96,8 @@ export function CreateAdminDialog() {
           <DialogHeader>
             <DialogTitle>어드민 추가</DialogTitle>
             <DialogDescription>
-              새 슈퍼어드민 계정을 생성합니다. 임시 비밀번호 12341234 가
-              발급되며 최초 로그인 후 변경해야 합니다.
+              새 슈퍼어드민 계정을 생성합니다. 랜덤 임시 비밀번호가 발급되어 생성
+              직후 1회 표시되며, 최초 로그인 후 변경해야 합니다.
             </DialogDescription>
           </DialogHeader>
 

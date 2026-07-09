@@ -25,34 +25,40 @@ export function useAdmin(adminId: string) {
   return useQuery(adminQueryOptions.detail(adminId))
 }
 
-/** 어드민 생성 */
+/** 어드민 생성 — 목록만 무효화 */
 export function useCreateAdmin() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (formData: FormData) => createAdminAction(undefined, formData),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminQueryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.lists() }),
   })
 }
 
-/** 어드민 수정 */
+/** 어드민 수정 — 해당 상세 + 목록만 무효화 */
 export function useUpdateAdmin(adminId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (formData: FormData) =>
       updateAdminAction(adminId, undefined, formData),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminQueryKeys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.detail(adminId),
+      })
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.lists() })
+    },
   })
 }
 
-/** 어드민 삭제 */
+/** 어드민 삭제 — 목록만 무효화하고 삭제된 상세 캐시는 제거 */
 export function useDeleteAdmin() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (adminId: string) => deleteAdminAction(adminId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: adminQueryKeys.all }),
+    onSuccess: (_result, adminId) => {
+      queryClient.invalidateQueries({ queryKey: adminQueryKeys.lists() })
+      queryClient.removeQueries({ queryKey: adminQueryKeys.detail(adminId) })
+    },
   })
 }
 

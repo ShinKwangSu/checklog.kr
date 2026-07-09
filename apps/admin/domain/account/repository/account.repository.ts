@@ -18,9 +18,21 @@ type Db = TypedSupabaseClient
 // password_hash 를 제외한 공개 컬럼만 선택한다.
 const PUBLIC_COLUMNS = 'id, company_name, admin_name, phone, email, created_at'
 
-/** 검색어를 ILIKE 패턴으로 안전하게 변환 (콤마/괄호는 .or() 구문 충돌 방지) */
+/**
+ * 검색어를 ILIKE 패턴으로 안전하게 변환한다.
+ * .or() 는 문자열을 PostgREST 필터 DSL로 파싱하므로, 구조 문자와 LIKE 와일드카드를
+ * 모두 제거해 필터 조작(인젝션)을 차단한다. service_role이 RLS를 우회하는 상태라
+ * 필터 안전성이 특히 중요하다.
+ *   - PostgREST 구조 문자: , ( ) *  (별표는 PostgREST에서 % 로 변환됨)
+ *   - LIKE 와일드카드/이스케이프: % _ \
+ * 길이도 상한을 둬 과도한 입력을 차단한다.
+ */
 function sanitizeSearch(search: string): string {
-  return search.replace(/[,()%]/g, ' ').trim()
+  return search
+    .replace(/[,()*%_\\]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 100)
 }
 
 export const accountRepository = {
@@ -87,73 +99,19 @@ export const accountRepository = {
   },
 
   /**
-   * 계정 소유 자식 엔티티를 전부 소프트 딜리트한다 (CLAUDE.md cascade soft delete 규칙).
+   * 계정 + 자식 엔티티를 단일 트랜잭션으로 cascade 소프트 딜리트한다.
    *
    * DB에는 ON DELETE CASCADE가 걸려 있지만 계정 삭제는 하드 딜리트가 아니라
-   * UPDATE(deleted_at)이므로 FK CASCADE는 발동하지 않는다 — 코드에서 명시적으로
-   * account_id 스코프 테이블(워크스페이스 이하 전부)을 순회하며 cascade soft delete 한다.
-   * facility_checklists는 조인 테이블(deleted_at 없음)이라 제외한다.
+   * UPDATE(deleted_at)이므로 FK CASCADE는 발동하지 않는다. 과거에는 앱에서 자식
+   * 테이블을 순차 UPDATE 했으나 각 문장이 개별 커밋되어 중간 실패 시 "부분 삭제"가
+   * 영구히 남는 문제가 있었다 — 이를 Postgres 함수(migration 016 soft_delete_account)로
+   * 옮겨 원자적으로 실행한다. 한 단계라도 실패하면 전체가 롤백된다.
+   * facility_checklists는 조인 테이블(deleted_at 없음)이라 함수에서도 제외한다.
    */
-  async softDeleteChildren(supabase: Db, accountId: string): Promise<void> {
-    const deletedAt = new Date().toISOString()
-
-    const { error: workspacesError } = await supabase
-      .from('workspaces')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (workspacesError) throw workspacesError
-
-    const { error: facilityTypesError } = await supabase
-      .from('facility_types')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (facilityTypesError) throw facilityTypesError
-
-    const { error: facilitiesError } = await supabase
-      .from('facilities')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (facilitiesError) throw facilitiesError
-
-    const { error: inspectorsError } = await supabase
-      .from('inspectors')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (inspectorsError) throw inspectorsError
-
-    const { error: checklistsError } = await supabase
-      .from('checklists')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (checklistsError) throw checklistsError
-
-    const { error: checklistItemsError } = await supabase
-      .from('checklist_items')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (checklistItemsError) throw checklistItemsError
-
-    const { error: complaintsError } = await supabase
-      .from('complaints')
-      .update({ deleted_at: deletedAt })
-      .eq('account_id', accountId)
-      .is('deleted_at', null)
-    if (complaintsError) throw complaintsError
-  },
-
-  /** 소프트 딜리트 (자식 엔티티는 softDeleteChildren으로 먼저 처리한 뒤 호출한다) */
-  async delete(supabase: Db, accountId: string): Promise<void> {
-    const { error } = await supabase
-      .from('accounts')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', accountId)
-      .is('deleted_at', null)
+  async softDeleteCascade(supabase: Db, accountId: string): Promise<void> {
+    const { error } = await supabase.rpc('soft_delete_account', {
+      p_account_id: accountId,
+    })
     if (error) throw error
   },
 }

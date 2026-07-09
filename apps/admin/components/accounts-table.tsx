@@ -48,22 +48,18 @@ export function AccountsTable() {
     parseAsString.withDefault('')
   )
 
-  // 검색 입력 로컬 상태 → debounce 후 URL 반영
+  // 로컬 입력값이 입력의 단일 소스다(URL→input 역동기화 없음 → 양방향 경쟁 제거).
+  // 디바운스된 값만 단방향으로 URL(search)에 반영하고 page 를 1로 리셋한다.
   const [searchInput, setSearchInput] = useState(search)
   const debouncedSearchInput = useDebouncedValue(searchInput, 300)
 
   useEffect(() => {
-    // URL(search)이 외부에서 바뀌면 입력값도 동기화
-    setSearchInput(search)
-  }, [search])
-
-  useEffect(() => {
     const trimmed = debouncedSearchInput.trim()
+    // 마운트 시(초기값 일치) 불필요한 page 리셋을 막는 가드.
     if (trimmed === search) return
     setSearch(trimmed || null)
     setPage(1)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchInput])
+  }, [debouncedSearchInput, search, setSearch, setPage])
 
   const { data, isLoading, isError } = useAccounts(page, search || undefined)
   const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount()

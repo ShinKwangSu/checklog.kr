@@ -21,3 +21,13 @@ export type AdminListDto = {
   page: number
   pageSize: number
 }
+
+/**
+ * 어드민 생성 결과 DTO.
+ * 랜덤 발급된 1회용 임시 비밀번호(tempPassword)를 포함한다 — 생성 직후에만 반환되며
+ * 저장·재조회되지 않는다(관리자가 신규 어드민에게 전달, 최초 로그인 후 변경).
+ */
+export type CreatedAdminDto = {
+  admin: AdminDto
+  tempPassword: string
+}

@@ -1,7 +1,8 @@
 // =============================================================================
 // checklog.kr MVP — Database Types
-// supabase/migrations/001_initial_schema.sql 과 1:1로 동기화된다.
-// 스키마 변경 시 이 파일을 반드시 함께 갱신할 것.
+// supabase/migrations/ 전체(현재 016까지)와 수기로 동기화되는 타입 정의.
+// 스키마 변경(마이그레이션 추가) 시 이 파일을 반드시 함께 갱신할 것.
+// 규모가 커지면 `supabase gen types typescript` 자동 생성으로 전환을 권장한다.
 // =============================================================================
 
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -472,6 +473,11 @@ export type Database = {
       app_current_account_id: {
         Args: Record<string, never>
         Returns: string
+      }
+      /** 계정 + 자식 엔티티 cascade 소프트 딜리트 (단일 트랜잭션). migration 016. */
+      soft_delete_account: {
+        Args: { p_account_id: string }
+        Returns: undefined
       }
     }
   }

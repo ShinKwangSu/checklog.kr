@@ -7,8 +7,10 @@
 
 export const accountQueryKeys = {
   all: ['accounts'] as const,
+  // 모든 목록 쿼리(페이지/검색 무관)를 한 번에 무효화하기 위한 부분 키.
+  lists: () => [...accountQueryKeys.all, 'list'] as const,
   list: (page: number, search?: string) =>
-    [...accountQueryKeys.all, 'list', { page, search: search ?? '' }] as const,
+    [...accountQueryKeys.lists(), { page, search: search ?? '' }] as const,
   detail: (accountId: string) =>
     [...accountQueryKeys.all, 'detail', accountId] as const,
 }

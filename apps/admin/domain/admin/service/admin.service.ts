@@ -8,22 +8,33 @@
 // - 비즈니스 에러는 사용자 친화 메시지로 throw 한다.
 // =============================================================================
 
+import { randomBytes } from 'node:crypto'
 import type { TypedSupabaseClient } from '@checklog/database'
 import bcrypt from 'bcryptjs'
+import { DomainError } from '@/lib/domain-error'
 import { adminRepository } from '../repository/admin.repository'
 import { toAdminDto } from '../mapper/admin.mapper'
 import type {
   AdminDto,
   AdminListDto,
   CreateAdminInput,
+  CreatedAdminDto,
   UpdateAdminInput,
 } from '../types'
 
 type Db = TypedSupabaseClient
 
 const PAGE_SIZE = 20
-const TEMP_PASSWORD = '12341234'
 const SALT_ROUNDS = 10
+
+/**
+ * 예측 불가능한 1회용 임시 비밀번호 생성 (base64url 12자).
+ * 과거 고정값('12341234')은 생성 직후 창에서 누구나 로그인 가능한 위험이 있어,
+ * 계정마다 랜덤값을 발급하고 생성 결과로 1회 반환한다(관리자가 최초 로그인 후 변경).
+ */
+function generateTempPassword(): string {
+  return randomBytes(9).toString('base64url')
+}
 
 export const adminService = {
   /** 어드민 목록 (페이지네이션 20건 단위) */
@@ -44,26 +55,31 @@ export const adminService = {
   /** 어드민 단건 조회 */
   async getAdmin(supabase: Db, id: string): Promise<AdminDto> {
     const admin = await adminRepository.findById(supabase, id)
-    if (!admin) throw new Error('어드민 계정을 찾을 수 없습니다.')
+    if (!admin) throw new DomainError('어드민 계정을 찾을 수 없습니다.')
     return toAdminDto(admin)
   },
 
   /**
    * 어드민 생성.
-   * 임시 비밀번호 '12341234' 를 bcrypt 해싱하여 저장한다.
+   * 계정마다 랜덤 임시 비밀번호를 발급해 bcrypt 해싱 후 저장하고, 평문 임시 비밀번호를
+   * 생성 결과로 1회 반환한다(관리자가 신규 어드민에게 전달, 최초 로그인 후 변경).
    * 이메일 중복 시 비즈니스 에러를 던진다.
    */
-  async createAdmin(supabase: Db, input: CreateAdminInput): Promise<AdminDto> {
+  async createAdmin(
+    supabase: Db,
+    input: CreateAdminInput
+  ): Promise<CreatedAdminDto> {
     const existing = await adminRepository.findByEmail(supabase, input.email)
-    if (existing) throw new Error('이미 사용 중인 이메일입니다.')
+    if (existing) throw new DomainError('이미 사용 중인 이메일입니다.')
 
-    const passwordHash = await bcrypt.hash(TEMP_PASSWORD, SALT_ROUNDS)
+    const tempPassword = generateTempPassword()
+    const passwordHash = await bcrypt.hash(tempPassword, SALT_ROUNDS)
     const created = await adminRepository.create(supabase, {
       email: input.email,
       name: input.name,
       password_hash: passwordHash,
     })
-    return toAdminDto(created)
+    return { admin: toAdminDto(created), tempPassword }
   },
 
   /**
@@ -76,12 +92,12 @@ export const adminService = {
     input: UpdateAdminInput
   ): Promise<AdminDto> {
     const target = await adminRepository.findById(supabase, id)
-    if (!target) throw new Error('어드민 계정을 찾을 수 없습니다.')
+    if (!target) throw new DomainError('어드민 계정을 찾을 수 없습니다.')
 
     if (input.email && input.email !== target.email) {
       const duplicate = await adminRepository.findByEmail(supabase, input.email)
       if (duplicate && duplicate.id !== id) {
-        throw new Error('이미 사용 중인 이메일입니다.')
+        throw new DomainError('이미 사용 중인 이메일입니다.')
       }
     }
 
@@ -102,10 +118,10 @@ export const adminService = {
     requestingAdminId: string
   ): Promise<void> {
     if (id === requestingAdminId) {
-      throw new Error('본인 계정은 삭제할 수 없습니다.')
+      throw new DomainError('본인 계정은 삭제할 수 없습니다.')
     }
     const target = await adminRepository.findById(supabase, id)
-    if (!target) throw new Error('어드민 계정을 찾을 수 없습니다.')
+    if (!target) throw new DomainError('어드민 계정을 찾을 수 없습니다.')
 
     await adminRepository.delete(supabase, id)
   },
@@ -121,10 +137,10 @@ export const adminService = {
     newPassword: string
   ): Promise<void> {
     const admin = await adminRepository.findSecretById(supabase, adminId)
-    if (!admin) throw new Error('어드민 계정을 찾을 수 없습니다.')
+    if (!admin) throw new DomainError('어드민 계정을 찾을 수 없습니다.')
 
     const matched = await bcrypt.compare(currentPassword, admin.password_hash)
-    if (!matched) throw new Error('현재 비밀번호가 올바르지 않습니다.')
+    if (!matched) throw new DomainError('현재 비밀번호가 올바르지 않습니다.')
 
     const newHash = await bcrypt.hash(newPassword, SALT_ROUNDS)
     await adminRepository.updatePassword(supabase, adminId, newHash)

@@ -23,23 +23,31 @@ export function useAccount(accountId: string) {
   return useQuery(accountQueryOptions.detail(accountId))
 }
 
-/** 고객 수정 */
+/** 고객 수정 — 해당 상세 + 목록만 무효화 */
 export function useUpdateAccount(accountId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (formData: FormData) =>
       updateAccountAction(accountId, undefined, formData),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: accountQueryKeys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: accountQueryKeys.detail(accountId),
+      })
+      queryClient.invalidateQueries({ queryKey: accountQueryKeys.lists() })
+    },
   })
 }
 
-/** 고객 삭제 */
+/** 고객 삭제 — 목록만 무효화하고 삭제된 상세 캐시는 제거 */
 export function useDeleteAccount() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (accountId: string) => deleteAccountAction(accountId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: accountQueryKeys.all }),
+    onSuccess: (_result, accountId) => {
+      queryClient.invalidateQueries({ queryKey: accountQueryKeys.lists() })
+      queryClient.removeQueries({
+        queryKey: accountQueryKeys.detail(accountId),
+      })
+    },
   })
 }

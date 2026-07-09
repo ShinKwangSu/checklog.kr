@@ -13,10 +13,10 @@
 // =============================================================================
 
 import { z } from 'zod'
-import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
-import { isRedirectError } from '@/lib/is-redirect-error'
+import { runAction } from '@/lib/action-result'
+import { DomainError } from '@/lib/domain-error'
 import { accountService } from '../service/account.service'
 import type {
   AccountActionResult,
@@ -80,7 +80,7 @@ export async function updateAccountAction(
   _prevState: AccountActionResult<AccountDto> | undefined,
   formData: FormData
 ): Promise<AccountActionResult<AccountDto>> {
-  try {
+  return runAction(async () => {
     await requireAdmin()
     const raw = {
       companyName: formData.get('companyName') ?? undefined,
@@ -89,44 +89,22 @@ export async function updateAccountAction(
     }
     const parsed = updateAccountSchema.safeParse(raw)
     if (!parsed.success) {
-      return {
-        success: false,
-        error: parsed.error.errors[0]?.message ?? '입력값을 확인해주세요.',
-      }
+      throw new DomainError(
+        parsed.error.errors[0]?.message ?? '입력값을 확인해주세요.'
+      )
     }
 
     const supabase = createClient()
-    const account = await accountService.updateAccount(
-      supabase,
-      accountId,
-      parsed.data
-    )
-    revalidatePath('/dashboard/accounts')
-    revalidatePath(`/dashboard/accounts/${accountId}`)
-    return { success: true, data: account }
-  } catch (e) {
-    if (isRedirectError(e)) throw e
-    return {
-      success: false,
-      error: e instanceof Error ? e.message : '고객 수정 중 오류가 발생했습니다.',
-    }
-  }
+    return accountService.updateAccount(supabase, accountId, parsed.data)
+  }, '고객 수정 중 오류가 발생했습니다.')
 }
 
 export async function deleteAccountAction(
   accountId: string
 ): Promise<AccountActionResult> {
-  try {
+  return runAction(async () => {
     await requireAdmin()
     const supabase = createClient()
     await accountService.deleteAccount(supabase, accountId)
-    revalidatePath('/dashboard/accounts')
-    return { success: true, data: undefined }
-  } catch (e) {
-    if (isRedirectError(e)) throw e
-    return {
-      success: false,
-      error: e instanceof Error ? e.message : '고객 삭제 중 오류가 발생했습니다.',
-    }
-  }
+  }, '고객 삭제 중 오류가 발생했습니다.')
 }

@@ -9,6 +9,7 @@
 // =============================================================================
 
 import type { TypedSupabaseClient } from '@checklog/database'
+import { DomainError } from '@/lib/domain-error'
 import { accountRepository } from '../repository/account.repository'
 import { toAccountDto, toAccountDetailDto } from '../mapper/account.mapper'
 import type {
@@ -49,7 +50,7 @@ export const accountService = {
     accountId: string
   ): Promise<AccountDetailDto> {
     const account = await accountRepository.findById(supabase, accountId)
-    if (!account) throw new Error('고객을 찾을 수 없습니다.')
+    if (!account) throw new DomainError('고객을 찾을 수 없습니다.')
     return toAccountDetailDto(account)
   },
 
@@ -72,11 +73,10 @@ export const accountService = {
   /**
    * 고객 삭제.
    * 소프트 딜리트는 UPDATE라 DB의 ON DELETE CASCADE가 발동하지 않으므로,
-   * 워크스페이스 이하 자식 엔티티를 먼저 코드에서 cascade soft delete 한 뒤
-   * 계정 자체를 삭제한다(CLAUDE.md 소프트 딜리트 컨벤션).
+   * 계정과 워크스페이스 이하 자식 엔티티를 단일 트랜잭션(soft_delete_account RPC)으로
+   * 원자적으로 cascade soft delete 한다 — 부분 삭제 방지(CLAUDE.md 소프트 딜리트 컨벤션).
    */
   async deleteAccount(supabase: Db, accountId: string): Promise<void> {
-    await accountRepository.softDeleteChildren(supabase, accountId)
-    await accountRepository.delete(supabase, accountId)
+    await accountRepository.softDeleteCascade(supabase, accountId)
   },
 }
