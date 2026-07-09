@@ -27,7 +27,14 @@ export const authConfig = {
   cookies: {
     sessionToken: {
       name: 'checklog-admin.session-token',
-      options: { httpOnly: true, sameSite: 'lax', path: '/', secure: false },
+      // secure: 프로덕션에서는 반드시 true(HTTPS 전용). 로컬(http) 개발에서만 false.
+      // 슈퍼어드민 세션 JWT가 평문 전송되어 MITM/다운그레이드로 탈취되는 것을 차단한다.
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
     },
   },
   // providers 는 auth.ts 에서 Credentials Provider 를 더해 완성한다.
