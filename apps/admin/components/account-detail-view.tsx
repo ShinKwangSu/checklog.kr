@@ -8,7 +8,6 @@
 // 하단: 워크스페이스 목록(읽기 전용). 층수는 floorToDisplay 로 표시.
 // =============================================================================
 
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -51,22 +50,19 @@ export function AccountDetailView({ accountId }: { accountId: string }) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { companyName: '', adminName: '', phone: '' },
+    // 캐시된 서버 데이터를 values 로 직접 제어한다(useEffect+reset 사후 동기화 제거).
+    values: data
+      ? {
+          companyName: data.companyName,
+          adminName: data.adminName,
+          phone: data.phone,
+        }
+      : undefined,
   })
-
-  useEffect(() => {
-    if (data) {
-      reset({
-        companyName: data.companyName,
-        adminName: data.adminName,
-        phone: data.phone,
-      })
-    }
-  }, [data, reset])
 
   const onSubmit = (values: FormValues) => {
     const formData = new FormData()

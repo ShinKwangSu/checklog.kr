@@ -16,6 +16,8 @@ export const accountQueryOptions = {
     queryOptions({
       queryKey: accountQueryKeys.list(page, search),
       queryFn: () => getAccountsAction(page, search),
+      // 목록은 mutation invalidate 로 정확히 갱신되므로 짧은 staleTime 으로 충분하다.
+      staleTime: 60_000,
     }),
   detail: (accountId: string) =>
     queryOptions({

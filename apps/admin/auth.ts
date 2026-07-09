@@ -27,7 +27,8 @@ import { createClient } from '@/lib/supabase/server'
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1),
+  // bcrypt 72바이트 상한과 과대입력 방어를 위해 상한을 둔다.
+  password: z.string().min(1).max(72),
 })
 
 export const { handlers, auth, signIn, signOut } = NextAuth({

@@ -7,7 +7,6 @@
 // react-hook-form + zod 검증. 성공 시 toast.
 // =============================================================================
 
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -40,17 +39,13 @@ export function AdminEditForm({ adminId }: { adminId: string }) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', email: '' },
+    // 캐시된 서버 데이터를 values 로 직접 제어한다(useEffect+reset 사후 동기화 제거).
+    values: data ? { name: data.name, email: data.email } : undefined,
   })
-
-  // 서버 데이터 도착 시 폼 기본값 동기화 (useEffect는 데이터 패칭이 아닌 폼 초기화용)
-  useEffect(() => {
-    if (data) reset({ name: data.name, email: data.email })
-  }, [data, reset])
 
   const onSubmit = (values: FormValues) => {
     const formData = new FormData()
