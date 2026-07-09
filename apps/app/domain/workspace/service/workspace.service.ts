@@ -4,8 +4,9 @@
 //
 // 비즈니스 규칙:
 //   ① min_floor 는 UI 에서 "지하 깊이 양수"로 들어오므로 저장 시 음수로 변환한다.
-//   ② 삭제 시 하위 엔티티(시설/타입/점검자/점검표/항목)를 먼저 cascade 소프트
-//      딜리트한 뒤 본체를 소프트 딜리트한다(코드 레벨 cascade).
+//   ② 삭제 시 하위 엔티티(시설/타입/점검자/점검표/항목) + 본체를 단일 트랜잭션
+//      RPC(soft_delete_workspace, migration 017)로 원자적으로 cascade 소프트
+//      딜리트한다.
 // =============================================================================
 
 import type { Workspace, TypedSupabaseClient } from '@checklog/database'
@@ -65,9 +66,8 @@ export const workspaceService = {
     return updated
   },
 
-  /** 워크스페이스 삭제 (하위 cascade → 본체) */
+  /** 워크스페이스 삭제 (하위 cascade + 본체, 단일 트랜잭션 RPC) */
   async remove(supabase: Db, accountId: string, id: string): Promise<void> {
-    await workspaceRepository.softDeleteChildren(supabase, { workspaceId: id, accountId })
-    await workspaceRepository.softDelete(supabase, { id, accountId })
+    await workspaceRepository.softDeleteCascade(supabase, { workspaceId: id, accountId })
   },
 }

@@ -96,53 +96,18 @@ export const workspaceRepository = {
   },
 
   /**
-   * 하위 엔티티 cascade 소프트 딜리트(코드 레벨).
-   * facility_types, facilities, inspectors, checklists, checklist_items 를
-   * 워크스페이스+고객 스코프로 일괄 soft delete 한다.
-   *
-   * NOTE: 개별 UPDATE 가 각각 커밋되므로 원자적이지 않다(부분 삭제 위험). account
-   * 삭제(016 soft_delete_account RPC)처럼 트랜잭션 함수로 옮기는 것이 정합성상 바람직하다.
+   * 워크스페이스 + 자식 엔티티(checklist_items/facilities/facility_types/
+   * inspectors/checklists)를 단일 트랜잭션으로 cascade 소프트 딜리트한다.
+   * migration 017 soft_delete_workspace RPC. 한 단계라도 실패하면 전체 롤백된다.
    */
-  async softDeleteChildren(
+  async softDeleteCascade(
     supabase: Db,
     params: { workspaceId: string; accountId: string }
   ): Promise<void> {
-    const now = new Date().toISOString()
-    const tables = [
-      'checklist_items',
-      'facilities',
-      'facility_types',
-      'inspectors',
-      'checklists',
-    ] as const
-
-    const results = await Promise.all(
-      tables.map((table) =>
-        supabase
-          .from(table)
-          .update({ deleted_at: now })
-          .eq('workspace_id', params.workspaceId)
-          .eq('account_id', params.accountId)
-          .is('deleted_at', null)
-      )
-    )
-
-    const failed = results.find((r) => r.error)
-    if (failed?.error) throw failed.error
-  },
-
-  /** 워크스페이스 본체 소프트 딜리트 */
-  async softDelete(
-    supabase: Db,
-    params: { id: string; accountId: string }
-  ): Promise<void> {
-    const { error } = await supabase
-      .from('workspaces')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', params.id)
-      .eq('account_id', params.accountId)
-      .is('deleted_at', null)
-
+    const { error } = await supabase.rpc('soft_delete_workspace', {
+      p_workspace_id: params.workspaceId,
+      p_account_id: params.accountId,
+    })
     if (error) throw error
   },
 }
