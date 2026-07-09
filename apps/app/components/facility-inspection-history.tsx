@@ -4,7 +4,7 @@
 // 시설별 점검이력 Sheet — 이력 목록 + 상세 읽기전용 뷰 (수정 불가)
 // =============================================================================
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { ClipboardList, ArrowLeft, CheckCircle2, XCircle, MinusCircle, User, Phone } from 'lucide-react'
 import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 import {
@@ -19,10 +19,9 @@ import { Badge } from '@checklog/ui/components/badge'
 import { Skeleton } from '@checklog/ui/components/skeleton'
 import { Separator } from '@checklog/ui/components/separator'
 import {
-  getInspectionHistory,
-  getInspectionDetail,
+  useInspectionHistory,
+  useInspectionDetail,
   type InspectionHistoryItem,
-  type InspectionHistoryDetail,
 } from '@/domain/inspection'
 import { formatPhone, rawPhone } from '@/lib/utils/phone'
 import type { FacilityWithChecklists } from '@/types/database'
@@ -54,18 +53,9 @@ function HistoryList({
   facilityId: string
   onSelect: (item: InspectionHistoryItem) => void
 }) {
-  const [items, setItems] = useState<InspectionHistoryItem[] | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { data: items, isLoading } = useInspectionHistory(facilityId)
 
-  useEffect(() => {
-    setLoading(true)
-    getInspectionHistory(facilityId).then((data) => {
-      setItems(data)
-      setLoading(false)
-    })
-  }, [facilityId])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-3 pt-4">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -150,17 +140,8 @@ function HistoryDetail({
   facilityId: string
   onBack: () => void
 }) {
-  const [detail, setDetail] = useState<InspectionHistoryDetail | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { data: detail, isLoading } = useInspectionDetail(sessionId, facilityId)
   const [lightbox, setLightbox] = useState<string | null>(null)
-
-  useEffect(() => {
-    setLoading(true)
-    getInspectionDetail(sessionId, facilityId).then((data) => {
-      setDetail(data)
-      setLoading(false)
-    })
-  }, [sessionId, facilityId])
 
   return (
     <>
@@ -178,7 +159,7 @@ function HistoryDetail({
         이력 목록으로
       </Button>
 
-      {loading ? (
+      {isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-16 w-full rounded-lg" />
           {Array.from({ length: 5 }).map((_, i) => (

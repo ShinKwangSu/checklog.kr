@@ -17,6 +17,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@checklog/database": "workspace:*",
     "@checklog/ui": "workspace:*",
+    "@tanstack/react-query": "^5.62.2",
     "@tanstack/react-table": "^8.21.3",
     "bcryptjs": "^2.4.3",
     "html-to-image": "^1.11.13",

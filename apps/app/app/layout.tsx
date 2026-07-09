@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import { Toaster } from '@checklog/ui/components/sonner'
+import { ReactQueryProvider } from '@/components/providers/react-query-provider'
 
 const pretendard = localFont({
   src: '../../../packages/ui/fonts/PretendardVariable.woff2',
@@ -23,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
       <body className="min-h-screen bg-background antialiased">
-        {children}
+        <ReactQueryProvider>{children}</ReactQueryProvider>
         <Toaster richColors position="top-center" />
       </body>
     </html>

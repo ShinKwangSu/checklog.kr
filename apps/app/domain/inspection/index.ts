@@ -4,6 +4,8 @@
 // 외부(컴포넌트/페이지)에서는 이 진입점으로만 import 한다. deep import 금지.
 // =============================================================================
 export * from './types'
+export * from './queries'
+export * from './hooks'
 export {
   getInspectionSession,
   submitInspection,

@@ -39,7 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from '@checklog/ui/components/table'
-import { getInspectionDetail, type InspectionHistoryDetail, type WorkspaceInspectionHistoryItem } from '@/domain/inspection'
+import { useInspectionDetail, type WorkspaceInspectionHistoryItem } from '@/domain/inspection'
 import { formatPhone, rawPhone } from '@/lib/utils/phone'
 
 function formatDateTime(iso: string) {
@@ -65,12 +65,8 @@ function InspectionDetailView({
   item: WorkspaceInspectionHistoryItem
   onBack: () => void
 }) {
-  const [detail, setDetail] = useState<InspectionHistoryDetail | null | 'loading'>('loading')
+  const { data: detail, isLoading } = useInspectionDetail(item.session_id, item.facility_id)
   const [lightbox, setLightbox] = useState<string | null>(null)
-
-  useState(() => {
-    getInspectionDetail(item.session_id, item.facility_id).then(setDetail)
-  })
 
   return (
     <>
@@ -89,7 +85,7 @@ function InspectionDetailView({
           목록으로
         </Button>
 
-        {detail === 'loading' ? (
+        {isLoading ? (
           <div className="space-y-3">
             <Skeleton className="h-16 w-full" />
             {Array.from({ length: 4 }).map((_, i) => (

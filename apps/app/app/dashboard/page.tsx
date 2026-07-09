@@ -11,9 +11,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@checklog/ui/components/card'
-import { Skeleton } from '@checklog/ui/components/skeleton'
 
 async function getStats(accountId: string) {
   const supabase = createClient()
@@ -102,89 +100,12 @@ export default async function DashboardPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {/* 차트 플레이스홀더 1 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">
-                워크스페이스별 시설 현황
-              </CardTitle>
-              <CardDescription>통계 항목을 구성 중입니다.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-32 w-full" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 차트 플레이스홀더 2 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">
-                층별 시설 분포
-              </CardTitle>
-              <CardDescription>통계 항목을 구성 중입니다.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[80, 55, 90, 40, 70].map((w, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-3 w-8 shrink-0" />
-                    <Skeleton className="h-4" style={{ width: `${w}%` }} />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 차트 플레이스홀더 3 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">
-                시설 타입별 비율
-              </CardTitle>
-              <CardDescription>통계 항목을 구성 중입니다.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center py-6">
-              <div className="relative">
-                <Skeleton className="h-32 w-32 rounded-full" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Skeleton className="h-16 w-16 rounded-full bg-background" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 차트 플레이스홀더 4 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">
-                최근 등록 현황
-              </CardTitle>
-              <CardDescription>통계 항목을 구성 중입니다.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full shrink-0" />
-                    <div className="flex-1 space-y-1">
-                      <Skeleton className="h-3 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
+            <BarChart3Icon className="mb-3 h-10 w-10 opacity-30" />
+            <p className="text-sm">통계 항목을 구성 중입니다.</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

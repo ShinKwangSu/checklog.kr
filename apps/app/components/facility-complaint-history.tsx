@@ -8,7 +8,7 @@
 // 상세에서 상태 변경(접수 → 처리중 → 완료) 가능.
 // =============================================================================
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { MessageSquareText, ArrowLeft, ImageIcon } from 'lucide-react'
 import { Dialog, DialogContent } from '@checklog/ui/components/dialog'
 import {
@@ -23,10 +23,7 @@ import { Badge } from '@checklog/ui/components/badge'
 import { Skeleton } from '@checklog/ui/components/skeleton'
 import { Separator } from '@checklog/ui/components/separator'
 import { toast } from 'sonner'
-import {
-  getComplaints,
-  updateComplaintStatus,
-} from '@/domain/complaint'
+import { useComplaints, useUpdateComplaintStatus } from '@/domain/complaint'
 import type { Complaint, FacilityWithChecklists } from '@/types/database'
 
 // -----------------------------------------------------------------------------
@@ -76,18 +73,9 @@ function ComplaintList({
   facilityId: string
   onSelect: (item: Complaint) => void
 }) {
-  const [items, setItems] = useState<Complaint[] | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { data: items, isLoading } = useComplaints(facilityId)
 
-  useEffect(() => {
-    setLoading(true)
-    getComplaints(facilityId).then((data) => {
-      setItems(data)
-      setLoading(false)
-    })
-  }, [facilityId])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-3 pt-4">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -149,34 +137,39 @@ function ComplaintList({
 
 function ComplaintDetail({
   complaint: initial,
+  facilityId,
   onBack,
 }: {
   complaint: Complaint
+  facilityId: string
   onBack: () => void
 }) {
   const [complaint, setComplaint] = useState(initial)
   const [lightbox, setLightbox] = useState<string | null>(null)
-  const [isPending, setIsPending] = useState(false)
+  const updateStatus = useUpdateComplaintStatus(facilityId)
 
   const nextStatus = NEXT_STATUS[complaint.status]
 
-  async function handleStatusChange() {
-    if (!nextStatus || isPending) return
-    setIsPending(true)
-    const result = await updateComplaintStatus(complaint.id, nextStatus)
-    setIsPending(false)
-
-    if (result.success) {
-      setComplaint((prev) => ({
-        ...prev,
-        status: nextStatus,
-        resolved_at:
-          nextStatus === 'resolved' ? new Date().toISOString() : null,
-      }))
-      toast.success(`상태가 "${STATUS_LABEL[nextStatus]}"으로 변경되었습니다.`)
-    } else {
-      toast.error(result.error)
-    }
+  function handleStatusChange() {
+    if (!nextStatus || updateStatus.isPending) return
+    updateStatus.mutate(
+      { complaintId: complaint.id, status: nextStatus },
+      {
+        onSuccess: (result) => {
+          if (result.success) {
+            setComplaint((prev) => ({
+              ...prev,
+              status: nextStatus,
+              resolved_at:
+                nextStatus === 'resolved' ? new Date().toISOString() : null,
+            }))
+            toast.success(`상태가 "${STATUS_LABEL[nextStatus]}"으로 변경되었습니다.`)
+          } else {
+            toast.error(result.error)
+          }
+        },
+      }
+    )
   }
 
   return (
@@ -261,10 +254,10 @@ function ComplaintDetail({
             <Separator />
             <Button
               className="w-full"
-              disabled={isPending}
+              disabled={updateStatus.isPending}
               onClick={handleStatusChange}
             >
-              {isPending
+              {updateStatus.isPending
                 ? '처리 중...'
                 : `"${STATUS_LABEL[nextStatus]}"으로 변경`}
             </Button>
@@ -312,6 +305,7 @@ export function FacilityComplaintHistory({
         {selected ? (
           <ComplaintDetail
             complaint={selected}
+            facilityId={facility.id}
             onBack={() => setSelected(null)}
           />
         ) : (
