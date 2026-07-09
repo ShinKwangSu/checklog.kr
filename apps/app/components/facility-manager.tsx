@@ -30,7 +30,7 @@ import {
   floorToDisplay,
   generateFloorOptions,
 } from '@/lib/utils/floor'
-import type { Checklist, Facility, FacilityType, FacilityWithChecklists, Workspace } from '@/types/database'
+import type { Checklist, FacilityType, FacilityWithChecklists, Workspace } from '@/types/database'
 import {
   Card,
   CardContent,

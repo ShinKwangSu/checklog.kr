@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAccountId } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 import {
   BuildingIcon,
@@ -40,8 +40,7 @@ async function getStats(accountId: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await auth()
-  const accountId = (session?.user as any)?.accountId as string | undefined
+  const accountId = await getAccountId()
 
   const stats = accountId
     ? await getStats(accountId)

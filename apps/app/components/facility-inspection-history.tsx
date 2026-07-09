@@ -49,11 +49,9 @@ function formatDateTime(iso: string) {
 
 function HistoryList({
   facilityId,
-  facilityName,
   onSelect,
 }: {
   facilityId: string
-  facilityName: string
   onSelect: (item: InspectionHistoryItem) => void
 }) {
   const [items, setItems] = useState<InspectionHistoryItem[] | null>(null)
@@ -312,7 +310,6 @@ export function FacilityInspectionHistory({
         ) : (
           <HistoryList
             facilityId={facility.id}
-            facilityName={facility.facility_name}
             onSelect={setSelected}
           />
         )}

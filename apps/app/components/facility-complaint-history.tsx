@@ -71,11 +71,9 @@ const NEXT_STATUS: Partial<Record<Complaint['status'], Complaint['status']>> = {
 
 function ComplaintList({
   facilityId,
-  facilityName,
   onSelect,
 }: {
   facilityId: string
-  facilityName: string
   onSelect: (item: Complaint) => void
 }) {
   const [items, setItems] = useState<Complaint[] | null>(null)
@@ -319,7 +317,6 @@ export function FacilityComplaintHistory({
         ) : (
           <ComplaintList
             facilityId={facility.id}
-            facilityName={facility.facility_name}
             onSelect={setSelected}
           />
         )}
