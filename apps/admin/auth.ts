@@ -24,6 +24,11 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { authConfig } from './auth.config'
 import { createClient } from '@/lib/supabase/server'
+// domain/auth 배럴(index.ts)은 actions/auth.actions.ts를 재export하고 그 파일이
+// signIn/signOut을 이 파일(@/auth)에서 import하므로, 배럴을 쓰면 순환 참조가 된다.
+// repository는 '@/auth'에 의존하지 않으므로 deep import로 우회한다.
+// eslint-disable-next-line no-restricted-imports
+import { authRepository } from '@/domain/auth/repository/auth.repository'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -47,18 +52,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { email, password } = parsed.data
 
         // service_role 클라이언트로 admins 조회(로그인 전이라 세션 컨텍스트 없음).
-        // password_hash 는 서버에서만 SELECT — 클라이언트로 절대 반환하지 않는다.
-        // admins.Row 타입이 AdminWithSecret(해시 포함)이므로 명시적 컬럼 지정으로
-        // 의도치 않은 해시 노출을 한 번 더 차단한다.
         const supabase = createClient()
-        const { data: admin, error } = await supabase
-          .from('admins')
-          .select('id, email, password_hash, name')
-          .eq('email', email)
-          .is('deleted_at', null)
-          .single()
-
-        if (error || !admin) return null
+        const admin = await authRepository.findActiveAdminByEmail(supabase, email)
+        if (!admin) return null
 
         const passwordMatch = await bcrypt.compare(password, admin.password_hash)
         if (!passwordMatch) return null
