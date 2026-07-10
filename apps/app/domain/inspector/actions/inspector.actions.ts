@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
-import { inspectorSchema } from '@/lib/validations/inspector'
+import { inspectorSchema } from '../validations/inspector.validations'
 import { inspectorService } from '../service/inspector.service'
 import type { Inspector } from '../types'
 

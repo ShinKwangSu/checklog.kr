@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
-import { facilityTypeSchema } from '@/lib/validations/facility-type'
+import { facilityTypeSchema } from '../validations/facility-type.validations'
 import { facilityTypeService } from '../service/facility-type.service'
 import type { FacilityType } from '../types'
 

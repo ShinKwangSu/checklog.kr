@@ -10,9 +10,10 @@ import {
   createInspector,
   updateInspector,
   deleteInspector,
+  inspectorSchema,
+  type InspectorInput,
 } from '@/domain/inspector'
 
-import { inspectorSchema, type InspectorInput } from '@/lib/validations/inspector'
 import { formatPhone } from '@/lib/utils/phone'
 import type { Inspector } from '@/types/database'
 import {

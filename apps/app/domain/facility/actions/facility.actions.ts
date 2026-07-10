@@ -18,7 +18,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
-import { facilitySchema } from '@/lib/validations/facility'
+import { facilitySchema } from '../validations/facility.validations'
 import { facilityService } from '../service/facility.service'
 import type { Facility, FacilityWithChecklists } from '../types'
 

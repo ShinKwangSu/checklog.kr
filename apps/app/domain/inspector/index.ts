@@ -10,3 +10,7 @@ export {
   updateInspector,
   deleteInspector,
 } from './actions/inspector.actions'
+export {
+  inspectorSchema,
+  type InspectorInput,
+} from './validations/inspector.validations'

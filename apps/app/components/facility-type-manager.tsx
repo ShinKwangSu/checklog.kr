@@ -21,11 +21,9 @@ import {
   createFacilityType,
   updateFacilityType,
   deleteFacilityType,
-} from '@/domain/facility-type'
-import {
   facilityTypeSchema,
   type FacilityTypeInput,
-} from '@/lib/validations/facility-type'
+} from '@/domain/facility-type'
 import type { FacilityType } from '@/types/database'
 import {
   Card,

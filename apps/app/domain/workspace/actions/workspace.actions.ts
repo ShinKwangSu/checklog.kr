@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
-import { workspaceSchema } from '@/lib/validations/workspace'
+import { workspaceSchema } from '../validations/workspace.validations'
 import { workspaceService } from '../service/workspace.service'
 import type { Workspace } from '../types'
 

@@ -30,6 +30,7 @@ model: opus
 이 파일은 여러 프로젝트에 복사해 쓰는 것을 전제로 작성되었다. 프로젝트별 특이사항이 있으면 프로젝트의 `.claude/agents/`에 복사해 하단에 `## 프로젝트 특이사항` 섹션을 추가한다. 글로벌 원본은 범용 원칙만 유지한다.
 
 ## 프로젝트 특이사항 (checklog.kr)
-- 스택: Next.js App Router + React Query + TypeScript + Tailwind. `apps/app`은 `app/actions`+`lib`+`components` 위주 구조, `apps/admin`은 `domain/{feature}` 레이어드 구조를 일부 사용 — 앱마다 실제 구조가 다르므로 코드를 직접 읽고 그 앱의 관성 안에서 판단한다. `apps/web`은 정적 마케팅 랜딩(단일 페이지)으로 이 리뷰 범위와 무관하다.
+- 스택: Next.js App Router + React Query + TypeScript + Tailwind. `apps/app`, `apps/admin` 모두 `domain/{feature}`(types/queries/hooks/actions/service/repository/validations) 레이어드 구조로 통일되어 있다 — 새 feature도 이 구조를 따른다. `apps/web`은 정적 마케팅 랜딩(단일 페이지)으로 이 리뷰 범위와 무관하다.
 - **폼 다이얼로그 필수** (`CLAUDE.md`): 입력 폼이 있는 Dialog는 `@/components/form-dialog`의 `FormDialogContent`를 사용해야 한다(바깥 클릭 시 닫힘 기본 차단 — 입력 데이터 보호). `@checklog/ui`의 `DialogContent`를 폼 다이얼로그에 직접 쓰면 결함으로 지적한다. QR/삭제 확인 등 조회·확인용 다이얼로그는 예외이므로 혼동하지 않는다.
 - UI 컴포넌트는 공유 패키지 `@checklog/ui`(shadcn 기반)에서 import하는 것이 기본 — 개별 앱에서 중복 구현되어 있으면 재사용성 결함으로 본다.
+- **검증 스키마/도메인 종속 유틸 위치**: 특정 domain 1곳에서만 쓰는 zod 스키마·유틸은 `domain/{feature}/validations/{feature}.validations.ts` 등 도메인 내부에 둔다. 앱 루트 `lib/`는 여러 domain이 실제로 공유하는 코드(ActionResult 봉투, DomainError, 인증 헬퍼, 공용 포맷터 등)만 남긴다. `apps/app/lib/validations/*` → `domain/{feature}/validations/`로 이관 완료(2026-07-09) — 새 검증 스키마 추가 시 이 패턴을 따르고, 리뷰 시 `lib/`에 사실상 단일 도메인 전용 코드가 남아있는지 확인한다.

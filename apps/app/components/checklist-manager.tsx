@@ -10,8 +10,9 @@ import {
   createChecklist,
   updateChecklist,
   deleteChecklist,
+  checklistSchema,
+  type ChecklistInput,
 } from '@/domain/checklist'
-import { checklistSchema, type ChecklistInput } from '@/lib/validations/checklist'
 import type { ChecklistWithItems } from '@/types/database'
 import {
   Card,

@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
-import { checklistSchema } from '@/lib/validations/checklist'
+import { checklistSchema } from '../validations/checklist.validations'
 import { checklistService } from '../service/checklist.service'
 import type { ChecklistWithItems, ChecklistWriteInput } from '../types'
 

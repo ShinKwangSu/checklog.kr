@@ -11,3 +11,7 @@ export {
   updateFacilityType,
   deleteFacilityType,
 } from './actions/facility-type.actions'
+export {
+  facilityTypeSchema,
+  type FacilityTypeInput,
+} from './validations/facility-type.validations'

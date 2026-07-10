@@ -10,3 +10,7 @@ export {
   updateChecklist,
   deleteChecklist,
 } from './actions/checklist.actions'
+export {
+  checklistSchema,
+  type ChecklistInput,
+} from './validations/checklist.validations'
