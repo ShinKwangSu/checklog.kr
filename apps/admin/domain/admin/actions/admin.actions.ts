@@ -12,11 +12,15 @@
 // - 슈퍼어드민은 전역 권한이므로 account_id 필터가 없다.
 // =============================================================================
 
-import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
 import { runAction } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
+import {
+  createAdminSchema,
+  updateAdminSchema,
+  changePasswordSchema,
+} from '../validations/admin.validations'
 import { adminService } from '../service/admin.service'
 import type {
   AdminActionResult,
@@ -24,40 +28,6 @@ import type {
   AdminListDto,
   CreatedAdminDto,
 } from '../types'
-
-// -----------------------------------------------------------------------------
-// 검증 스키마
-// -----------------------------------------------------------------------------
-
-const createAdminSchema = z.object({
-  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
-  name: z.string().trim().min(1, '이름을 입력해주세요.').max(100, '이름이 너무 깁니다.'),
-})
-
-const updateAdminSchema = z.object({
-  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.').optional(),
-  name: z
-    .string()
-    .trim()
-    .min(1, '이름을 입력해주세요.')
-    .max(100, '이름이 너무 깁니다.')
-    .optional(),
-})
-
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, '현재 비밀번호를 입력해주세요.'),
-    // bcrypt 는 72바이트 초과분을 조용히 절단하므로 상한을 명시해 예측 불가 동작을 막는다.
-    newPassword: z
-      .string()
-      .min(8, '새 비밀번호는 8자 이상이어야 합니다.')
-      .max(72, '새 비밀번호는 72자 이하여야 합니다.'),
-    confirmPassword: z.string().min(1, '새 비밀번호 확인을 입력해주세요.'),
-  })
-  .refine((v) => v.newPassword === v.confirmPassword, {
-    message: '새 비밀번호가 일치하지 않습니다.',
-    path: ['confirmPassword'],
-  })
 
 // -----------------------------------------------------------------------------
 // 조회 액션 (실패 시 throw)

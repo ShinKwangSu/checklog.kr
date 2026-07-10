@@ -10,10 +10,10 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { toast } from 'sonner'
 
-import { useAccount, useUpdateAccount } from '@/domain/account'
+import { useAccount, useUpdateAccount, accountFormSchema } from '@/domain/account'
 import { floorToDisplay } from '@checklog/database'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
@@ -35,13 +35,7 @@ import {
 } from '@checklog/ui/components/table'
 import { Skeleton } from '@checklog/ui/components/skeleton'
 
-const schema = z.object({
-  companyName: z.string().trim().min(1, '업체명을 입력해주세요.'),
-  adminName: z.string().trim().min(1, '관리자명을 입력해주세요.'),
-  phone: z.string().trim().min(1, '전화번호를 입력해주세요.'),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof accountFormSchema>
 
 export function AccountDetailView({ accountId }: { accountId: string }) {
   const { data, isLoading, isError } = useAccount(accountId)
@@ -52,7 +46,7 @@ export function AccountDetailView({ accountId }: { accountId: string }) {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(accountFormSchema),
     defaultValues: { companyName: '', adminName: '', phone: '' },
     // 캐시된 서버 데이터를 values 로 직접 제어한다(useEffect+reset 사후 동기화 제거).
     values: data

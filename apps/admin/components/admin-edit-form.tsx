@@ -9,10 +9,10 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { toast } from 'sonner'
 
-import { useAdmin, useUpdateAdmin } from '@/domain/admin'
+import { useAdmin, useUpdateAdmin, adminFormSchema } from '@/domain/admin'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
 import { Label } from '@checklog/ui/components/label'
@@ -25,12 +25,7 @@ import {
 } from '@checklog/ui/components/card'
 import { Skeleton } from '@checklog/ui/components/skeleton'
 
-const schema = z.object({
-  name: z.string().trim().min(1, '이름을 입력해주세요.'),
-  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof adminFormSchema>
 
 export function AdminEditForm({ adminId }: { adminId: string }) {
   const { data, isLoading, isError } = useAdmin(adminId)
@@ -41,7 +36,7 @@ export function AdminEditForm({ adminId }: { adminId: string }) {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(adminFormSchema),
     defaultValues: { name: '', email: '' },
     // 캐시된 서버 데이터를 values 로 직접 제어한다(useEffect+reset 사후 동기화 제거).
     values: data ? { name: data.name, email: data.email } : undefined,

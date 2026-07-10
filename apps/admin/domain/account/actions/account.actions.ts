@@ -12,11 +12,11 @@
 // - 슈퍼어드민은 전역 권한이므로 account_id 필터가 없다(의도된 설계).
 // =============================================================================
 
-import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
 import { runAction } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
+import { updateAccountSchema } from '../validations/account.validations'
 import { accountService } from '../service/account.service'
 import type {
   AccountActionResult,
@@ -24,31 +24,6 @@ import type {
   AccountDetailDto,
   AccountListDto,
 } from '../types'
-
-// -----------------------------------------------------------------------------
-// 검증 스키마
-// -----------------------------------------------------------------------------
-
-const updateAccountSchema = z.object({
-  companyName: z
-    .string()
-    .trim()
-    .min(1, '업체명을 입력해주세요.')
-    .max(255, '업체명이 너무 깁니다.')
-    .optional(),
-  adminName: z
-    .string()
-    .trim()
-    .min(1, '관리자명을 입력해주세요.')
-    .max(100, '관리자명이 너무 깁니다.')
-    .optional(),
-  phone: z
-    .string()
-    .trim()
-    .min(1, '전화번호를 입력해주세요.')
-    .max(50, '전화번호가 너무 깁니다.')
-    .optional(),
-})
 
 // -----------------------------------------------------------------------------
 // 조회 액션 (실패 시 throw)

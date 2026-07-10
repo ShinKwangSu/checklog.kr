@@ -11,11 +11,11 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
-import { useCreateAdmin } from '@/domain/admin'
+import { useCreateAdmin, adminFormSchema } from '@/domain/admin'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
 import { Label } from '@checklog/ui/components/label'
@@ -29,12 +29,7 @@ import {
   FormDialogContent as DialogContent,
 } from '@/components/form-dialog'
 
-const schema = z.object({
-  name: z.string().trim().min(1, '이름을 입력해주세요.'),
-  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof adminFormSchema>
 
 export function CreateAdminDialog() {
   const [open, setOpen] = useState(false)
@@ -46,7 +41,7 @@ export function CreateAdminDialog() {
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(adminFormSchema),
     defaultValues: { name: '', email: '' },
   })
 

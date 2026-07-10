@@ -13,3 +13,4 @@ export {
   updateAccountAction,
   deleteAccountAction,
 } from './actions/account.actions'
+export { accountFormSchema } from './validations/account.validations'

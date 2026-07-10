@@ -15,3 +15,7 @@ export {
   deleteAdminAction,
   changePasswordAction,
 } from './actions/admin.actions'
+export {
+  adminFormSchema,
+  changePasswordSchema,
+} from './validations/admin.validations'

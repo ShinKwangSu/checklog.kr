@@ -9,10 +9,10 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { toast } from 'sonner'
 
-import { useChangePassword } from '@/domain/admin'
+import { useChangePassword, changePasswordSchema } from '@/domain/admin'
 import { logoutAction } from '@/app/actions/auth'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
@@ -25,18 +25,7 @@ import {
   CardTitle,
 } from '@checklog/ui/components/card'
 
-const schema = z
-  .object({
-    currentPassword: z.string().min(1, '현재 비밀번호를 입력해주세요.'),
-    newPassword: z.string().min(8, '새 비밀번호는 8자 이상이어야 합니다.'),
-    confirmPassword: z.string().min(1, '새 비밀번호 확인을 입력해주세요.'),
-  })
-  .refine((v) => v.newPassword === v.confirmPassword, {
-    path: ['confirmPassword'],
-    message: '새 비밀번호가 일치하지 않습니다.',
-  })
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof changePasswordSchema>
 
 export function ChangePasswordForm() {
   const { mutate: changePassword, isPending } = useChangePassword()
@@ -46,7 +35,7 @@ export function ChangePasswordForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
