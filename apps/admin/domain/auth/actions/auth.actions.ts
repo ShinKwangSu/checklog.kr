@@ -1,38 +1,26 @@
 'use server'
 
 // =============================================================================
-// checklog.kr Admin — 인증 Server Action (로그인 / 로그아웃)
+// admin auth 도메인 — Server Actions (진입점)
 // =============================================================================
 //
 // 슈퍼어드민은 회원가입 플로우가 없다. 계정은 시딩/수동 발급으로만 생성된다.
-// 따라서 이 파일은 로그인/로그아웃만 제공한다.
+// 따라서 이 도메인은 로그인/로그아웃만 제공한다.
 //
 // - 비밀번호 검증/해싱은 auth.ts 의 Credentials authorize() 에서 수행한다
-//   (bcrypt.compare). 이 파일은 signIn/signOut 트리거만 담당한다.
+//   (bcrypt.compare). 이 액션은 signIn/signOut 트리거만 담당한다.
 // - 로그인 성공 시 /dashboard 로 redirect 한다.
 // =============================================================================
 
-import { z } from 'zod'
 import { AuthError } from 'next-auth'
 import { signIn, signOut } from '@/auth'
 import { isRedirectError } from '@/lib/is-redirect-error'
-
-export type AuthActionState = {
-  success: boolean
-  error?: string
-  // 필드별 검증 오류(폼 인라인 표시용)
-  fieldErrors?: Record<string, string[]>
-}
+import { loginSchema } from '../validations/auth.validations'
+import type { AuthActionState } from '../types'
 
 // -----------------------------------------------------------------------------
 // 로그인
 // -----------------------------------------------------------------------------
-
-const loginSchema = z.object({
-  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
-  // bcrypt 72바이트 상한과 과대입력 방어를 위해 상한을 둔다(발급 비밀번호는 ≤72자).
-  password: z.string().min(1, '비밀번호를 입력해주세요.').max(72),
-})
 
 /**
  * 로그인 Server Action.

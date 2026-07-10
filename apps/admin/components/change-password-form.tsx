@@ -13,7 +13,7 @@ import type { z } from 'zod'
 import { toast } from 'sonner'
 
 import { useChangePassword, changePasswordSchema } from '@/domain/admin'
-import { logoutAction } from '@/app/actions/auth'
+import { logoutAction } from '@/domain/auth'
 import { Button } from '@checklog/ui/components/button'
 import { Input } from '@checklog/ui/components/input'
 import { Label } from '@checklog/ui/components/label'
