@@ -313,4 +313,16 @@ export const authService = {
       );
     }
   },
+
+  /**
+   * 계정 활성화 여부를 조회한다(throw 없이 boolean 반환).
+   * 워크스페이스 생성 버튼처럼 서버 컴포넌트에서 UI 노출 여부를 미리 판단할 때 쓴다.
+   */
+  async isAccountActive(supabase: Db, accountId: string): Promise<boolean> {
+    const account = await authRepository.findAccountStatusById(
+      supabase,
+      accountId,
+    );
+    return account?.status === "active";
+  },
 };

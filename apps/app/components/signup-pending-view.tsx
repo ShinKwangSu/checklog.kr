@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 import { useResendVerificationEmail, useUpdateEmail } from '@/domain/auth'
@@ -113,18 +114,26 @@ export function SignupPendingView({
             </Button>
           </div>
         ) : (
-          <div className="flex w-full gap-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              disabled={isResending}
-              onClick={handleResend}
+          <div className="flex w-full flex-col gap-3">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                disabled={isResending}
+                onClick={handleResend}
+              >
+                {isResending ? '전송 중...' : '인증 메일 재전송'}
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => setIsEditing(true)}>
+                이메일 수정
+              </Button>
+            </div>
+            <Link
+              href="/login"
+              className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
             >
-              {isResending ? '전송 중...' : '인증 메일 재전송'}
-            </Button>
-            <Button variant="outline" className="flex-1" onClick={() => setIsEditing(true)}>
-              이메일 수정
-            </Button>
+              로그인으로 돌아가기
+            </Link>
           </div>
         )}
       </CardFooter>

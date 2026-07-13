@@ -2,6 +2,13 @@ import Link from 'next/link'
 import { BuildingIcon } from 'lucide-react'
 
 import { getWorkspaces } from '@/domain/workspace'
+import { getAccountId } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
+// domain/auth 배럴은 server-only 이메일 발송 코드를 물고 있는 authService를 export하지
+// 않는다(클라이언트 컴포넌트가 배럴을 import할 때 함께 딸려 들어가는 것을 막기 위해).
+// 이 파일은 Server Component(클라이언트 번들에 포함되지 않음)이므로 deep import로 쓴다.
+// eslint-disable-next-line no-restricted-imports
+import { authService } from '@/domain/auth/service/auth.service'
 import { floorToDisplay, generateFloorOptions } from '@/lib/utils/floor'
 import {
   Card,
@@ -16,6 +23,11 @@ import { WorkspaceRowActions } from '@/components/workspace-row-actions'
 export default async function WorkspacesPage() {
   const workspaces = await getWorkspaces()
 
+  const accountId = await getAccountId()
+  const canCreateWorkspace = accountId
+    ? await authService.isAccountActive(createClient(), accountId)
+    : false
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -25,7 +37,7 @@ export default async function WorkspacesPage() {
             관리할 건물/장소를 선택하세요.
           </p>
         </div>
-        <WorkspaceFormDialog />
+        <WorkspaceFormDialog canCreate={canCreateWorkspace} />
       </div>
 
       {workspaces.length === 0 ? (
@@ -37,7 +49,7 @@ export default async function WorkspacesPage() {
               건물/장소를 등록하면 시설을 관리할 수 있습니다.
             </p>
           </div>
-          <WorkspaceFormDialog />
+          <WorkspaceFormDialog canCreate={canCreateWorkspace} />
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

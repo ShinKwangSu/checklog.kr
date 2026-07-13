@@ -15,8 +15,7 @@ export const inspectorSchema = z.object({
       z
         .string()
         .min(1, '전화번호를 입력해주세요.')
-        .max(11, '전화번호는 11자리 이하여야 합니다.')
-        .regex(/^\d+$/, '전화번호는 숫자만 입력 가능합니다.')
+        .regex(/^010\d{7,8}$/, '010으로 시작하는 휴대폰 번호를 입력해주세요.')
     ),
   email: z
     .string()

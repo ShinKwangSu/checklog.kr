@@ -7,8 +7,7 @@ export const signUpSchema = z.object({
     .string()
     .trim()
     .min(1, '전화번호를 입력해주세요.')
-    .max(11, '전화번호는 11자리 이하여야 합니다.')
-    .regex(/^\d+$/, '전화번호는 숫자만 입력 가능합니다.'),
+    .regex(/^010\d{7,8}$/, '010으로 시작하는 휴대폰 번호를 입력해주세요.'),
   email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
   password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
 })

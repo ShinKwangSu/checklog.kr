@@ -111,9 +111,17 @@ type Props = {
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  /** 워크스페이스 생성(비수정) 가능 여부. false면 폼을 열기 전에 트리거 클릭에서 막는다. */
+  canCreate?: boolean
 }
 
-export function WorkspaceFormDialog({ workspace, trigger, open: openProp, onOpenChange }: Props) {
+export function WorkspaceFormDialog({
+  workspace,
+  trigger,
+  open: openProp,
+  onOpenChange,
+  canCreate = true,
+}: Props) {
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = openProp !== undefined
   const open = isControlled ? openProp! : internalOpen
@@ -186,16 +194,29 @@ export function WorkspaceFormDialog({ workspace, trigger, open: openProp, onOpen
         if (next && !isEdit) form.reset()
       }}
     >
-      {!isControlled && (
-        <DialogTrigger asChild>
-          {trigger ?? (
-            <Button>
-              <Plus className="h-4 w-4" />
-              워크스페이스 추가
-            </Button>
-          )}
-        </DialogTrigger>
-      )}
+      {!isControlled &&
+        (!isEdit && !canCreate ? (
+          <Button
+            type="button"
+            onClick={() =>
+              toast.error(
+                '이메일 인증 후 워크스페이스를 추가할 수 있습니다. 가입하신 이메일함을 확인해주세요.'
+              )
+            }
+          >
+            <Plus className="h-4 w-4" />
+            워크스페이스 추가
+          </Button>
+        ) : (
+          <DialogTrigger asChild>
+            {trigger ?? (
+              <Button>
+                <Plus className="h-4 w-4" />
+                워크스페이스 추가
+              </Button>
+            )}
+          </DialogTrigger>
+        ))}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
