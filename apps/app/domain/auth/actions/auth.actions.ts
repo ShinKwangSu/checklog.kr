@@ -4,8 +4,9 @@
 // auth 도메인 — Server Actions (진입점)
 // =============================================================================
 //
-// - 회원가입 = accounts 마스터 계정 1행 생성(= 멀티고객 격리 루트). 가입 성공 시
-//   자동 로그인하여 세션 JWT 에 accountId 를 적재한다.
+// - 회원가입 = accounts 마스터 계정 1행 생성(= 멀티고객 격리 루트, status='pending').
+//   자동 로그인은 하지 않는다 — 이메일 인증 전까지 pending 상태로 남겨두고 화면에서
+//   인증 메일 발송 안내로 전환한다.
 // - signIn/signOut 의 redirectTo 는 NEXT_REDIRECT 예외를 throw 하므로 반드시 재던진다.
 // - 반환 타입은 AuthActionState(fieldErrors 포함)라 runAction 봉투를 쓰지 않는다.
 // =============================================================================
@@ -24,6 +25,9 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  resendVerificationSchema,
+  updateEmailSchema,
+  verifyEmailSchema,
 } from '../validations/auth.validations'
 import { authService } from '../service/auth.service'
 import type { AuthActionState } from '../types'
@@ -47,9 +51,11 @@ export async function signUpAction(
 
   const { company_name, admin_name, phone, email, password } = parsed.data
 
+  // 가입 성공 시 자동 로그인은 하지 않는다 — 이메일 인증 전까지는 pending 상태로
+  // 남겨두고, 화면에서 인증 메일 발송 안내로 전환한다.
   try {
     const supabase = createClient()
-    await authService.registerAccount(supabase, {
+    await authService.signUp(supabase, {
       companyName: company_name,
       adminName: admin_name,
       phone,
@@ -62,16 +68,66 @@ export async function signUpAction(
     return { success: false, error: '회원가입 중 오류가 발생했습니다.' }
   }
 
-  // 가입 후 자동 로그인. 성공하면 redirectTo 로 이동(NEXT_REDIRECT throw).
-  try {
-    await signIn('credentials', { email, password, redirectTo: '/dashboard/workspaces' })
-  } catch (err) {
-    // signIn 의 redirect 예외는 상위로 다시 던져 실제 리다이렉트가 일어나게 한다.
-    if (isRedirectError(err)) throw err
-    return {
-      success: false,
-      error: '가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인해주세요.',
+  return { success: true }
+}
+
+// -----------------------------------------------------------------------------
+// 이메일 인증 (회원가입)
+// -----------------------------------------------------------------------------
+
+export async function resendVerificationEmailAction(
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return runAction(async () => {
+    const parsed = resendVerificationSchema.safeParse({
+      email: formData.get('email'),
+    })
+    if (!parsed.success) {
+      throw new DomainError(parsed.error.errors[0]?.message ?? '입력값을 확인해주세요.')
     }
+
+    const supabase = createClient()
+    await authService.resendVerificationEmail(supabase, parsed.data.email)
+  }, '인증 메일 재전송 중 오류가 발생했습니다.')
+}
+
+export async function updateEmailAction(
+  formData: FormData
+): Promise<ActionResult<{ email: string }>> {
+  return runAction(async () => {
+    const parsed = updateEmailSchema.safeParse({
+      currentEmail: formData.get('currentEmail'),
+      newEmail: formData.get('newEmail'),
+    })
+    if (!parsed.success) {
+      throw new DomainError(parsed.error.errors[0]?.message ?? '입력값을 확인해주세요.')
+    }
+
+    const supabase = createClient()
+    return authService.updateEmailAndResend(
+      supabase,
+      parsed.data.currentEmail,
+      parsed.data.newEmail
+    )
+  }, '이메일 수정 중 오류가 발생했습니다.')
+}
+
+export async function verifyEmailAction(
+  _prevState: AuthActionState | undefined,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = verifyEmailSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) {
+    return { success: false, error: '유효하지 않은 링크입니다.' }
+  }
+
+  try {
+    const supabase = createClient()
+    await authService.verifyEmail(supabase, parsed.data.token)
+  } catch (e) {
+    if (e instanceof DomainError) return { success: false, error: e.message }
+    console.error('[verifyEmailAction]', e)
+    return { success: false, error: '이메일 인증 중 오류가 발생했습니다.' }
   }
 
   return { success: true }

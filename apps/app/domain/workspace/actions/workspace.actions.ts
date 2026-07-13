@@ -12,6 +12,11 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccountId, requireAccountId } from '@/lib/auth'
 import { runAction, type ActionResult } from '@/lib/action-result'
 import { DomainError } from '@/lib/domain-error'
+// domain/auth 배럴은 server-only 이메일 발송 코드를 물고 있는 authService를 export하지
+// 않는다(클라이언트 컴포넌트가 배럴을 import할 때 함께 딸려 들어가는 것을 막기 위해).
+// 이 파일은 서버 전용 Server Action이므로 service 파일을 deep import 로 직접 쓴다.
+// eslint-disable-next-line no-restricted-imports
+import { authService } from '@/domain/auth/service/auth.service'
 import { workspaceSchema } from '../validations/workspace.validations'
 import { workspaceService } from '../service/workspace.service'
 import type { Workspace } from '../types'
@@ -65,8 +70,9 @@ export async function createWorkspace(
 ): Promise<ActionResult<Workspace>> {
   return runAction(async () => {
     const accountId = await requireAccountId()
-    const input = parseWorkspaceInput(formData)
     const supabase = createClient()
+    await authService.requireActiveAccount(supabase, accountId)
+    const input = parseWorkspaceInput(formData)
     const created = await workspaceService.create(supabase, accountId, input)
     revalidatePath(WORKSPACES_PATH)
     return created

@@ -97,4 +97,23 @@ export const authRepository = {
 
     if (error) throw error
   },
+
+  /** 최근 발급된 토큰들의 생성 시각을 최신순으로 조회한다(재전송 쿨다운/상한 판단용). */
+  async listRecentTokenTimestamps(
+    supabase: Db,
+    subjectId: string,
+    sinceISO: string
+  ): Promise<string[]> {
+    const { data, error } = await supabase
+      .from('password_reset_tokens')
+      .select('created_at')
+      .eq('subject_type', 'admin')
+      .eq('subject_id', subjectId)
+      .eq('purpose', 'password_reset')
+      .gte('created_at', sinceISO)
+      .order('created_at', { ascending: false })
+
+    if (error || !data) return []
+    return data.map((row) => row.created_at)
+  },
 }

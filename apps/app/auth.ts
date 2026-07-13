@@ -49,6 +49,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const passwordMatch = await bcrypt.compare(password, account.password_hash)
         if (!passwordMatch) return null
 
+        // 정지된 계정은 비밀번호가 맞아도 로그인을 차단한다(pending은 로그인 허용).
+        if (account.status === 'suspended') return null
+
         // 여기서 반환되는 객체가 jwt() 콜백의 user 로 전달된다.
         // password_hash 는 절대 포함하지 않는다(세션/토큰 누출 방지).
         return {

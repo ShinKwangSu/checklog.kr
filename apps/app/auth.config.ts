@@ -43,7 +43,9 @@ export const authConfig = {
         return isLoggedIn
       }
 
-      // 로그인 상태에서 /login·/signup·/forgot-password·/reset-password 접근 시 대시보드로 보냄
+      // 로그인 상태에서 /login·/signup·/forgot-password·/reset-password 접근 시 대시보드로 보냄.
+      // /verify-email 은 제외한다 — pending 상태는 로그인이 허용되므로, 로그인한 채로
+      // 인증 메일 링크를 열어도 인증 버튼을 누를 수 있어야 한다.
       if (isLoggedIn) {
         const isAuthPage =
           nextUrl.pathname === '/login' ||

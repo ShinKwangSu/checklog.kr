@@ -21,6 +21,7 @@ export type Account = {
   admin_name: string
   phone: string
   email: string
+  status: 'pending' | 'active' | 'suspended'
   created_at: string
   deleted_at?: string | null
 }
@@ -181,6 +182,7 @@ export type AccountInsert = {
   phone: string
   email: string
   password_hash: string
+  status?: 'pending' | 'active' | 'suspended'
   created_at?: string
   deleted_at?: string | null
 }
@@ -303,6 +305,7 @@ export type PasswordResetToken = {
   id: string
   subject_type: 'account' | 'admin'
   subject_id: string
+  purpose: 'password_reset' | 'email_verification'
   token_hash: string
   expires_at: string
   consumed_at: string | null
@@ -313,6 +316,7 @@ export type PasswordResetTokenInsert = {
   id?: string
   subject_type: 'account' | 'admin'
   subject_id: string
+  purpose?: 'password_reset' | 'email_verification'
   token_hash: string
   expires_at: string
   consumed_at?: string | null

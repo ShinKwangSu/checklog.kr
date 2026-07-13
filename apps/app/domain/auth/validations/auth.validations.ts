@@ -50,3 +50,16 @@ export const changePasswordSchema = z
     message: '새 비밀번호가 일치하지 않습니다.',
     path: ['confirmPassword'],
   })
+
+export const resendVerificationSchema = z.object({
+  email: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
+})
+
+export const updateEmailSchema = z.object({
+  currentEmail: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
+  newEmail: z.string().trim().email('올바른 이메일 형식이 아닙니다.'),
+})
+
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, '유효하지 않은 링크입니다.'),
+})

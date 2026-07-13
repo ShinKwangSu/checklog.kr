@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { signUpAction, type AuthActionState } from "@/domain/auth";
+import { SignupPendingView } from "@/components/signup-pending-view";
 import { formatPhone, rawPhone } from "@/lib/utils/phone";
 import { Button } from "@checklog/ui/components/button";
 import {
@@ -40,13 +41,21 @@ export default function SignupPage() {
     setPhone(formatPhone(e.target.value));
   }
 
+  if (state.success) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
+        <SignupPendingView email={email} onEmailChange={setEmail} />
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">회원가입</CardTitle>
           <CardDescription>
-            업체 마스터 계정을 생성합니다. 가입 후 자동으로 로그인됩니다.
+            업체 마스터 계정을 생성합니다. 가입 후 이메일 인증이 필요합니다.
           </CardDescription>
         </CardHeader>
 
