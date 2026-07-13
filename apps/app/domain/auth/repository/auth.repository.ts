@@ -61,4 +61,98 @@ export const authRepository = {
     if (error || !data) return null
     return data
   },
+
+  /**
+   * 활성(미삭제) 계정을 이메일로 조회한다(비밀번호 찾기 전용).
+   * 삭제된 계정은 재설정 대상에서 제외한다.
+   */
+  async findActiveAccountByEmail(
+    supabase: Db,
+    email: string
+  ): Promise<AccountWithSecret | null> {
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('id, email, password_hash, admin_name, company_name')
+      .eq('email', email)
+      .is('deleted_at', null)
+      .single()
+
+    if (error || !data) return null
+    return data
+  },
+
+  /** id로 계정을 조회한다(비밀번호 변경 시 현재 비밀번호 검증용). */
+  async findAccountSecretById(
+    supabase: Db,
+    id: string
+  ): Promise<AccountWithSecret | null> {
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('id, email, password_hash, admin_name, company_name')
+      .eq('id', id)
+      .is('deleted_at', null)
+      .single()
+
+    if (error || !data) return null
+    return data
+  },
+
+  /** 비밀번호 해시를 갱신한다. */
+  async updatePassword(
+    supabase: Db,
+    id: string,
+    passwordHash: string
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('accounts')
+      .update({ password_hash: passwordHash })
+      .eq('id', id)
+      .is('deleted_at', null)
+
+    if (error) throw error
+  },
+
+  /** 비밀번호 재설정 토큰을 생성한다(subject_type: 'account' 고정). */
+  async createPasswordResetToken(
+    supabase: Db,
+    row: { subjectId: string; tokenHash: string; expiresAt: string }
+  ): Promise<void> {
+    const { error } = await supabase.from('password_reset_tokens').insert({
+      subject_type: 'account',
+      subject_id: row.subjectId,
+      token_hash: row.tokenHash,
+      expires_at: row.expiresAt,
+    })
+
+    if (error) throw error
+  },
+
+  /** 만료/소비되지 않은 유효 토큰을 해시로 조회한다. */
+  async findValidResetToken(
+    supabase: Db,
+    tokenHash: string
+  ): Promise<{ id: string; subjectId: string } | null> {
+    const { data, error } = await supabase
+      .from('password_reset_tokens')
+      .select('id, subject_id, expires_at, consumed_at')
+      .eq('subject_type', 'account')
+      .eq('token_hash', tokenHash)
+      .is('consumed_at', null)
+      .single()
+
+    if (error || !data) return null
+    if (new Date(data.expires_at).getTime() < Date.now()) return null
+
+    return { id: data.id, subjectId: data.subject_id }
+  },
+
+  /** 토큰을 1회성으로 소비 처리한다. */
+  async consumeResetToken(supabase: Db, id: string): Promise<void> {
+    const { error } = await supabase
+      .from('password_reset_tokens')
+      .update({ consumed_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) throw error
+  },
 }

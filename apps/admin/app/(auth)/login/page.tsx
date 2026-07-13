@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 // =============================================================================
 // CheckLog 관리자 포털 — 로그인 페이지
@@ -9,9 +9,11 @@
 // 슈퍼어드민은 회원가입이 없으므로 회원가입 링크를 두지 않는다.
 // =============================================================================
 
-import { useActionState } from 'react'
+import Link from "next/link";
+import { useActionState, useState } from "react";
 
-import { loginAction, type AuthActionState } from '@/domain/auth'
+import { loginAction, type AuthActionState } from "@/domain/auth";
+import { Button } from "@checklog/ui/components/button";
 import {
   Card,
   CardContent,
@@ -19,27 +21,27 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@checklog/ui/components/card'
-import { Button } from '@checklog/ui/components/button'
-import { Input } from '@checklog/ui/components/input'
-import { Label } from '@checklog/ui/components/label'
+} from "@checklog/ui/components/card";
+import { Input } from "@checklog/ui/components/input";
+import { Label } from "@checklog/ui/components/label";
 
-const initialState: AuthActionState = { success: false }
+const initialState: AuthActionState = { success: false };
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(
     loginAction,
-    initialState
-  )
+    initialState,
+  );
+  // Server Action 제출 후 React가 비제어 입력을 초기화하므로, 실패 시에도
+  // 이메일이 남아있도록 제어 컴포넌트로 관리한다(비밀번호는 보안상 그대로 비운다).
+  const [email, setEmail] = useState("");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">CheckLog 관리자 포털</CardTitle>
-          <CardDescription>
-            슈퍼어드민 계정으로 로그인하세요.
-          </CardDescription>
+          <CardDescription>슈퍼어드민 계정으로 로그인하세요.</CardDescription>
         </CardHeader>
 
         <form action={formAction}>
@@ -57,8 +59,10 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="admin@checklog.kr"
+                placeholder=""
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={!!state?.fieldErrors?.email}
               />
               {state?.fieldErrors?.email?.[0] && (
@@ -69,13 +73,21 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">비밀번호</Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                >
+                  비밀번호를 잊으셨나요?
+                </Link>
+              </div>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                placeholder="••••••••"
+                placeholder=""
                 required
                 aria-invalid={!!state?.fieldErrors?.password}
               />
@@ -89,11 +101,11 @@ export default function LoginPage() {
 
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? '로그인 중...' : '로그인'}
+              {isPending ? "로그인 중..." : "로그인"}
             </Button>
           </CardFooter>
         </form>
       </Card>
     </main>
-  )
+  );
 }

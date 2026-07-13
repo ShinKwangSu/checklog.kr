@@ -53,8 +53,12 @@ export const authConfig = {
         return isAdmin
       }
 
-      // 정상 인증된 상태에서 /login 접근 시 대시보드로 보냄
-      if (isAdmin && nextUrl.pathname === '/login') {
+      // 정상 인증된 상태에서 /login·/forgot-password·/reset-password 접근 시 대시보드로 보냄
+      const isAuthPage =
+        nextUrl.pathname === '/login' ||
+        nextUrl.pathname === '/forgot-password' ||
+        nextUrl.pathname === '/reset-password'
+      if (isAdmin && isAuthPage) {
         return Response.redirect(new URL('/dashboard', nextUrl))
       }
 

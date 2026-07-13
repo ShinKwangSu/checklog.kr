@@ -43,10 +43,13 @@ export const authConfig = {
         return isLoggedIn
       }
 
-      // 로그인 상태에서 /login·/signup 접근 시 대시보드로 보냄
+      // 로그인 상태에서 /login·/signup·/forgot-password·/reset-password 접근 시 대시보드로 보냄
       if (isLoggedIn) {
         const isAuthPage =
-          nextUrl.pathname === '/login' || nextUrl.pathname === '/signup'
+          nextUrl.pathname === '/login' ||
+          nextUrl.pathname === '/signup' ||
+          nextUrl.pathname === '/forgot-password' ||
+          nextUrl.pathname === '/reset-password'
         if (isAuthPage) {
           return Response.redirect(new URL('/dashboard/workspaces', nextUrl))
         }

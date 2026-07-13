@@ -16,6 +16,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.1",
     "@checklog/database": "workspace:*",
+    "@checklog/email": "workspace:*",
     "@checklog/ui": "workspace:*",
     "@tanstack/react-query": "^5.62.2",
     "@tanstack/react-table": "^8.21.3",

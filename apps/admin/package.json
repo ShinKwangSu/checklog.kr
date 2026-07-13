@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@checklog/database": "workspace:*",
+    "@checklog/email": "workspace:*",
     "@checklog/ui": "workspace:*",
     "@tanstack/react-query": "^5.62.2",
     "bcryptjs": "^2.4.3",

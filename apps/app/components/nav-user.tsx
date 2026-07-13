@@ -1,6 +1,7 @@
 "use client"
 
-import { LogOutIcon, MoreVerticalIcon, UserCircleIcon } from "lucide-react"
+import Link from "next/link"
+import { KeyRoundIcon, LogOutIcon, MoreVerticalIcon, UserCircleIcon } from "lucide-react"
 
 import { logoutAction } from "@/domain/auth"
 import {
@@ -81,6 +82,13 @@ export function NavUser({
             <DropdownMenuItem disabled>
               <UserCircleIcon />
               {user.name}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/change-password">
+                <KeyRoundIcon />
+                비밀번호 변경
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <form action={logoutAction}>

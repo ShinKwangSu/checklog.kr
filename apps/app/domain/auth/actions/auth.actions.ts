@@ -10,12 +10,21 @@
 // - 반환 타입은 AuthActionState(fieldErrors 포함)라 runAction 봉투를 쓰지 않는다.
 // =============================================================================
 
+import { redirect } from 'next/navigation'
 import { AuthError } from 'next-auth'
 import { createClient } from '@/lib/supabase/server'
 import { signIn, signOut } from '@/auth'
 import { isRedirectError } from '@/lib/is-redirect-error'
 import { DomainError } from '@/lib/domain-error'
-import { signUpSchema, loginSchema } from '../validations/auth.validations'
+import { runAction, type ActionResult } from '@/lib/action-result'
+import { requireAccountId } from '@/lib/auth'
+import {
+  signUpSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} from '../validations/auth.validations'
 import { authService } from '../service/auth.service'
 import type { AuthActionState } from '../types'
 
@@ -109,4 +118,100 @@ export async function loginAction(
 
 export async function logoutAction() {
   await signOut({ redirectTo: '/login' })
+}
+
+// -----------------------------------------------------------------------------
+// 비밀번호 찾기 (재설정 메일 발송)
+// -----------------------------------------------------------------------------
+
+/**
+ * 비밀번호 재설정 메일 발송 요청.
+ * 이메일 존재 여부와 무관하게 항상 동일한 성공 메시지를 반환한다(계정 열거 방지).
+ */
+export async function requestPasswordResetAction(
+  _prevState: AuthActionState | undefined,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: '입력값을 확인해주세요.',
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    }
+  }
+
+  try {
+    const supabase = createClient()
+    await authService.requestPasswordReset(supabase, parsed.data.email)
+  } catch (e) {
+    console.error('[requestPasswordResetAction]', e)
+    // 발송 실패도 사용자에게는 동일한 안내를 보여준다(내부 오류 노출 방지).
+  }
+
+  return { success: true }
+}
+
+// -----------------------------------------------------------------------------
+// 비밀번호 재설정 (토큰 검증 후 새 비밀번호 저장)
+// -----------------------------------------------------------------------------
+
+export async function resetPasswordAction(
+  _prevState: AuthActionState | undefined,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = resetPasswordSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: '입력값을 확인해주세요.',
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    }
+  }
+
+  try {
+    const supabase = createClient()
+    await authService.resetPassword(
+      supabase,
+      parsed.data.token,
+      parsed.data.newPassword
+    )
+  } catch (e) {
+    if (e instanceof DomainError) return { success: false, error: e.message }
+    console.error('[resetPasswordAction]', e)
+    return { success: false, error: '비밀번호 재설정 중 오류가 발생했습니다.' }
+  }
+
+  redirect('/login')
+}
+
+// -----------------------------------------------------------------------------
+// 비밀번호 변경 (로그인 상태)
+// -----------------------------------------------------------------------------
+
+export async function changePasswordAction(
+  _prevState: ActionResult<void> | undefined,
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return runAction(async () => {
+    const accountId = await requireAccountId()
+    const parsed = changePasswordSchema.safeParse({
+      currentPassword: formData.get('currentPassword'),
+      newPassword: formData.get('newPassword'),
+      confirmPassword: formData.get('confirmPassword'),
+    })
+    if (!parsed.success) {
+      throw new DomainError(
+        parsed.error.errors[0]?.message ?? '입력값을 확인해주세요.'
+      )
+    }
+
+    const supabase = createClient()
+    await authService.changePassword(
+      supabase,
+      accountId,
+      parsed.data.currentPassword,
+      parsed.data.newPassword
+    )
+  }, '비밀번호 변경 중 오류가 발생했습니다.')
 }

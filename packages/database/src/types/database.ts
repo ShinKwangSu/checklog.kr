@@ -295,6 +295,31 @@ export type AdminInsert = {
 export type AdminUpdate = Partial<Omit<Admin, 'id' | 'created_at'>>
 
 /**
+ * password_reset_tokens — 비밀번호 찾기(재설정) 1회용 토큰.
+ * accounts(apps/app)/admins(apps/admin) 공용, subject_type 으로 구분한다.
+ * token_hash 는 SHA-256 해시(평문 토큰은 이메일 링크에만 담긴다).
+ */
+export type PasswordResetToken = {
+  id: string
+  subject_type: 'account' | 'admin'
+  subject_id: string
+  token_hash: string
+  expires_at: string
+  consumed_at: string | null
+  created_at: string
+}
+
+export type PasswordResetTokenInsert = {
+  id?: string
+  subject_type: 'account' | 'admin'
+  subject_id: string
+  token_hash: string
+  expires_at: string
+  consumed_at?: string | null
+  created_at?: string
+}
+
+/**
  * inspection_sessions — QR 스캔 시 생성되는 5분 유효 점검 세션.
  * id(UUID)가 일회성 토큰 역할을 한다.
  */
@@ -448,6 +473,12 @@ export type Database = {
         Row: AdminWithSecret
         Insert: AdminInsert
         Update: Partial<AdminInsert>
+        Relationships: []
+      }
+      password_reset_tokens: {
+        Row: PasswordResetToken
+        Insert: PasswordResetTokenInsert
+        Update: Partial<PasswordResetTokenInsert>
         Relationships: []
       }
       inspection_sessions: {
